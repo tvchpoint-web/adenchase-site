@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thank you — AdenChase Labs</title>
+  <meta name="description" content="Your AdenChase Labs prescription is on the way. Check your inbox in 60–90 seconds.">
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+
+    :root {
+      --teal: #0F4C5C;
+      --teal-soft: #6F95A0;
+      --teal-deep: #093642;
+      --amber: #F5A742;
+      --amber-deep: #C97F1C;
+      --cream: #FAF7F0;
+      --cream-soft: #F2EEE4;
+      --ink: #1A1A1A;
+      --grey: #767672;
+      --grey-light: #B8B5AC;
+      --rule: #1F5868;
+
+      --font-serif: 'IBM Plex Serif', 'Times New Roman', Georgia, serif;
+      --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
+    }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--font-serif);
+      font-size: 18px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: var(--teal); color: var(--cream); }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 22px;
+      width: 100%;
+    }
+
+    .container--narrow { max-width: 640px; }
+
+    /* ─────────────────────────────────────
+       MASTHEAD
+    ───────────────────────────────────── */
+    .masthead {
+      padding: 36px 0 22px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .masthead-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .wordmark {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .wordmark-name {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      font-size: 28px;
+      color: var(--teal);
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+    .wordmark-rule {
+      width: 80%;
+      height: 1px;
+      background: var(--teal);
+      margin: 6px auto 4px;
+    }
+    .wordmark-labs {
+      font-family: var(--font-sans);
+      font-weight: 500;
+      font-size: 10px;
+      color: var(--teal);
+      letter-spacing: 0.5em;
+      padding-left: 0.5em;
+      line-height: 1;
+    }
+    .masthead-meta {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      color: var(--grey);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .masthead-meta a {
+      color: var(--grey);
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .masthead-meta a:hover {
+      color: var(--teal);
+      border-bottom-color: var(--teal-soft);
+    }
+
+    /* ─────────────────────────────────────
+       HERO (thank-you content)
+    ───────────────────────────────────── */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      padding: 80px 0 100px;
+    }
+
+    .checkmark-block {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 32px;
+      animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+    .checkmark-icon {
+      width: 36px;
+      height: 36px;
+      border: 1.5px solid var(--amber);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--amber);
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .checkmark-label {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      color: var(--amber-deep);
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .lede {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      font-size: clamp(36px, 5.5vw, 56px);
+      line-height: 1.1;
+      letter-spacing: -1px;
+      color: var(--teal-deep);
+      margin-bottom: 24px;
+      animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    .lede-rule {
+      width: 60px;
+      height: 1px;
+      background: var(--teal);
+      margin: 32px 0 28px;
+      animation: expandRule 0.6s ease-out 0.5s both;
+      transform-origin: left;
+    }
+
+    .subhead {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      line-height: 1.65;
+      color: var(--ink);
+      margin-bottom: 28px;
+      animation: fadeInUp 0.8s ease-out 0.35s both;
+    }
+    .subhead strong {
+      font-weight: 500;
+      color: var(--teal-deep);
+    }
+
+    .fallback-note {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: var(--grey);
+      line-height: 1.6;
+      margin-bottom: 40px;
+      max-width: 540px;
+      animation: fadeInUp 0.8s ease-out 0.5s both;
+    }
+    .fallback-note a {
+      color: var(--teal);
+      border-bottom: 1px solid var(--teal-soft);
+      transition: border-color 0.2s;
+    }
+    .fallback-note a:hover { border-bottom-color: var(--teal); }
+
+    .signature {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 18px;
+      color: var(--teal);
+      margin-top: 16px;
+      animation: fadeInUp 0.8s ease-out 0.65s both;
+    }
+    .signature-block {
+      font-style: normal;
+      font-size: 13px;
+      color: var(--grey);
+      letter-spacing: 0.04em;
+      margin-top: 4px;
+      font-family: var(--font-sans);
+    }
+
+    /* ─────────────────────────────────────
+       FOOTER
+    ───────────────────────────────────── */
+    footer {
+      padding: 32px 0 40px;
+      border-top: 1px solid var(--rule);
+      background: var(--cream);
+    }
+    .footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--grey);
+      letter-spacing: 0.04em;
+    }
+    .footer-row a {
+      color: var(--grey);
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .footer-row a:hover {
+      color: var(--teal);
+      border-bottom-color: var(--teal-soft);
+    }
+    .footer-sig {
+      font-family: var(--font-serif);
+      font-style: italic;
+      color: var(--teal);
+      font-size: 13px;
+    }
+
+    /* ─────────────────────────────────────
+       ANIMATIONS
+    ───────────────────────────────────── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes expandRule {
+      from { transform: scaleX(0); opacity: 0; }
+      to { transform: scaleX(1); opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ─────────────────────────────────────
+       MOBILE
+    ───────────────────────────────────── */
+    @media (max-width: 760px) {
+      main { padding: 56px 0 72px; }
+      .lede { font-size: 34px; }
+      .subhead { font-size: 17px; }
+    }
+    @media (max-width: 480px) {
+      .lede { font-size: 30px; letter-spacing: -0.5px; }
+      .checkmark-icon { width: 32px; height: 32px; font-size: 16px; }
+      .masthead-row { gap: 12px; }
+      .masthead-meta { font-size: 10px; letter-spacing: 0.14em; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─────────────────────────────────────
+       MASTHEAD
+  ───────────────────────────────────── -->
+  <header class="masthead">
+    <div class="container">
+      <div class="masthead-row">
+        <a class="wordmark" href="/" aria-label="AdenChase Labs home">
+          <span class="wordmark-name">AdenChase</span>
+          <span class="wordmark-rule" aria-hidden="true"></span>
+          <span class="wordmark-labs">L A B S</span>
+        </a>
+        <div class="masthead-meta">
+          <a href="mailto:support@adenchaselabs.com">support@adenchaselabs.com</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─────────────────────────────────────
+       MAIN
+  ───────────────────────────────────── -->
+  <main>
+    <div class="container container--narrow">
+
+      <div class="checkmark-block">
+        <span class="checkmark-icon" aria-hidden="true">✓</span>
+        <span class="checkmark-label">Payment Confirmed</span>
+      </div>
+
+      <h1 class="lede">
+        Check your inbox in 60–90 seconds.
+      </h1>
+
+      <div class="lede-rule" aria-hidden="true"></div>
+
+      <p class="subhead">
+        Your prescription is on the way.
+      </p>
+
+      <p class="fallback-note">
+        If it doesn't arrive within five minutes, check your spam folder — and if it's still missing, email <a href="mailto:support@adenchaselabs.com">support@adenchaselabs.com</a> and I'll resend it personally.
+      </p>
+
+      <div class="signature">
+        — Manny A.
+        <div class="signature-block">AdenChase Labs</div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ─────────────────────────────────────
+       FOOTER
+  ───────────────────────────────────── -->
+  <footer>
+    <div class="container">
+      <div class="footer-row">
+        <div>
+          <span class="footer-sig">— Manny A.</span>
+          &nbsp;·&nbsp; AdenChase Labs &nbsp;·&nbsp;
+          <a href="mailto:support@adenchaselabs.com">support@adenchaselabs.com</a>
+        </div>
+        <div>
+          © 2026 AdenChase Labs
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
