@@ -1,14 +1,15 @@
 // AdenChase Labs — Free AI-Blind Spot Check intake
-// Vercel serverless function (Node 18+). Captures a lead, emails Manny the
-// submission, and sends the contractor a warm confirmation. No dependencies.
+// Vercel serverless function (Node 18+). CommonJS (no ESM compile step).
+// Captures a lead, emails Manny the submission, and sends the contractor a
+// warm confirmation. No dependencies (uses built-in fetch).
 //
-// Required env var (set in Vercel → Project → Settings → Environment Variables):
+// Required env var (Vercel → Project → Settings → Environment Variables):
 //   RESEND_API_KEY   your AdenChase Resend key (adenchaselabs.com is verified)
 // Optional (sensible defaults below):
-//   NOTIFY_TO        where leads land so you can act on them   (default: support@adenchaselabs.com)
-//   FROM_EMAIL       verified sender                            (default: AdenChase Labs <support@adenchaselabs.com>)
+//   NOTIFY_TO        where leads land   (default: support@adenchaselabs.com)
+//   FROM_EMAIL       verified sender    (default: AdenChase Labs <support@adenchaselabs.com>)
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method not allowed' });
@@ -19,13 +20,14 @@ export default async function handler(req, res) {
   const FROM_EMAIL = process.env.FROM_EMAIL || 'AdenChase Labs <support@adenchaselabs.com>';
 
   if (!RESEND_API_KEY) {
+    console.error('[check] RESEND_API_KEY missing at runtime — env var not bound to this deployment');
     return res.status(500).json({ error: 'Email is not configured yet.' });
   }
 
-  // Vercel parses JSON bodies automatically; guard for string bodies too.
+  // Vercel usually parses JSON bodies; guard for string/raw bodies too.
   let body = req.body;
   if (typeof body === 'string') {
-    try { body = JSON.parse(body); } catch { body = {}; }
+    try { body = JSON.parse(body); } catch (e) { body = {}; }
   }
   body = body || {};
 
@@ -49,40 +51,34 @@ export default async function handler(req, res) {
     from: FROM_EMAIL,
     to: [NOTIFY_TO],
     reply_to: email,
-    subject: `Free check — ${name} (${trade}, ${area})`,
+    subject: 'Free check — ' + name + ' (' + trade + ', ' + area + ')',
     text:
-`New free AI-Blind Spot Check request.
-
-Name:     ${name}
-Website:  ${website}
-Trade:    ${trade}
-Area:     ${area}
-Email:    ${email}
-
-Submitted: ${submittedAt} (ET)
-
-— Run the check, then reply with the score + your read (score & verdict only; hold the Top 3 Fixes for the paid Audit).`
+'New free AI-Blind Spot Check request.\n\n' +
+'Name:     ' + name + '\n' +
+'Website:  ' + website + '\n' +
+'Trade:    ' + trade + '\n' +
+'Area:     ' + area + '\n' +
+'Email:    ' + email + '\n\n' +
+'Submitted: ' + submittedAt + ' (ET)\n\n' +
+'— Run the check, then reply with the score + your read (score & verdict only; hold the Top 3 Fixes for the paid Audit).'
   };
 
   // 2) Confirm the contractor — sets the "within a day" expectation
+  const firstName = name.split(' ')[0] || name;
   const confirm = {
     from: FROM_EMAIL,
     to: [email],
     reply_to: 'support@adenchaselabs.com',
     subject: 'Your free AI Visibility check is on its way',
     text:
-`Hi ${name.split(' ')[0] || name},
-
-Got your request — thanks for trusting me with it.
-
-I'll personally run your free AI Visibility check: I'll ask ChatGPT, Gemini, and Perplexity the questions your customers ask before they hire a ${trade.toLowerCase()} in ${area}, and I'll score where you actually stand. You'll have your number, and my honest read on whether you're sitting in the blind spot, within a day.
-
-No cost, no catch. If you've got anything you want me to look at specifically, just reply to this email.
-
-Talk soon,
-Manny A.
-AdenChase Labs
-AI Visibility, not rankings.`
+'Hi ' + firstName + ',\n\n' +
+'Got your request — thanks for trusting me with it.\n\n' +
+'I\'ll personally run your free AI Visibility check: I\'ll ask ChatGPT, Gemini, and Perplexity the questions your customers ask before they hire a ' + trade.toLowerCase() + ' in ' + area + ', and I\'ll score where you actually stand. You\'ll have your number, and my honest read on whether you\'re sitting in the blind spot, within a day.\n\n' +
+'No cost, no catch. If you\'ve got anything you want me to look at specifically, just reply to this email.\n\n' +
+'Talk soon,\n' +
+'Manny A.\n' +
+'AdenChase Labs\n' +
+'AI Visibility, not rankings.'
   };
 
   try {
@@ -104,17 +100,17 @@ AI Visibility, not rankings.`
     console.error('[check] handler threw', e);
     return res.status(500).json({ error: 'Unexpected error.' });
   }
-}
+};
 
 function clean(v) {
   return (typeof v === 'string' ? v : '').trim().slice(0, 300);
 }
 
-async function sendEmail(key, payload) {
+function sendEmail(key, payload) {
   return fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${key}`,
+      Authorization: 'Bearer ' + key,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(payload)
@@ -122,5 +118,5 @@ async function sendEmail(key, payload) {
 }
 
 async function safeText(r) {
-  try { return await r.text(); } catch { return '(no body)'; }
+  try { return await r.text(); } catch (e) { return '(no body)'; }
 }
