@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AdenChase Labs — AI Visibility Audits for Contractors</title>
-  <meta name="description" content="Homeowners are asking ChatGPT, Gemini, and Perplexity who to hire — today. AdenChase Labs shows you exactly where your business stands in AI search, with the receipts, and the Top 3 Fixes to get back in the answer.">
+  <title>AdenChase Labs — Free AI-Blind Spot Check for Contractors</title>
+  <meta name="description" content="When a homeowner asks AI for a contractor near you, does your name come up? Get a free AI-Blind Spot Check from Manny A. — your score and where you stand, in plain English, within a day.">
   <link rel="canonical" href="https://adenchaselabs.com/">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://adenchaselabs.com/">
-  <meta property="og:title" content="AdenChase Labs — AI Visibility Audits for Contractors">
-  <meta property="og:description" content="When a homeowner asks AI for the best contractor in your area, does your name come up? Find out — measured, not guessed.">
+  <meta property="og:title" content="AdenChase Labs — Free AI-Blind Spot Check for Contractors">
+  <meta property="og:description" content="When a homeowner asks AI for the best contractor in your area, does your name come up? Find out free — measured, not guessed.">
   <meta property="og:image" content="https://adenchaselabs.com/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
 
@@ -348,13 +348,57 @@
       .masthead-meta { font-size: 10px; letter-spacing: 0.14em; }
       .btn { width: 100%; justify-content: center; }
     }
+  
+    /* ─────────────────────────────────────
+       FREE-CHECK FORM  (added)
+    ───────────────────────────────────── */
+    .form { margin-top: 34px; max-width: 560px; }
+    .field { margin-bottom: 20px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form label {
+      display: block;
+      font-family: var(--font-sans);
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--teal-deep);
+      margin-bottom: 8px;
+    }
+    .form input {
+      width: 100%;
+      font-family: var(--font-serif);
+      font-size: 17px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--grey-light);
+      border-radius: 2px;
+      padding: 13px 14px;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .form input::placeholder { color: var(--grey-light); }
+    .form input:focus-visible {
+      outline: none;
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(15,76,92,.12);
+    }
+    .form .btn { width: 100%; justify-content: center; margin-top: 6px; }
+    .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+    .form-status { font-family: var(--font-sans); font-size: 14px; color: var(--grey); margin-top: 16px; line-height: 1.6; }
+    .form-status a { color: var(--teal); border-bottom: 1px solid var(--teal-soft); }
+    .done h3 { font-family: var(--font-serif); font-weight: 500; font-size: 26px; color: var(--teal-deep); margin-bottom: 12px; }
+    .done h3:focus { outline: none; }
+    .done p { font-family: var(--font-serif); font-size: 18px; }
+    .done .sig { font-family: var(--font-serif); font-style: italic; color: var(--teal); margin-top: 6px; }
+    .free-note { font-family: var(--font-serif); font-size: 18px; margin-top: 30px; max-width: 60ch; }
+    .free-note a { color: var(--teal); border-bottom: 1px solid var(--amber); }
+    .skip-link { position: absolute; left: -9999px; }
+    .skip-link:focus { left: 16px; top: 16px; background: var(--teal); color: var(--cream); padding: 10px 16px; border-radius: 2px; z-index: 10; font-family: var(--font-sans); }
   </style>
 </head>
-<body>
 
-  <!-- ─────────────────────────────────────
-       MASTHEAD
-  ───────────────────────────────────── -->
+<body>
+  <a href="#check" class="skip-link">Skip to the free check</a>
+
+  <!-- MASTHEAD -->
   <header class="masthead">
     <div class="container">
       <div class="masthead-row">
@@ -370,129 +414,173 @@
     </div>
   </header>
 
-  <!-- ─────────────────────────────────────
-       HERO
-  ───────────────────────────────────── -->
+  <!-- HERO -->
   <section class="hero">
     <div class="container">
       <span class="kicker">AI visibility, not rankings</span>
-      <h1 class="lede">Your customers are asking AI who to hire. Today.</h1>
+      <h1 class="lede">When a homeowner asks AI for a contractor near you &mdash; does your name come up?</h1>
       <div class="lede-rule" aria-hidden="true"></div>
       <p class="subhead">
-        Today, 3 in 4 Americans search with AI every week. Before a homeowner ever calls you,
-        they're asking <strong>ChatGPT, Gemini, and Perplexity</strong> for the best contractor in their area —
-        and hiring from the short list those engines hand back.
+        Most contractors have no idea. I'll check it for you, by hand, for free &mdash; and tell you exactly where you
+        stand when <strong>ChatGPT, Gemini, and Perplexity</strong> get asked who to hire.
       </p>
-      <p class="subhead" style="margin-bottom:10px;">If those engines don't name you, you're not in the running.</p>
-      <p class="stat-source">Source: Nielsen Norman Group, 2026</p>
       <div class="cta-wrap">
-        <a class="btn" href="https://buy.stripe.com/5kQaEX1ci2xi50E7KXejK0i">
-          Get your AI Visibility Audit <span class="btn-price">$249</span>
-        </a>
-        <p class="btn-caption">Delivered to your inbox in 60–90 seconds.</p>
+        <a class="btn" href="#check">Run my free AI-Blind Spot Check</a>
+        <p class="btn-caption">No cost, no catch. You'll hear back from me within a day.</p>
       </div>
     </div>
   </section>
 
-  <!-- ─────────────────────────────────────
-       THE GAP
-  ───────────────────────────────────── -->
+  <!-- THE BLIND SPOT -->
   <section class="section section--teal">
     <div class="container reveal">
       <span class="kicker">The new front door</span>
       <h2 class="h2">A homeowner asks AI for the best plumber in town. It names three. Everyone else is invisible.</h2>
       <p class="body-lg">
-        Not lower-ranked — <strong>invisible</strong>. There's no second page to scroll to. The engine picks a
-        short list, explains why, and the homeowner calls from it. This is happening on every AI search,
-        right now, and the share of searches that start this way climbs every month.
+        Not lower-ranked &mdash; <strong>invisible</strong>. There's no second page to scroll to. The engine picks a
+        short list, explains why, and the homeowner calls from it. That's what I call <strong>&ldquo;The AI Blind Spot&rdquo;</strong>
+        &mdash; you do great work, but the machine can't see you. Like on the road, the thing in your blind spot is the one that gets you.
       </p>
       <div class="verify">
-        Don't take our word for it. Open ChatGPT and ask: <code>best [your trade] in [your town]</code>.
-        The names it gives back are the only contractors in the running — and you already know whether yours is one of them.
+        Don't take my word for it. Open ChatGPT and ask: <code>best [your trade] in [your town]</code>.
+        The names it gives back are the only contractors in the running &mdash; and you already know whether yours is one of them.
       </div>
     </div>
   </section>
 
-  <!-- ─────────────────────────────────────
-       WHAT YOU GET
-  ───────────────────────────────────── -->
+  <!-- WHAT THE FREE CHECK IS -->
   <section class="section">
     <div class="container reveal">
-      <span class="kicker">What $249 buys</span>
-      <h2 class="h2">Your AI Visibility Audit — and the Top 3 Fixes.</h2>
+      <span class="kicker">What the free check is</span>
+      <h2 class="h2">I'll tell you exactly where you stand &mdash; for free.</h2>
       <ol class="offer-list">
-        <li>We ask <strong>ChatGPT, Gemini, and Perplexity</strong> the exact questions your customers ask before hiring — for your trade, in your service area.</li>
-        <li>We score where you actually stand: a single <strong>0–100 number</strong>, measured across AI visibility, local SEO, technical health, and credibility.</li>
-        <li>We hand you the <strong>Top 3 Fixes</strong> — the specific moves that put you back in the answer, ranked by impact.</li>
+        <li>I ask <strong>ChatGPT, Gemini, and Perplexity</strong> the exact questions your customers ask before hiring &mdash; for your trade, in your service area.</li>
+        <li>I score where you actually stand: a single <strong>0&ndash;100 number</strong> &mdash; your AI Visibility score, measured, not guessed.</li>
+        <li>I send it back to you personally, in plain English, with my honest read on whether you're sitting in the blind spot.</li>
       </ol>
-      <p class="measured">Every score is what the engines actually returned. Measured, not guessed.</p>
-      <p class="delivery-note">Delivered to your inbox in 60–90 seconds</p>
+      <p class="free-note">
+        That's the free check &mdash; your number and where you stand. If you're invisible and you want the
+        <strong>Top 3 Fixes</strong> to climb out, that's the next step: <a href="/audit">The AI-Blind Spot Audit</a>.
+        But start here. No reason to pay to find out you're fine.
+      </p>
     </div>
   </section>
 
-  <!-- ─────────────────────────────────────
-       ABOUT
-  ───────────────────────────────────── -->
-  <section class="section section--soft about">
+  <!-- THE FORM -->
+  <section class="section section--soft" id="check">
     <div class="container container--narrow reveal">
-      <span class="kicker">Why AdenChase</span>
+      <span class="kicker">Your free check</span>
+      <h2 class="h2">Find out if AI is sending your customers to someone else.</h2>
+      <form class="form" id="checkForm" novalidate>
+        <div class="field">
+          <label for="name">Your name</label>
+          <input id="name" name="name" type="text" autocomplete="name" placeholder="Dave Calloway" required>
+        </div>
+        <div class="field">
+          <label for="website">Business website</label>
+          <input id="website" name="website" type="text" inputmode="url" autocomplete="url" placeholder="callowayplumbing.com" required>
+        </div>
+        <div class="field field-row">
+          <div>
+            <label for="trade">Your trade</label>
+            <input id="trade" name="trade" type="text" placeholder="Plumber" required>
+          </div>
+          <div>
+            <label for="area">Town / service area</label>
+            <input id="area" name="area" type="text" placeholder="Bryn Mawr, PA" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">Where should I send it?</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="you@yourbusiness.com" required>
+        </div>
+        <div class="hp" aria-hidden="true">
+          <label for="company">Company (leave blank)</label>
+          <input id="company" name="company" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <button class="btn" type="submit" id="submitBtn">Send me my free AI-Blind Spot Check</button>
+        <p class="form-status" id="formStatus" role="status" aria-live="polite">I'll run it personally and email you back within a day. &mdash; Manny A.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- WHO'S BEHIND THIS -->
+  <section class="section about">
+    <div class="container container--narrow reveal">
+      <span class="kicker">Who's behind this</span>
       <p class="body-lg" style="margin-top:18px;">
-        AdenChase Labs doesn't sell rankings, promises, or another SEO package. We show you exactly what
-        AI says about your business <strong>today</strong> — with the receipts — and the three things to fix first.
-        The number doesn't lie, and neither do we.
+        I spent 25 years on the tools. Then I went and learned AI so you don't have to. AdenChase Labs doesn't sell
+        rankings, promises, or another SEO package. I show you exactly what AI says about your business <strong>today</strong>
+        &mdash; starting with a free check, with the receipts. The number doesn't lie, and neither do I.
       </p>
       <div class="signature">
-        — Manny A.
+        &mdash; Manny A.
         <div class="signature-block">AdenChase Labs</div>
       </div>
     </div>
   </section>
 
-  <!-- ─────────────────────────────────────
-       CLOSING CTA
-  ───────────────────────────────────── -->
-  <section class="closer">
-    <div class="container reveal">
-      <span class="kicker">Let's fix it</span>
-      <h2 class="h2">Find out exactly where you stand with AI — and what to fix first.</h2>
-      <div class="lede-rule" aria-hidden="true"></div>
-      <a class="btn" href="https://buy.stripe.com/5kQaEX1ci2xi50E7KXejK0i">
-        Get your AI Visibility Audit <span class="btn-price">$249</span>
-      </a>
-      <p class="btn-caption">60–90 seconds · delivered to your inbox</p>
-    </div>
-  </section>
-
-  <!-- ─────────────────────────────────────
-       FOOTER
-  ───────────────────────────────────── -->
+  <!-- FOOTER -->
   <footer>
     <div class="container">
       <div class="footer-row">
         <div>
-          <span class="footer-sig">— Manny A.</span>
-          &nbsp;·&nbsp; AdenChase Labs &nbsp;·&nbsp;
+          <span class="footer-sig">&mdash; Manny A.</span>
+          &nbsp;&middot;&nbsp; AdenChase Labs &nbsp;&middot;&nbsp;
           <a href="mailto:support@AdenChaseLabs.com">support@AdenChaseLabs.com</a>
         </div>
-        <div>© 2026 AdenChase Labs</div>
+        <div>&copy; 2026 AdenChase Labs</div>
       </div>
     </div>
   </footer>
 
   <script>
-    // Reveal-on-scroll (progressive enhancement; respects reduced-motion via CSS)
+    // Reveal-on-scroll (matches /audit)
     (function () {
       var els = document.querySelectorAll('.reveal');
-      if (!('IntersectionObserver' in window)) {
-        els.forEach(function (el) { el.classList.add('in'); });
-        return;
-      }
+      if (!('IntersectionObserver' in window)) { els.forEach(function (el) { el.classList.add('in'); }); return; }
       var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-        });
+        entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
       }, { threshold: 0.12 });
       els.forEach(function (el) { io.observe(el); });
+    })();
+
+    // Free-check form -> /api/check
+    (function () {
+      var form = document.getElementById('checkForm');
+      var statusEl = document.getElementById('formStatus');
+      var btn = document.getElementById('submitBtn');
+      if (!form) return;
+      function setStatus(msg, tone) {
+        statusEl.innerHTML = msg;
+        statusEl.style.color = tone === 'error' ? '#9A3B2A' : '';
+      }
+      function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var hp = form.elements['company']; if (hp && hp.value) return;
+        if (!form.checkValidity()) { setStatus('Looks like a field is missing &mdash; fill in your name, website, trade, town, and email and try again.', 'error'); form.reportValidity(); return; }
+        var data = {
+          name: form.elements['name'].value.trim(),
+          website: form.elements['website'].value.trim(),
+          trade: form.elements['trade'].value.trim(),
+          area: form.elements['area'].value.trim(),
+          email: form.elements['email'].value.trim()
+        };
+        btn.disabled = true; var original = btn.innerHTML; btn.innerHTML = 'Sending\u2026';
+        setStatus('Sending your request\u2026', null);
+        try {
+          var res = await fetch('/api/check', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+          if (!res.ok) throw new Error('failed');
+          form.innerHTML = '<div class="done"><h3 id="doneHeading" tabindex="-1">Got it. You\'re in good hands.</h3>' +
+            '<p>I\'ll personally run your free AI Visibility check and email your score &mdash; and where you stand &mdash; to <strong>' + escapeHtml(data.email) + '</strong> within a day.</p>' +
+            '<p class="sig">Talk soon. &mdash; Manny A.</p></div>';
+          var dh = document.getElementById('doneHeading'); if (dh) dh.focus();
+        } catch (err) {
+          btn.disabled = false; btn.innerHTML = original;
+          setStatus('Something didn\'t send on our end. Email me directly at <a href="mailto:support@AdenChaseLabs.com">support@AdenChaseLabs.com</a> with your website, trade, and town &mdash; I\'ll run it by hand.', 'error');
+        }
+      });
     })();
   </script>
 
