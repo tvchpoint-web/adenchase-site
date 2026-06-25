@@ -1,1 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AdenChase Labs — Free AI-Blind Spot Check for Contractors</title>
+  <meta name="description" content="When a homeowner asks AI for a contractor near you, does your name come up? Get a free AI-Blind Spot Check from Manny A. — your score and where you stand, in plain English, within a day.">
+  <link rel="canonical" href="https://adenchaselabs.com/">
 
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://adenchaselabs.com/">
+  <meta property="og:title" content="AdenChase Labs — Free AI-Blind Spot Check for Contractors">
+  <meta property="og:description" content="When a homeowner asks AI for the best contractor in your area, does your name come up? Find out free — measured, not guessed.">
+  <meta property="og:image" content="https://adenchaselabs.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+    :root {
+      --teal: #0F4C5C;
+      --teal-soft: #6F95A0;
+      --teal-deep: #093642;
+      --amber: #F5A742;
+      --amber-deep: #C97F1C;
+      --cream: #FAF7F0;
+      --cream-soft: #F2EEE4;
+      --ink: #1A1A1A;
+      --grey: #767672;
+      --grey-light: #B8B5AC;
+      --rule: #1F5868;
+
+      --font-serif: 'IBM Plex Serif', 'Times New Roman', Georgia, serif;
+      --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
+    }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--font-serif);
+      font-size: 18px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: var(--teal); color: var(--cream); }
+
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 22px;
+      width: 100%;
+    }
+    .container--narrow { max-width: 680px; }
+
+    /* ─────────────────────────────────────
+       MASTHEAD
+    ───────────────────────────────────── */
+    .masthead {
+      padding: 36px 0 22px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .masthead-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .wordmark { display: inline-flex; flex-direction: column; align-items: center; }
+    .wordmark-name {
+      font-family: var(--font-serif);
+      font-weight: 500; font-size: 28px;
+      color: var(--teal); letter-spacing: -0.5px; line-height: 1;
+    }
+    .wordmark-rule { width: 80%; height: 1px; background: var(--teal); margin: 6px auto 4px; }
+    .wordmark-labs {
+      font-family: var(--font-sans); font-weight: 500; font-size: 10px;
+      color: var(--teal); letter-spacing: 0.5em; padding-left: 0.5em; line-height: 1;
+    }
+    .masthead-meta {
+      font-family: var(--font-sans); font-size: 11px; color: var(--grey);
+      letter-spacing: 0.18em; text-transform: uppercase;
+    }
+    .masthead-meta a { color: var(--grey); border-bottom: 1px solid transparent; transition: color .2s, border-color .2s; }
+    .masthead-meta a:hover { color: var(--teal); border-bottom-color: var(--teal-soft); }
+
+    /* ─────────────────────────────────────
+       SHARED PIECES
+    ───────────────────────────────────── */
+    .kicker {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--amber-deep);
+      display: inline-block;
+    }
+    .lede-rule {
+      width: 60px; height: 1px; background: var(--teal);
+      margin: 30px 0 28px; transform-origin: left;
+    }
+    .lede-rule--center { margin-left: auto; margin-right: auto; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--teal);
+      color: var(--cream);
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: 0.01em;
+      padding: 16px 30px;
+      border-radius: 2px;
+      border: 1px solid var(--teal);
+      transition: background .2s, transform .15s, box-shadow .2s;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: var(--teal-deep);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px -14px rgba(9,54,66,.7);
+    }
+    .btn:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+    .btn .btn-price {
+      font-family: var(--font-mono);
+      font-weight: 500;
+      padding-left: 12px;
+      margin-left: 2px;
+      border-left: 1px solid rgba(250,247,240,.32);
+      color: var(--amber);
+    }
+    .btn-caption {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: var(--grey);
+      letter-spacing: 0.02em;
+      margin-top: 14px;
+    }
+
+    /* ─────────────────────────────────────
+       HERO
+    ───────────────────────────────────── */
+    .hero { padding: 84px 0 76px; }
+    .hero .kicker { margin-bottom: 22px; animation: fadeInUp .6s ease-out .05s both; }
+    .lede {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      font-size: clamp(38px, 5.6vw, 60px);
+      line-height: 1.08;
+      letter-spacing: -1.2px;
+      color: var(--teal-deep);
+      max-width: 17ch;
+      animation: fadeInUp .8s ease-out .15s both;
+    }
+    .hero .lede-rule { animation: expandRule .6s ease-out .45s both; }
+    .subhead {
+      font-family: var(--font-serif);
+      font-size: 21px;
+      line-height: 1.6;
+      color: var(--ink);
+      max-width: 60ch;
+      margin-bottom: 14px;
+      animation: fadeInUp .8s ease-out .3s both;
+    }
+    .subhead strong { font-weight: 600; color: var(--teal-deep); }
+    .stat-source {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--grey-light);
+      letter-spacing: 0.04em;
+      margin-bottom: 30px;
+      animation: fadeInUp .8s ease-out .4s both;
+    }
+    .cta-wrap { animation: fadeInUp .8s ease-out .55s both; }
+
+    /* ─────────────────────────────────────
+       SECTION SCAFFOLD
+    ───────────────────────────────────── */
+    .section { padding: 76px 0; }
+    .section--soft { background: var(--cream-soft); border-top: 1px solid var(--cream); border-bottom: 1px solid #E6E1D5; }
+    .section--teal { background: var(--teal-deep); color: var(--cream); }
+    .section--teal .kicker { color: var(--amber); }
+    .h2 {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      font-size: clamp(28px, 3.8vw, 40px);
+      line-height: 1.18;
+      letter-spacing: -0.6px;
+      color: var(--teal-deep);
+      max-width: 22ch;
+      margin: 18px 0 0;
+    }
+    .section--teal .h2 { color: var(--cream); max-width: 24ch; }
+    .body-lg {
+      font-family: var(--font-serif);
+      font-size: 19px;
+      line-height: 1.7;
+      max-width: 58ch;
+      margin-top: 22px;
+    }
+    .section--teal .body-lg { color: #DDE7EA; }
+    .body-lg strong { font-weight: 600; color: var(--teal-deep); }
+    .section--teal .body-lg strong { color: #fff; }
+
+    /* verify-it-yourself callout */
+    .verify {
+      margin-top: 30px;
+      padding: 22px 24px;
+      border-left: 2px solid var(--amber);
+      background: rgba(255,255,255,.04);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.6;
+      color: #E7EEF0;
+      max-width: 60ch;
+    }
+    .verify code {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--amber);
+      background: rgba(245,167,66,.08);
+      padding: 2px 7px;
+      border-radius: 2px;
+    }
+
+    /* ─────────────────────────────────────
+       OFFER
+    ───────────────────────────────────── */
+    .offer-list { margin: 34px 0 0; max-width: 64ch; counter-reset: step; list-style: none; }
+    .offer-list li {
+      position: relative;
+      padding: 0 0 26px 56px;
+      font-family: var(--font-serif);
+      font-size: 19px;
+      line-height: 1.6;
+    }
+    .offer-list li::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 0; top: 2px;
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 16px; font-weight: 500;
+      color: var(--teal);
+      border: 1px solid var(--teal-soft);
+      border-radius: 50%;
+    }
+    .offer-list li strong { font-weight: 600; color: var(--teal-deep); }
+    .measured {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 22px;
+      color: var(--teal);
+      margin: 12px 0 6px;
+    }
+    .delivery-note {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: var(--grey);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 36px;
+    }
+
+    /* ─────────────────────────────────────
+       ABOUT
+    ───────────────────────────────────── */
+    .about .body-lg { font-size: 20px; }
+    .signature {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 19px;
+      color: var(--teal);
+      margin-top: 28px;
+    }
+    .signature-block {
+      font-style: normal; font-size: 13px; color: var(--grey);
+      letter-spacing: 0.04em; margin-top: 4px; font-family: var(--font-sans);
+    }
+
+    /* ─────────────────────────────────────
+       CLOSING CTA
+    ───────────────────────────────────── */
+    .closer { text-align: center; padding: 90px 0; }
+    .closer .kicker { color: var(--amber-deep); font-size: 13px; letter-spacing: 0.36em; margin-bottom: 18px; }
+    .closer .h2 { margin: 0 auto; color: var(--teal-deep); }
+    .closer .lede-rule { margin: 28px auto 34px; }
+
+    /* ─────────────────────────────────────
+       FOOTER
+    ───────────────────────────────────── */
+    footer { padding: 32px 0 40px; border-top: 1px solid var(--rule); background: var(--cream); }
+    .footer-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 24px; flex-wrap: wrap;
+      font-family: var(--font-sans); font-size: 12px; color: var(--grey); letter-spacing: 0.04em;
+    }
+    .footer-row a { color: var(--grey); border-bottom: 1px solid transparent; transition: color .2s, border-color .2s; }
+    .footer-row a:hover { color: var(--teal); border-bottom-color: var(--teal-soft); }
+    .footer-sig { font-family: var(--font-serif); font-style: italic; color: var(--teal); font-size: 13px; }
+
+    /* ─────────────────────────────────────
+       ANIMATIONS / REVEAL
+    ───────────────────────────────────── */
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes expandRule { from { transform: scaleX(0); opacity: 0; } to { transform: scaleX(1); opacity: 1; } }
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease-out, transform .7s ease-out; }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+      html { scroll-behavior: auto; }
+    }
+
+    /* ─────────────────────────────────────
+       MOBILE
+    ───────────────────────────────────── */
+    @media (max-width: 760px) {
+      .hero { padding: 56px 0 60px; }
+      .section, .closer { padding: 58px 0; }
+      .subhead { font-size: 18px; }
+      .offer-list li { font-size: 18px; padding-left: 50px; }
+    }
+    @media (max-width: 480px) {
+      body { font-size: 17px; }
+      .lede { letter-spacing: -0.6px; }
+      .masthead-row { gap: 12px; }
+      .masthead-meta { font-size: 10px; letter-spacing: 0.14em; }
+      .btn { width: 100%; justify-content: center; }
+    }
+  
+    /* ─────────────────────────────────────
+       FREE-CHECK FORM  (added)
+    ───────────────────────────────────── */
+    .form { margin-top: 34px; max-width: 560px; }
+    .field { margin-bottom: 20px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form label {
+      display: block;
+      font-family: var(--font-sans);
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--teal-deep);
+      margin-bottom: 8px;
+    }
+    .form input {
+      width: 100%;
+      font-family: var(--font-serif);
+      font-size: 17px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--grey-light);
+      border-radius: 2px;
+      padding: 13px 14px;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .form input::placeholder { color: var(--grey-light); }
+    .form input:focus-visible {
+      outline: none;
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(15,76,92,.12);
+    }
+    .form .btn { width: 100%; justify-content: center; margin-top: 6px; }
+    .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+    .form-status { font-family: var(--font-sans); font-size: 14px; color: var(--grey); margin-top: 16px; line-height: 1.6; }
+    .form-status a { color: var(--teal); border-bottom: 1px solid var(--teal-soft); }
+    .done h3 { font-family: var(--font-serif); font-weight: 500; font-size: 26px; color: var(--teal-deep); margin-bottom: 12px; }
+    .done h3:focus { outline: none; }
+    .done p { font-family: var(--font-serif); font-size: 18px; }
+    .done .sig { font-family: var(--font-serif); font-style: italic; color: var(--teal); margin-top: 6px; }
+    .free-note { font-family: var(--font-serif); font-size: 18px; margin-top: 30px; max-width: 60ch; }
+    .free-note a { color: var(--teal); border-bottom: 1px solid var(--amber); }
+    .skip-link { position: absolute; left: -9999px; }
+    .skip-link:focus { left: 16px; top: 16px; background: var(--teal); color: var(--cream); padding: 10px 16px; border-radius: 2px; z-index: 10; font-family: var(--font-sans); }
+  </style>
+</head>
+
+<body>
+  <a href="#check" class="skip-link">Skip to the free check</a>
+
+  <!-- MASTHEAD -->
+  <header class="masthead">
+    <div class="container">
+      <div class="masthead-row">
+        <a class="wordmark" href="/" aria-label="AdenChase Labs home">
+          <span class="wordmark-name">AdenChase</span>
+          <span class="wordmark-rule" aria-hidden="true"></span>
+          <span class="wordmark-labs">L A B S</span>
+        </a>
+        <div class="masthead-meta">
+          <a href="mailto:support@AdenChaseLabs.com">support@AdenChaseLabs.com</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <span class="kicker">AI visibility, not rankings</span>
+      <h1 class="lede">When a homeowner asks AI for a contractor near you &mdash; does your name come up?</h1>
+      <div class="lede-rule" aria-hidden="true"></div>
+      <p class="subhead">
+        Most contractors have no idea. I'll check it for you, by hand, for free &mdash; and tell you exactly where you
+        stand when <strong>ChatGPT, Gemini, and Perplexity</strong> get asked who to hire.
+      </p>
+      <div class="cta-wrap">
+        <a class="btn" href="#check">Run my free AI-Blind Spot Check</a>
+        <p class="btn-caption">No cost, no catch. You'll hear back from me within a day.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE BLIND SPOT -->
+  <section class="section section--teal">
+    <div class="container reveal">
+      <span class="kicker">The new front door</span>
+      <h2 class="h2">A homeowner asks AI for the best plumber in town. It names three. Everyone else is invisible.</h2>
+      <p class="body-lg">
+        Not lower-ranked &mdash; <strong>invisible</strong>. There's no second page to scroll to. The engine picks a
+        short list, explains why, and the homeowner calls from it. That's what I call <strong>&ldquo;The AI Blind Spot&rdquo;</strong>
+        &mdash; you do great work, but the machine can't see you. Like on the road, the thing in your blind spot is the one that gets you.
+      </p>
+      <div class="verify">
+        Don't take my word for it. Open ChatGPT and ask: <code>best [your trade] in [your town]</code>.
+        The names it gives back are the only contractors in the running &mdash; and you already know whether yours is one of them.
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT THE FREE CHECK IS -->
+  <section class="section">
+    <div class="container reveal">
+      <span class="kicker">What the free check is</span>
+      <h2 class="h2">I'll tell you exactly where you stand &mdash; for free.</h2>
+      <ol class="offer-list">
+        <li>I ask <strong>ChatGPT, Gemini, and Perplexity</strong> the exact questions your customers ask before hiring &mdash; for your trade, in your service area.</li>
+        <li>I score where you actually stand: a single <strong>0&ndash;100 number</strong> &mdash; your AI Visibility score, measured, not guessed.</li>
+        <li>I send it back to you personally, in plain English, with my honest read on whether you're sitting in the blind spot.</li>
+      </ol>
+      <p class="free-note">
+        That's the free check &mdash; your number and where you stand. If you're invisible and you want the
+        <strong>Top 3 Fixes</strong> to climb out, that's the next step: <a href="/audit">The AI-Blind Spot Audit</a>.
+        But start here. No reason to pay to find out you're fine.
+      </p>
+    </div>
+  </section>
+
+  <!-- THE FORM -->
+  <section class="section section--soft" id="check">
+    <div class="container container--narrow reveal">
+      <span class="kicker">Your free check</span>
+      <h2 class="h2">Find out if AI is sending your customers to someone else.</h2>
+      <form class="form" id="checkForm" novalidate>
+        <div class="field">
+          <label for="name">Your name</label>
+          <input id="name" name="name" type="text" autocomplete="name" placeholder="Dave Calloway" required>
+        </div>
+        <div class="field">
+          <label for="website">Business website</label>
+          <input id="website" name="website" type="text" inputmode="url" autocomplete="url" placeholder="callowayplumbing.com" required>
+        </div>
+        <div class="field field-row">
+          <div>
+            <label for="trade">Your trade</label>
+            <input id="trade" name="trade" type="text" placeholder="Plumber" required>
+          </div>
+          <div>
+            <label for="area">Town / service area</label>
+            <input id="area" name="area" type="text" placeholder="Bryn Mawr, PA" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">Where should I send it?</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="you@yourbusiness.com" required>
+        </div>
+        <div class="hp" aria-hidden="true">
+          <label for="company">Company (leave blank)</label>
+          <input id="company" name="company" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <button class="btn" type="submit" id="submitBtn">Send me my free AI-Blind Spot Check</button>
+        <p class="form-status" id="formStatus" role="status" aria-live="polite">I'll run it personally and email you back within a day. &mdash; Manny A.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- WHO'S BEHIND THIS -->
+  <section class="section about">
+    <div class="container container--narrow reveal">
+      <span class="kicker">Who's behind this</span>
+      <p class="body-lg" style="margin-top:18px;">
+        I spent 25 years on the tools. Then I went and learned AI so you don't have to. AdenChase Labs doesn't sell
+        rankings, promises, or another SEO package. I show you exactly what AI says about your business <strong>today</strong>
+        &mdash; starting with a free check, with the receipts. The number doesn't lie, and neither do I.
+      </p>
+      <div class="signature">
+        &mdash; Manny A.
+        <div class="signature-block">AdenChase Labs</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-row">
+        <div>
+          <span class="footer-sig">&mdash; Manny A.</span>
+          &nbsp;&middot;&nbsp; AdenChase Labs &nbsp;&middot;&nbsp;
+          <a href="mailto:support@AdenChaseLabs.com">support@AdenChaseLabs.com</a>
+        </div>
+        <div>&copy; 2026 AdenChase Labs</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Reveal-on-scroll (matches /audit)
+    (function () {
+      var els = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) { els.forEach(function (el) { el.classList.add('in'); }); return; }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold: 0.12 });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+
+    // Free-check form -> /api/check
+    (function () {
+      var form = document.getElementById('checkForm');
+      var statusEl = document.getElementById('formStatus');
+      var btn = document.getElementById('submitBtn');
+      if (!form) return;
+      function setStatus(msg, tone) {
+        statusEl.innerHTML = msg;
+        statusEl.style.color = tone === 'error' ? '#9A3B2A' : '';
+      }
+      function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var hp = form.elements['company']; if (hp && hp.value) return;
+        if (!form.checkValidity()) { setStatus('Looks like a field is missing &mdash; fill in your name, website, trade, town, and email and try again.', 'error'); form.reportValidity(); return; }
+        var data = {
+          name: form.elements['name'].value.trim(),
+          website: form.elements['website'].value.trim(),
+          trade: form.elements['trade'].value.trim(),
+          area: form.elements['area'].value.trim(),
+          email: form.elements['email'].value.trim()
+        };
+        btn.disabled = true; var original = btn.innerHTML; btn.innerHTML = 'Sending\u2026';
+        setStatus('Sending your request\u2026', null);
+        try {
+          var res = await fetch('/api/check', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+          if (!res.ok) throw new Error('failed');
+          form.innerHTML = '<div class="done"><h3 id="doneHeading" tabindex="-1">Got it. You\'re in good hands.</h3>' +
+            '<p>I\'ll personally run your free AI Visibility check and email your score &mdash; and where you stand &mdash; to <strong>' + escapeHtml(data.email) + '</strong> within a day.</p>' +
+            '<p class="sig">Talk soon. &mdash; Manny A.</p></div>';
+          var dh = document.getElementById('doneHeading'); if (dh) dh.focus();
+        } catch (err) {
+          btn.disabled = false; btn.innerHTML = original;
+          setStatus('Something didn\'t send on our end. Email me directly at <a href="mailto:support@AdenChaseLabs.com">support@AdenChaseLabs.com</a> with your website, trade, and town &mdash; I\'ll run it by hand.', 'error');
+        }
+      });
+    })();
+  </script>
+
+</body>
+</html>
