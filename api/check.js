@@ -66,9 +66,9 @@ module.exports = async function handler(req, res) {
   // 2) Confirm the contractor — sets the "within a day" expectation
   const firstName = name.split(' ')[0] || name;
   const confirm = {
-    from: FROM_EMAIL,
+    from: 'Manny A. <Manny@adenchaselabs.com>',
     to: [email],
-    reply_to: 'support@adenchaselabs.com',
+    reply_to: 'Manny@adenchaselabs.com',
     subject: 'Your free AI-Blind Spot Check is on its way',
     text:
 'Hi ' + firstName + ',\n\n' +
