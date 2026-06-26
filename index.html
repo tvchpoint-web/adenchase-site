@@ -486,8 +486,8 @@
             <input id="trade" name="trade" type="text" placeholder="Plumber" required>
           </div>
           <div>
-            <label for="area">Town / service area</label>
-            <input id="area" name="area" type="text" placeholder="Bryn Mawr, PA" required>
+            <label for="area">Zip Code / service area</label>
+            <input id="area" name="area" type="text" placeholder="19050" required>
           </div>
         </div>
         <div class="field">
@@ -573,7 +573,7 @@
           var res = await fetch('/api/check', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
           if (!res.ok) throw new Error('failed');
           form.innerHTML = '<div class="done"><h3 id="doneHeading" tabindex="-1">Got it. You\'re in good hands.</h3>' +
-            '<p>I\'ll personally run your free AI Visibility check and email your score &mdash; and where you stand &mdash; to <strong>' + escapeHtml(data.email) + '</strong> within a day.</p>' +
+            '<p>I\'ll personally run your free AI-Blind Spot Check and email your score &mdash; and where you stand &mdash; to <strong>' + escapeHtml(data.email) + '</strong> within a day.</p>' +
             '<p class="sig">Talk soon. &mdash; Manny A.</p></div>';
           var dh = document.getElementById('doneHeading'); if (dh) dh.focus();
         } catch (err) {
