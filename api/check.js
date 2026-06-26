@@ -69,11 +69,11 @@ module.exports = async function handler(req, res) {
     from: FROM_EMAIL,
     to: [email],
     reply_to: 'support@adenchaselabs.com',
-    subject: 'Your free AI Visibility check is on its way',
+    subject: 'Your free AI-Blind Spot Check is on its way',
     text:
 'Hi ' + firstName + ',\n\n' +
 'Got your request — thanks for trusting me with it.\n\n' +
-'I\'ll personally run your free AI Visibility check: I\'ll ask ChatGPT, Gemini, and Perplexity the questions your customers ask before they hire a ' + trade.toLowerCase() + ' in ' + area + ', and I\'ll score where you actually stand. You\'ll have your number, and my honest read on whether you\'re sitting in the blind spot, within a day.\n\n' +
+'I\'ll personally run your free AI-Blind Spot Check: I\'ll ask ChatGPT, Gemini, and Perplexity the questions your customers ask before they hire a ' + trade.toLowerCase() + ' in ' + area + ', and I\'ll score where you actually stand. You\'ll have your number, and my honest read on whether you\'re sitting in the blind spot, within a day.\n\n' +
 'No cost, no catch. If you\'ve got anything you want me to look at specifically, just reply to this email.\n\n' +
 'Talk soon,\n' +
 'Manny A.\n' +
