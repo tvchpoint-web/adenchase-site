@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { BLOCKS, BLOCK_COLOURS, BLOCK_TEXT, K, LOGO_H, LOGO_W, para, type Pt, type Quad } from "@/lib/blocks";
 
 /**
  * Opening prototype — storyboard v2.
@@ -13,22 +14,6 @@ import { useEffect, useRef } from "react";
 
 /* ------------------------------------------------------------- geometry */
 
-type Pt = [number, number];
-type Quad = [Pt, Pt, Pt, Pt]; // TL, TR, BR, BL
-
-const LOGO_W = 1397;
-const LOGO_H = 473;
-/** The three blocks in the artwork's own pixel space (measured from the official file). */
-const BLOCKS: Quad[] = [
-  [[909, 236], [1027, 236], [955, 344], [834, 344]],
-  [[1047, 236], [1168, 236], [1096, 344], [975, 344]],
-  [[1190, 236], [1327, 236], [1254, 344], [1117, 344]],
-];
-/** Colours sampled from the artwork. */
-const BLOCK_COLOURS = ["#6EFA2E", "#00F6FE", "#005FFE"];
-/** The blocks' slant: horizontal run per unit of rise (measured: 0.67–0.69). */
-const K = 0.68;
-
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const seg = (p: number, a: number, b: number) => clamp01((p - a) / (b - a));
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -36,14 +21,6 @@ const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const lerpPt = (a: Pt, b: Pt, t: number): Pt => [lerp(a[0], b[0], t), lerp(a[1], b[1], t)];
 const lerpQuad = (a: Quad, b: Quad, t: number): Quad => [lerpPt(a[0], b[0], t), lerpPt(a[1], b[1], t), lerpPt(a[2], b[2], t), lerpPt(a[3], b[3], t)];
-
-/** A parallelogram with the logo's slant: bottom-left (x, yBottom), width w, height h. */
-const para = (x: number, yBottom: number, w: number, h: number): Quad => [
-  [x + K * h, yBottom - h],
-  [x + w + K * h, yBottom - h],
-  [x + w, yBottom],
-  [x, yBottom],
-];
 
 interface LogoBox {
   left: number;
@@ -106,13 +83,8 @@ export function OpeningSequence() {
     let t0 = -1;
     let mobile = false;
 
-    const setPhotos = () => {
-      mobile = window.innerWidth < 768;
-      document.querySelectorAll<HTMLElement>("[data-photo]").forEach((el) => {
-        el.style.backgroundImage = `url(/opening/${el.dataset.photo}${mobile ? "-m" : ""}.webp)`;
-      });
-    };
-    setPhotos();
+    const setMobile = () => (mobile = window.innerWidth < 768);
+    setMobile();
 
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame);
@@ -287,10 +259,10 @@ export function OpeningSequence() {
     };
 
     raf = requestAnimationFrame(frame);
-    window.addEventListener("resize", setPhotos);
+    window.addEventListener("resize", setMobile);
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("resize", setPhotos);
+      window.removeEventListener("resize", setMobile);
       delete root.dataset.openingHideHeader;
     };
   }, []);
@@ -319,7 +291,7 @@ export function OpeningSequence() {
 
         {/* The mark: the official wordmark layer plus the three blocks as separate layers */}
         {/* eslint-disable-next-line @next/next/no-img-element -- positioned every frame; must stay a plain layer */}
-        <img data-k="wordmark" src="/opening/logo-wordmark.png" alt="" className="absolute left-0 top-0 h-auto mix-blend-lighten will-change-transform select-none" style={{ opacity: 0 }} draggable={false} />
+        <img data-k="wordmark" src="/photos/logo-wordmark.png" alt="" className="absolute left-0 top-0 h-auto mix-blend-lighten will-change-transform select-none" style={{ opacity: 0 }} draggable={false} />
         {BLOCKS.map((_, i) => (
           <div key={i} data-k={`block${i}`} className="absolute left-0 top-0 will-change-transform" style={{ background: BLOCK_COLOURS[i], opacity: 0 }}>
             <div data-k={`blockInset${i}`} className="absolute inset-0 overflow-hidden">
@@ -340,7 +312,7 @@ export function OpeningSequence() {
           <p data-k="f1tag" className="type-label absolute inset-x-0 top-[66%] text-center text-haze max-md:top-[56%] max-md:text-[10px]" style={{ opacity: 0 }}>
             Identifying Opportunity · Engineering Growth
           </p>
-          <a data-k="cue" href="#after-opening" className="type-label pointer-events-auto absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-haze" style={{ opacity: 0 }}>
+          <a data-k="cue" href="#business-strategy" className="type-label pointer-events-auto absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-haze" style={{ opacity: 0 }}>
             Scroll
             <span aria-hidden className="block h-8 w-px bg-line" />
           </a>
@@ -392,7 +364,7 @@ export function OpeningSequence() {
           </div>
           {PORTALS.map((pt, i) => (
             <div key={pt.label} data-k={`portalLabel${i}`} className="portal-label absolute" data-i={i} style={{ opacity: 0 }}>
-              <p className="type-label max-md:text-[10px]" style={{ color: BLOCK_COLOURS[i] }}>
+              <p className="type-label max-md:text-[10px]" style={{ color: BLOCK_TEXT[i] }}>
                 0{i + 1}
               </p>
               <p className="mt-1.5 text-[1.05rem] font-semibold tracking-[-0.015em] text-ink lg:mt-2 lg:text-[1.55rem]">{pt.label}</p>
@@ -427,7 +399,7 @@ export function OpeningSequence() {
               <a href="/engagement" className="btn btn-primary justify-center">
                 Request a Strategic Introduction <span aria-hidden className="btn-arrow">→</span>
               </a>
-              <a href="/expertise#engineering" className="btn btn-ghost justify-center max-lg:hidden">
+              <a href="#ai-engineering" className="btn btn-ghost justify-center max-lg:hidden">
                 Next: AI Engineering
               </a>
             </div>

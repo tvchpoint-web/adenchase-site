@@ -1,6 +1,6 @@
 # ADEN-CHASE Strategies — The Living Opportunity Engine
 
-Corporate website for ADEN-CHASE Strategies (`adenchase.com`). It is built around **The Nexus**: one persistent, interactive 3D architecture that the homepage re-configures across five scroll scenes (Arrival → Discovery → Engineering → Growth → Private Engagement).
+Corporate website for ADEN-CHASE Strategies (`adenchase.com`). The design is photographic and editorial. The homepage opens logo-first: the official mark resolves, its green block sweeps into a business skyline, four slices cut at the mark's angle carry Strategy, AI Engineering, Intelligence and Market Growth, and the slices resolve back into the mark. Its three angled blocks then become portals, and the first opens into Business Strategy. The full story follows in one editorial system, and every photo frame and transition reuses the logo's three blocks.
 
 This folder is a **self-contained project**. It shares nothing with:
 
@@ -11,7 +11,7 @@ It has its own dependencies, environment variables and Vercel project.
 
 ## Stack
 
-Next.js 16 (App Router, TypeScript) · React 19 · React Three Fiber + Three.js + Drei · @react-three/postprocessing · GSAP ScrollTrigger · Tailwind CSS 4 · Inter Tight (SIL OFL 1.1, self-hosted).
+Next.js 16 (App Router, TypeScript) · React 19 · GSAP ScrollTrigger · Tailwind CSS 4 · Inter Tight (SIL OFL 1.1, self-hosted).
 
 ## Commands
 

@@ -16,8 +16,8 @@ export default function EngagementPage() {
         label="Private Engagement"
         lines={["Your next", "opportunity", "starts here."]}
         accent={2}
-        story={4}
-        distance={0.78}
+        photo="office"
+        block={0}
         lede="A private, considered approach to business strategy, intelligent engineering, and market growth. Tell us a little about the opportunity, and we will be in touch."
       />
       <section aria-labelledby="inquiry-title" className="relative bg-navy/40">

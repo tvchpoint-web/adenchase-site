@@ -17,8 +17,8 @@ export default function ApproachPage() {
         label="Our Approach"
         lines={["Identify.", "Engineer.", "Accelerate."]}
         accent={2}
-        story={1}
-        distance={1.4}
+        photo="strategy"
+        block={0}
         lede="Every engagement follows the same discipline: understand the business deeply, build what the opportunity actually requires, then create momentum — measuring progress at every stage."
       />
 

@@ -187,10 +187,5 @@ export const OUTCOMES = [
   "Market Expansion",
 ] as const;
 
-export const DISCOVERY_LENSES = [
-  { path: "market", title: "Market Opportunity", body: "Unserved demand, adjacent markets and positioning gaps." },
-  { path: "experience", title: "Customer Experience", body: "The moments that win, or quietly lose, customer trust." },
-  { path: "operations", title: "Operational Efficiency", body: "Manual effort, disconnected systems and hidden cost." },
-] as const;
 
 export const INTERESTS = ["Business Strategy", "AI Engineering", "Market Growth", "Not sure yet — exploring"] as const;

@@ -210,52 +210,21 @@
   }
 }
 
-/* --------------------------------------------------------------- scrims */
-.scrim-story {
-  background:
-    linear-gradient(90deg, color-mix(in oklab, var(--navy-deep) 82%, transparent) 0%, color-mix(in oklab, var(--navy-deep) 45%, transparent) 34%, transparent 58%);
-}
-@media (max-width: 1023px) {
-  .scrim-story {
-    background: linear-gradient(180deg, transparent 0%, transparent 34%, color-mix(in oklab, var(--navy-deep) 70%, transparent) 62%, color-mix(in oklab, var(--navy-deep) 92%, transparent) 100%);
-  }
-}
-
 .hairline {
   height: 1px;
   background: linear-gradient(90deg, var(--line), transparent);
 }
 
-@keyframes cue {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(300%);
-  }
-}
 
-/* Feathers a contained Nexus stage into the page on every side, so the rendered night never shows an edge. */
-.stage-fade-x {
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%, #000 90%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 14%, #000 80%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(90deg, transparent 0%, #000 34%, #000 90%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 14%, #000 80%, transparent 100%);
-  mask-composite: intersect;
-}
-@media (max-width: 1023px) {
-  .stage-fade-x {
-    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 60%, transparent 100%);
-    mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 60%, transparent 100%);
-  }
-}
 
-/* ------------------------------------------------- opening prototype */
-header,
+/* ------------------------------------------------------------- opening */
+/* While the opening shows the large mark, only the header's own logo steps back (the mark appears
+   once); navigation and the menu stay available throughout. */
+.site-logo,
 .site-header-bar {
   transition: opacity 400ms var(--ease);
 }
-html[data-opening-hide-header="1"] header,
-html[data-opening-hide-header="1"] .site-header-bar {
+html[data-opening-hide-header="1"] .site-logo {
   opacity: 0;
   pointer-events: none;
 }
@@ -269,4 +238,16 @@ html[data-opening-hide-header="1"] .site-header-bar {
   inset: 0;
   background: linear-gradient(160deg, rgba(0, 66, 172, 0.4), rgba(0, 16, 61, 0.6));
   mix-blend-mode: multiply;
+}
+
+/* Angled photo frames open out from the block shape. */
+.angled-clip {
+  transition:
+    clip-path 1100ms var(--ease),
+    opacity 900ms var(--ease);
+}
+@media (prefers-reduced-motion: reduce) {
+  .angled-clip {
+    transition: none;
+  }
 }

@@ -61,7 +61,7 @@ export function SiteHeader() {
       */}
       <header className="fixed inset-x-0 top-0 z-50 mix-blend-lighten">
       <div className="mx-auto flex h-[4.5rem] max-w-[96rem] items-center justify-between gap-6 px-5 sm:px-8 lg:h-20 lg:px-12">
-        <Link href="/" aria-label={`${SITE.name} — home`} className="relative z-10 shrink-0 rounded-sm">
+        <Link href="/" aria-label={`${SITE.name} — home`} className="site-logo relative z-10 shrink-0 rounded-sm">
           <Image
             src="/brand/aden-chase-logo.png"
             alt="ADEN-CHASE Strategies — Business Development • AI Engineering • Market Growth"

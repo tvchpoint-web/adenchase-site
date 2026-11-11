@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { NexusStage } from "@/components/nexus/NexusStage";
-import { RegionTracker } from "@/components/site/RegionTracker";
+import { AngledPhoto } from "@/components/brand/AngledPhoto";
+import { DisciplineLabel } from "@/components/home/Sections";
 import { CtaBand } from "@/components/site/CtaBand";
-import { Reveal, SplitLines } from "@/components/editorial/SplitLines";
+import { PageHero } from "@/components/site/PageHero";
+import { Reveal } from "@/components/editorial/SplitLines";
+import { BLOCK_COLOURS } from "@/lib/blocks";
 import { DISCIPLINES } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -10,77 +12,71 @@ export const metadata: Metadata = {
   description: "Business Strategy, AI Engineering and Market Growth — three interconnected disciplines and how they are applied in practice.",
 };
 
+const PHOTOS = [
+  { photo: "towers", position: "center" },
+  { photo: "floor", position: "center 40%" },
+  { photo: "growth", position: "center" },
+] as const;
+
 export default function ExpertisePage() {
   return (
     <main id="main">
-      <RegionTracker />
-      <div className="relative mx-auto max-w-[96rem] lg:grid lg:grid-cols-12">
-        {/* The Nexus stays in view, highlighting the discipline being read. */}
-        <div className="stage-fade-x pointer-events-none max-lg:fixed max-lg:inset-x-0 max-lg:top-0 max-lg:h-[46svh] max-lg:opacity-80 lg:sticky lg:top-0 lg:order-2 lg:col-span-6 lg:col-start-7 lg:h-svh">
-          <NexusStage variant="contained" story={2} distance={0.72} />
-        </div>
+      <PageHero
+        label="Expertise"
+        lines={["Three disciplines.", "One connected", "system."]}
+        accent={2}
+        photo="engineering"
+        block={1}
+        position="center 35%"
+        lede="Business strategy sets direction. AI engineering builds the systems that deliver it. Market growth turns both into commercial momentum. Each is stronger because of the others."
+      />
 
-        <div className="relative z-10 px-5 sm:px-8 lg:order-1 lg:col-span-6 lg:px-12">
-          <section aria-labelledby="page-title" data-reveal-immediate="" className="flex min-h-svh flex-col justify-end pb-16 pt-36 lg:justify-center lg:pb-0">
-            <Reveal as="p" delay={150} className="type-label flex items-center gap-3 text-haze">
-              <span aria-hidden className="h-px w-8 bg-jade" />
-              Expertise
-            </Reveal>
-            <SplitLines as="h1" id="page-title" delay={260} lines={["Three disciplines.", "One connected", "system."]} accent={2} className="type-headline mt-7 text-ink" />
-            <Reveal as="p" delay={620} className="type-lede mt-8 max-w-[33rem] text-mist">
-              Business strategy sets direction. AI engineering builds the systems that deliver it. Market growth turns both into commercial momentum. Each is stronger because of the others.
-            </Reveal>
-          </section>
-
-          {DISCIPLINES.map((d) => (
-            <section
-              key={d.id}
-              id={d.id}
-              data-region={d.region}
-              aria-labelledby={`${d.id}-title`}
-              className="scroll-mt-24 border-t border-line py-20 max-lg:rounded-3xl max-lg:border max-lg:bg-navy-deep/80 max-lg:px-6 max-lg:py-10 max-lg:backdrop-blur-md max-lg:[&+section]:mt-6 lg:py-28"
-            >
-              <Reveal as="p" className="type-label text-jade">
-                {d.index}
-              </Reveal>
-              <Reveal as="h2" delay={60} className="type-title mt-4 text-ink">
-                <span id={`${d.id}-title`}>{d.title}</span>
-              </Reveal>
-              <Reveal as="p" delay={120} className="mt-4 text-lg font-medium text-ocean">
-                {d.line}
-              </Reveal>
-              <Reveal as="p" delay={180} className="mt-6 max-w-xl text-[1.0625rem] leading-relaxed text-mist">
-                {d.description}
-              </Reveal>
-              <div className="mt-10 grid gap-10 sm:grid-cols-2">
-                <Reveal delay={220}>
-                  <h3 className="type-label text-haze">Practical applications</h3>
-                  <ul className="mt-5 space-y-3 text-[0.9375rem] text-ink/90">
-                    {d.applications.map((a) => (
-                      <li key={a} className="flex gap-3">
-                        <span aria-hidden className="mt-[0.6em] h-1 w-1 shrink-0 rounded-full bg-ocean" />
-                        {a}
-                      </li>
-                    ))}
-                  </ul>
-                </Reveal>
-                <Reveal delay={280}>
-                  <h3 className="type-label text-haze">Questions we help answer</h3>
-                  <ul className="mt-5 space-y-4 text-[0.9375rem] italic leading-relaxed text-mist">
-                    {d.questions.map((q) => (
-                      <li key={q}>{q}</li>
-                    ))}
-                  </ul>
-                </Reveal>
+      {DISCIPLINES.map((d, i) => {
+        const block = d.region;
+        const flip = i % 2 === 1;
+        return (
+          <section key={d.id} id={d.id} aria-labelledby={`${d.id}-title`} className={`scroll-mt-20 border-t border-line ${flip ? "bg-navy-deep/60" : ""}`}>
+            <div className="mx-auto grid max-w-[96rem] gap-12 px-5 py-20 sm:px-8 lg:grid-cols-12 lg:px-12 lg:py-28">
+              <div className={`lg:col-span-6 ${flip ? "lg:order-2 lg:col-start-7" : ""}`}>
+                <AngledPhoto photo={PHOTOS[i].photo} block={block} position={PHOTOS[i].position} className="h-[56vw] max-h-[34rem] min-h-[14rem]" />
               </div>
-            </section>
-          ))}
-          <div className="h-16 lg:h-24" />
-        </div>
-      </div>
-      <div className="relative z-10 bg-navy">
-        <CtaBand title="Bring the right discipline to the right opportunity." />
-      </div>
+              <div className={`lg:col-span-5 ${flip ? "lg:order-1" : "lg:col-start-8"}`}>
+                <DisciplineLabel block={block} label={`${d.index} · ${d.title}`} />
+                <Reveal as="h2" delay={80} className="type-title mt-5 text-ink">
+                  <span id={`${d.id}-title`}>{d.line}</span>
+                </Reveal>
+                <Reveal as="p" delay={140} className="mt-5 text-[1.05rem] leading-relaxed text-mist">
+                  {d.description}
+                </Reveal>
+                <div className="mt-9 grid gap-9 sm:grid-cols-2">
+                  <Reveal delay={200}>
+                    <h3 className="type-label text-haze">Practical applications</h3>
+                    <ul className="mt-4 space-y-3 text-[0.95rem] text-ink/90">
+                      {d.applications.map((a) => (
+                        <li key={a} className="flex gap-3">
+                          <span aria-hidden className="mt-[0.55em] h-1.5 w-2.5 shrink-0 -skew-x-[34deg]" style={{ background: BLOCK_COLOURS[block] }} />
+                          {a}
+                        </li>
+                      ))}
+                    </ul>
+                  </Reveal>
+                  <Reveal delay={260}>
+                    <h3 className="type-label text-haze">Questions we help answer</h3>
+                    <ul className="mt-4 space-y-4 text-[0.95rem] leading-relaxed text-mist">
+                      {d.questions.map((q) => (
+                        <li key={q} className="border-l-2 pl-3" style={{ borderColor: BLOCK_COLOURS[block] }}>
+                          {q}
+                        </li>
+                      ))}
+                    </ul>
+                  </Reveal>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      })}
+      <CtaBand title="Bring the right discipline to the right opportunity." />
     </main>
   );
 }

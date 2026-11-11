@@ -1,35 +1,37 @@
-import { NexusStage } from "@/components/nexus/NexusStage";
+import { AngledPhoto } from "@/components/brand/AngledPhoto";
 import { Reveal, SplitLines } from "@/components/editorial/SplitLines";
 
 /**
- * Sub-page opening: the same Nexus, held in the configuration that matches the
- * page's subject, beside an editorial headline.
+ * Sub-page opening: an editorial headline beside a photograph framed in the mark's
+ * angled-block geometry — the same system as the homepage.
  */
 export function PageHero({
   label,
   lines,
   accent,
   lede,
-  story,
-  distance = 1,
+  photo,
+  block = 0,
+  position,
   children,
 }: {
   label: string;
   lines: string[];
   accent?: number;
   lede: string;
-  story: number;
-  /** Camera distance multiplier for the contained stage. */
-  distance?: number;
+  photo: string;
+  /** The discipline block that frames the photograph: 0 green, 1 cyan, 2 blue. */
+  block?: 0 | 1 | 2;
+  position?: string;
   children?: React.ReactNode;
 }) {
   return (
     <section aria-labelledby="page-title" data-reveal-immediate="" className="relative overflow-hidden">
-      <div className="stage-fade-x absolute inset-y-0 right-0 w-full max-lg:h-[62%] lg:w-[62%]">
-        <NexusStage variant="contained" story={story} distance={distance} />
-      </div>
-      <div className="relative mx-auto flex min-h-[88svh] max-w-[96rem] items-end px-5 pb-16 pt-36 sm:px-8 lg:min-h-[86svh] lg:items-center lg:px-12 lg:pb-12">
-        <div className="max-w-2xl lg:w-[48%]">
+      <div className="relative mx-auto grid max-w-[96rem] items-center gap-12 px-5 pb-16 pt-32 sm:px-8 lg:min-h-[86svh] lg:grid-cols-12 lg:px-12 lg:pb-12 lg:pt-28">
+        <div className="order-2 lg:order-2 lg:col-span-6 lg:col-start-7">
+          <AngledPhoto photo={photo} block={block} position={position} className="h-[58vw] max-h-[36rem] min-h-[14rem] lg:h-[62svh]" />
+        </div>
+        <div className="order-1 max-w-2xl lg:order-1 lg:col-span-6">
           <Reveal as="p" delay={150} className="type-label flex items-center gap-3 text-haze">
             <span aria-hidden className="h-px w-8 bg-jade" />
             {label}
