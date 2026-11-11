@@ -51,7 +51,7 @@ export function SiteHeader() {
       {/* Background bar sits beneath the header so the header itself can blend with the page. */}
       <div
         aria-hidden
-        className={`pointer-events-none fixed inset-x-0 top-0 z-40 h-[4.5rem] border-b transition-[opacity,border-color] duration-500 lg:h-20 ${
+        className={`site-header-bar pointer-events-none fixed inset-x-0 top-0 z-40 h-[4.5rem] border-b transition-[opacity,border-color] duration-500 lg:h-20 ${
           open ? "border-line bg-navy-deep opacity-100" : scrolled ? "border-line bg-navy-deep/75 opacity-100 backdrop-blur-md" : "border-transparent opacity-0"
         }`}
       />

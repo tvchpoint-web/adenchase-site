@@ -248,3 +248,25 @@
     mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 60%, transparent 100%);
   }
 }
+
+/* ------------------------------------------------- opening prototype */
+header,
+.site-header-bar {
+  transition: opacity 400ms var(--ease);
+}
+html[data-opening-hide-header="1"] header,
+html[data-opening-hide-header="1"] .site-header-bar {
+  opacity: 0;
+  pointer-events: none;
+}
+/* Photography graded toward Midnight Navy and Sapphire so the copy always leads. */
+.photo {
+  filter: saturate(0.72) contrast(1.06) brightness(0.82);
+}
+.photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(0, 66, 172, 0.4), rgba(0, 16, 61, 0.6));
+  mix-blend-mode: multiply;
+}
