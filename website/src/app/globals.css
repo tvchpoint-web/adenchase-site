@@ -1,0 +1,248 @@
+@import "tailwindcss";
+
+/*
+ * ADEN-CHASE Strategies — design system.
+ * Approved palette only:
+ *   Midnight Navy #00103D · Sapphire Blue #0042AC · Ocean Blue #00D3FB · Neon Jade #83FD80
+ * The site is a single dark composition by design (it is built around the
+ * illuminated Nexus), so tokens are intentionally not redefined for light mode.
+ */
+:root {
+  --navy: #00103d;
+  --navy-deep: #000b2c;
+  --sapphire: #0042ac;
+  --ocean: #00d3fb;
+  --jade: #83fd80;
+  --ink: #f4f8ff;
+  --mist: #b4c4e0; /* body copy on navy — 9.9:1 contrast */
+  --haze: #8296bd; /* labels / secondary — 5.9:1 contrast */
+  --line: color-mix(in oklab, var(--ocean) 18%, transparent);
+  --ease: cubic-bezier(0.22, 0.75, 0.15, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-navy: var(--navy);
+  --color-navy-deep: var(--navy-deep);
+  --color-sapphire: var(--sapphire);
+  --color-ocean: var(--ocean);
+  --color-jade: var(--jade);
+  --color-ink: var(--ink);
+  --color-mist: var(--mist);
+  --color-haze: var(--haze);
+  --color-line: var(--line);
+  --font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ease-brand: var(--ease);
+}
+
+@layer base {
+  html {
+    background: var(--navy-deep);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    min-height: 100svh;
+    background:
+      radial-gradient(120% 90% at 70% 35%, color-mix(in oklab, var(--sapphire) 26%, var(--navy)) 0%, var(--navy) 46%, var(--navy-deep) 100%) fixed;
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  ::selection {
+    background: var(--jade);
+    color: var(--navy);
+  }
+  :focus-visible {
+    outline: 2px solid var(--jade);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* ------------------------------------------------------------- typography */
+@utility type-display {
+  font-size: clamp(2.75rem, 1.05rem + 5.4vw, 7rem); /* → 112px on large screens */
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  font-weight: 600;
+}
+@utility type-headline {
+  font-size: clamp(2.35rem, 1.2rem + 3.9vw, 5.5rem); /* → 88px */
+  line-height: 0.97;
+  letter-spacing: -0.032em;
+  font-weight: 600;
+}
+@utility type-title {
+  font-size: clamp(1.6rem, 1.1rem + 1.6vw, 2.6rem);
+  line-height: 1.08;
+  letter-spacing: -0.022em;
+  font-weight: 560;
+}
+@utility type-lede {
+  font-size: clamp(1.07rem, 0.98rem + 0.32vw, 1.31rem); /* 18–21px */
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+}
+@utility type-label {
+  font-size: 0.75rem; /* 12px */
+  line-height: 1.2;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  font-weight: 560;
+}
+
+/* ------------------------------------------------------- buttons & links */
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.25rem;
+  padding: 0 1.5rem;
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  font-weight: 560;
+  letter-spacing: 0.005em;
+  transition:
+    background-color 220ms var(--ease),
+    color 220ms var(--ease),
+    border-color 220ms var(--ease),
+    box-shadow 220ms var(--ease),
+    transform 220ms var(--ease);
+}
+@utility btn-primary {
+  background: var(--jade);
+  color: var(--navy);
+  box-shadow: 0 0 0 0 color-mix(in oklab, var(--jade) 0%, transparent);
+  &:hover {
+    background: color-mix(in oklab, var(--jade) 88%, white);
+    box-shadow: 0 0 32px -6px color-mix(in oklab, var(--jade) 60%, transparent);
+  }
+}
+@utility btn-ghost {
+  border: 1px solid color-mix(in oklab, var(--ocean) 45%, transparent);
+  color: var(--ink);
+  background: color-mix(in oklab, var(--navy) 35%, transparent);
+  backdrop-filter: blur(6px);
+  &:hover {
+    border-color: var(--ocean);
+    background: color-mix(in oklab, var(--ocean) 10%, transparent);
+  }
+}
+@utility link-quiet {
+  color: var(--mist);
+  transition: color 200ms var(--ease);
+  &:hover {
+    color: var(--ink);
+  }
+}
+
+.btn-arrow {
+  transition: transform 220ms var(--ease);
+}
+.btn:hover .btn-arrow {
+  transform: translateX(3px);
+}
+
+/* --------------------------------------------------------- editorial reveal
+ * Content is visible by default (no JS = fully readable). The inline head
+ * script adds `.js`, which arms the reveal; a timed failsafe adds
+ * `.reveal-all` if the controller never starts.
+ */
+.js [data-reveal]:not([data-reveal="lines"]) {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 650ms var(--ease),
+    transform 650ms var(--ease);
+  transition-delay: calc(var(--d, 0) * 1ms);
+}
+.js [data-reveal="lines"] .line > span {
+  transform: translateY(108%);
+  transition: transform 720ms var(--ease);
+  transition-delay: calc(var(--i, 0) * 90ms + var(--d, 0) * 1ms);
+}
+.js [data-reveal].is-in:not([data-reveal="lines"]),
+.reveal-all [data-reveal]:not([data-reveal="lines"]) {
+  opacity: 1;
+  transform: none;
+}
+.js [data-reveal="lines"].is-in .line > span,
+.reveal-all [data-reveal="lines"] .line > span {
+  transform: none;
+}
+.line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.09em;
+  margin-bottom: -0.09em;
+}
+.line > span {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal]:not([data-reveal="lines"]),
+  .js [data-reveal="lines"] .line > span {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:focus-within {
+    scroll-behavior: smooth;
+  }
+}
+
+/* --------------------------------------------------------------- scrims */
+.scrim-story {
+  background:
+    linear-gradient(90deg, color-mix(in oklab, var(--navy-deep) 82%, transparent) 0%, color-mix(in oklab, var(--navy-deep) 45%, transparent) 34%, transparent 58%);
+}
+@media (max-width: 1023px) {
+  .scrim-story {
+    background: linear-gradient(180deg, transparent 0%, transparent 34%, color-mix(in oklab, var(--navy-deep) 70%, transparent) 62%, color-mix(in oklab, var(--navy-deep) 92%, transparent) 100%);
+  }
+}
+
+.hairline {
+  height: 1px;
+  background: linear-gradient(90deg, var(--line), transparent);
+}
+
+@keyframes cue {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(300%);
+  }
+}
+
+/* Fades a contained Nexus stage into the page without painting a colour over it. */
+.stage-fade-x {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 38%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 38%);
+}
+@media (max-width: 1023px) {
+  .stage-fade-x {
+    -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+    mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+  }
+}
