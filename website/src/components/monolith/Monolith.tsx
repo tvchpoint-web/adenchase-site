@@ -86,7 +86,7 @@ const inlayFragment = /* glsl */ `
     float breath = 0.78 + 0.22 * sin(uTime * 1.1 - t * 5.0);
     float cursor = uCursorAmt * exp(-pow((t - uCursorT) / 0.09, 2.0));
     float scan = exp(-pow((t - uScan) / 0.035, 2.0));
-    float glow = revealed * uLevel * breath * 0.85 + head * 3.6 + cursor * 1.6 + scan * 1.4 * uLevel;
+    float glow = revealed * uLevel * breath * 0.85 + head * 2.3 + cursor * 1.6 + scan * 1.4 * uLevel;
     gl_FragColor = vec4(uJade * glow, 1.0);
   }
 `;

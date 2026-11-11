@@ -39,17 +39,20 @@ function CameraRig() {
 
     const aspect = size.width / Math.max(1, size.height);
     const narrow = aspect < 1.1;
-    const fit = narrow ? Math.min(2.1, 1.25 / aspect) : aspect < 1.45 ? 1.1 : 1;
+    // Narrow screens widen the lens rather than retreating into the fog, so the sculpture keeps its presence.
+    const fit = narrow ? 1.2 : aspect < 1.45 ? 1.1 : 1;
+    const lens = narrow ? Math.min(2.4, 1.05 / aspect) : 1;
 
     const az = THREE.MathUtils.lerp(0.5, 0.24, k) - r.az;
     const el = THREE.MathUtils.lerp(0.03, 0.11, k) - r.el;
-    const dist = (THREE.MathUtils.lerp(17, 13.6, k) + intro * 2.4) * fit;
+    const dist = (THREE.MathUtils.lerp(18.6, 14.2, k) + intro * 2.4) * fit;
     target.set(THREE.MathUtils.lerp(0, 0.1, k), THREE.MathUtils.lerp(3.7, 4.1, k), 0);
     camera.position.set(target.x + dist * Math.cos(el) * Math.sin(az), target.y + dist * Math.sin(el) - 1.2, target.z + dist * Math.cos(el) * Math.cos(az));
     camera.lookAt(target);
     const cam = camera as THREE.PerspectiveCamera;
+    cam.fov = THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(15)) * lens));
     const ax = narrow ? 0.5 : THREE.MathUtils.lerp(0.66, 0.63, k);
-    const ay = narrow ? 0.34 : 0.5;
+    const ay = narrow ? 0.27 : 0.5;
     cam.setViewOffset(size.width, size.height, (0.5 - ax) * size.width, (0.5 - ay) * size.height, size.width, size.height);
   });
   return null;
