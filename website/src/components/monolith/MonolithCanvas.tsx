@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame } from "@react-three/fiber";
 import { ContactShadows, Environment, Lightformer, MeshReflectorMaterial, PerformanceMonitor } from "@react-three/drei";
-import { Bloom, EffectComposer, Noise, Vignette } from "@react-three/postprocessing";
+import { Bloom, EffectComposer, Noise } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
@@ -10,7 +10,8 @@ import { RectAreaLightUniformsLib } from "three/examples/jsm/lights/RectAreaLigh
 import { Monolith } from "./Monolith";
 import { monolithState } from "./state";
 
-const BG = "#010819";
+/** Brand Midnight Navy: also lets the official logo's own navy field dissolve into the page. */
+const BG = "#00103D";
 
 /* ------------------------------------------------------------------ camera */
 
@@ -42,7 +43,7 @@ function CameraRig() {
 
     const az = THREE.MathUtils.lerp(0.5, 0.24, k) - r.az;
     const el = THREE.MathUtils.lerp(0.03, 0.11, k) - r.el;
-    const dist = (THREE.MathUtils.lerp(17, 11.5, k) + intro * 2.4) * fit;
+    const dist = (THREE.MathUtils.lerp(17, 13.6, k) + intro * 2.4) * fit;
     target.set(THREE.MathUtils.lerp(0, 0.1, k), THREE.MathUtils.lerp(3.7, 4.1, k), 0);
     camera.position.set(target.x + dist * Math.cos(el) * Math.sin(az), target.y + dist * Math.sin(el) - 1.2, target.z + dist * Math.cos(el) * Math.cos(az));
     camera.lookAt(target);
@@ -62,8 +63,8 @@ function Gallery({ lite }: { lite: boolean }) {
     c.width = c.height = 256;
     const ctx = c.getContext("2d")!;
     const g = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-    g.addColorStop(0, "rgba(70,110,200,0.55)");
-    g.addColorStop(0.45, "rgba(20,50,140,0.18)");
+    g.addColorStop(0, "rgba(90,120,190,0.32)");
+    g.addColorStop(0.45, "rgba(30,55,130,0.1)");
     g.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 256, 256);
@@ -78,7 +79,7 @@ function Gallery({ lite }: { lite: boolean }) {
       <ambientLight intensity={0.06} color="#3b5bb0" />
       {/* Dark studio: only a few soft panels for the polished surfaces to reflect. */}
       <Environment frames={1} resolution={lite ? 128 : 256}>
-        <color attach="background" args={["#00030b"]} />
+        <color attach="background" args={["#00061a"]} />
         <Lightformer form="rect" intensity={1.6} color="#cddcff" scale={[3, 12]} position={[-6, 5, 6]} target={[0, 3, 0]} />
         <Lightformer form="rect" intensity={0.9} color="#2a5cff" scale={[10, 2]} position={[0, 10, -4]} target={[0, 3, 0]} />
         <Lightformer form="rect" intensity={1.4} color="#00D3FB" scale={[0.4, 10]} position={[6, 4, -2]} target={[0, 3, 0]} />
@@ -121,7 +122,6 @@ function Effects({ lite }: { lite: boolean }) {
       {/* Only the jade signal exceeds the bloom threshold: no general glow. */}
       <Bloom mipmapBlur intensity={0.55} luminanceThreshold={1.0} luminanceSmoothing={0.15} radius={0.6} />
       <Noise premultiply blendFunction={BlendFunction.SOFT_LIGHT} opacity={0.22} />
-      <Vignette offset={0.22} darkness={0.7} />
     </EffectComposer>
   );
 }

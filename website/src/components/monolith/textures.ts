@@ -72,9 +72,9 @@ export function wearRoughnessMap(seed = 7): THREE.Texture {
     ctx.fillRect(x - r, y - r, r * 2, r * 2);
   }
   // Fine vertical polishing streaks.
-  for (let i = 0; i < 260; i++) {
+  for (let i = 0; i < 90; i++) {
     const x = rand() * size;
-    ctx.fillStyle = `rgba(0,${40 + rand() * 60},0,0.08)`;
+    ctx.fillStyle = `rgba(0,${50 + rand() * 40},0,0.05)`;
     ctx.fillRect(x, 0, 1, size);
   }
   const t = new THREE.CanvasTexture(c);

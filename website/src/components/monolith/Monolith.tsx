@@ -125,7 +125,7 @@ export function Monolith({ lite }: { lite: boolean }) {
   /* ---- materials */
   const mats = useMemo(() => {
     const fluting = flutingNormalMap();
-    fluting.repeat.set(1 / 0.085, 1);
+    fluting.repeat.set(1 / 0.06, 1);
     const wear = wearRoughnessMap(11);
     wear.repeat.set(0.32, 0.32);
     const wearSide = wearRoughnessMap(23);
@@ -133,13 +133,13 @@ export function Monolith({ lite }: { lite: boolean }) {
     // Polished sapphire-black lacquer with fine architectural fluting on the broad faces.
     const lacquer = new THREE.MeshPhysicalMaterial({
       color: "#0b1531",
-      metalness: 0.12,
-      roughness: 0.62,
+      metalness: 0.1,
+      roughness: 0.95,
       roughnessMap: wear,
       normalMap: fluting,
-      normalScale: new THREE.Vector2(0.32, 0.32),
-      clearcoat: 1,
-      clearcoatRoughness: 0.06,
+      normalScale: new THREE.Vector2(0.09, 0.09),
+      clearcoat: 0.7,
+      clearcoatRoughness: 0.2,
       envMapIntensity: 1.0,
     });
     // Brushed graphite metal for the edges and the revealed cut faces.
@@ -320,7 +320,7 @@ export function Monolith({ lite }: { lite: boolean }) {
     if (keyLight.current) {
       keyLight.current.position.set(s.keyX, s.keyY, 7);
       keyLight.current.lookAt(0, 3.6, 0);
-      keyLight.current.intensity = 7.5 * light;
+      keyLight.current.intensity = 5.2 * light;
     }
     if (rimLight.current) rimLight.current.intensity = 6 * light;
     if (backLight.current) backLight.current.intensity = 3.2 * light;

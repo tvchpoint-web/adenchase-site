@@ -60,7 +60,7 @@ export function MonolithStage({ scrollTargetId }: { scrollTargetId: string }) {
   }, [scrollTargetId]);
 
   return (
-    <div ref={ref} className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#010819]" data-nexus-stage="monolith">
+    <div ref={ref} className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-navy" data-nexus-stage="monolith">
       <picture>
         <source media="(max-width: 767px)" srcSet="/monolith/still-mobile.webp" />
         <img
