@@ -3,7 +3,8 @@
  * and `<name>-m.webp` (phones). To swap in final or client-supplied photography, add the files
  * and change the name here — nothing else needs to change.
  *
- * All current images are TEMPORARY references (see public/photos/CREDITS.md).
+ * Client-supplied images: handshake, team-overhead, counsel. All others are TEMPORARY
+ * Unsplash references (see public/photos/CREDITS.md).
  */
 export const PHOTO = {
   // Opening
@@ -20,8 +21,8 @@ export const PHOTO = {
   aiMain: "engineering",
   aiDetail: "systems",
   growthMain: "growth",
-  growthDetail: "analytics",
-  engagement: "office",
+  growthDetail: "team-overhead",
+  engagement: "handshake",
   finalCta: "earth",
   // Inner pages
   approachHero: "strategy",
@@ -30,5 +31,5 @@ export const PHOTO = {
   expertiseEngineering: "systems",
   expertiseGrowth: "growth",
   capabilitiesHero: "analytics",
-  engagementHero: "office",
+  engagementHero: "counsel",
 } as const;

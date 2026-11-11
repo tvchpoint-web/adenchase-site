@@ -15,14 +15,19 @@ and Sapphire in CSS (`.photo`).
 | towers | 1486406146926-c627a92ad1ab | Strategy portal; Expertise |
 | earth | 1451187580459-43490279c0fa | Growth portal; final call to action |
 | analytics | 1460925895917-afdab827c52f | Market Growth detail; Capabilities |
-| office | 1497366216548-37526070297c | Private Engagement |
 | systems | 1544197150-b99a580bb7a8 | AI Engineering detail; Expertise (network patch panel) |
 
 `logo-wordmark.png` is the official ADEN-CHASE artwork with the three colour blocks moved
 to their own layers (recomposited at rest, they reproduce the original).
 
-## Pending: client-supplied photography
+## Client-supplied photography
 
-Five replacement photographs were shared in conversation but did not reach the build
-environment as files. Add them to `public/photos/` (any name) and map them in
-`src/lib/photos.ts`; every section reads its photograph from there.
+Supplied by ADEN-CHASE for this site (licence status to be confirmed by ADEN-CHASE).
+
+| File | Used for | Notes |
+| --- | --- | --- |
+| handshake | Private Engagement (home) | Faces silhouetted and out of focus |
+| team-overhead | Market Growth detail | Overhead; faces not visible |
+| counsel | Private Engagement page hero | Cropped to remove the scales on the left |
+
+Not used: a high-five image (faces prominent) and a chart image carrying a "Magnific" watermark.
