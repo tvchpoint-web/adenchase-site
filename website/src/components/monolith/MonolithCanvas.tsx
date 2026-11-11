@@ -45,8 +45,8 @@ function CameraRig() {
 
     const az = THREE.MathUtils.lerp(0.5, 0.24, k) - r.az;
     const el = THREE.MathUtils.lerp(0.03, 0.11, k) - r.el;
-    const dist = (THREE.MathUtils.lerp(18.6, 14.2, k) + intro * 2.4) * fit;
-    target.set(THREE.MathUtils.lerp(0, 0.1, k), THREE.MathUtils.lerp(3.7, 4.1, k), 0);
+    const dist = (THREE.MathUtils.lerp(18.6, 15.2, k) + intro * 2.4) * fit;
+    target.set(THREE.MathUtils.lerp(0, 0.05, k), THREE.MathUtils.lerp(3.7, 4.35, k), 0);
     camera.position.set(target.x + dist * Math.cos(el) * Math.sin(az), target.y + dist * Math.sin(el) - 1.2, target.z + dist * Math.cos(el) * Math.cos(az));
     camera.lookAt(target);
     const cam = camera as THREE.PerspectiveCamera;

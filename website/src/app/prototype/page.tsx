@@ -3,6 +3,7 @@ import Link from "next/link";
 import { MonolithStage } from "@/components/monolith/MonolithStage";
 import { Reveal, SplitLines } from "@/components/editorial/SplitLines";
 import { CTA_INTRO, SITE } from "@/lib/site";
+import { DNA_DISCIPLINES, STRANDS } from "@/components/monolith/disciplines";
 
 export const metadata: Metadata = {
   title: "Hero look development",
@@ -20,7 +21,7 @@ export default function PrototypePage() {
       <MonolithStage scrollTargetId="hero" />
       <div aria-hidden className="scrim-story pointer-events-none fixed inset-0 z-0" />
       <main id="main" className="relative z-10">
-        <section id="hero" aria-labelledby="hero-title" className="relative min-h-svh lg:min-h-[210vh]" data-reveal-immediate="">
+        <section id="hero" aria-labelledby="hero-title" className="relative min-h-[175svh] lg:min-h-[210vh]" data-reveal-immediate="">
           <div className="flex min-h-svh items-end pb-14 pt-28 lg:sticky lg:top-0 lg:h-svh lg:items-center lg:pb-0 lg:pt-20">
             <div className="mx-auto w-full max-w-[96rem] px-5 sm:px-8 lg:px-12">
               <div className="max-w-2xl lg:w-[46%] lg:max-w-none">
@@ -45,11 +46,25 @@ export default function PrototypePage() {
             </div>
           </div>
         </section>
+        {/* The same meaning as the 3D helix, for assistive technology. */}
+        <div className="sr-only">
+          <h2>The DNA of Growth</h2>
+          <p>
+            Inside the sculpture is a double helix. One strand represents {STRANDS[0].title}; the other represents {STRANDS[1].title}. Six connections join them:
+          </p>
+          <ol>
+            {DNA_DISCIPLINES.map((d) => (
+              <li key={d.title}>
+                {d.title}: {d.line}
+              </li>
+            ))}
+          </ol>
+        </div>
         <section aria-label="About this prototype" className="relative border-t border-line bg-navy-deep">
           <div className="mx-auto max-w-[96rem] px-5 py-16 sm:px-8 lg:px-12">
             <p className="type-label text-haze">Look-development prototype</p>
             <p className="mt-4 max-w-2xl text-mist">
-              Hero only, for review. Move the pointer to light the sculpture; scroll to open it further and back to close it. The remaining scenes will be built after this direction is approved.
+              Hero only, for review. Move the pointer to light the sculpture; scroll to open it and reveal the DNA of Growth, and hover its connections. Scroll back to close it. The remaining scenes will be built after this direction is approved.
             </p>
           </div>
         </section>

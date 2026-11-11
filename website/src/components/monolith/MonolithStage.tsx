@@ -4,12 +4,15 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { monolithState, onMonolithReady } from "./state";
 
-const MonolithCanvas = dynamic(() => import("./MonolithCanvas"), { ssr: false });
+const MonolithCanvas = dynamic(() => import("./MonolithCanvas"), {
+  ssr: false,
+});
 
 function webgl(): boolean {
   try {
     const c = document.createElement("canvas");
-    const gl = (c.getContext("webgl2") || c.getContext("webgl")) as WebGLRenderingContext | null;
+    const gl = (c.getContext("webgl2") ||
+      c.getContext("webgl")) as WebGLRenderingContext | null;
     gl?.getExtension("WEBGL_lose_context")?.loseContext();
     return !!gl;
   } catch {
@@ -24,7 +27,9 @@ function webgl(): boolean {
  */
 export function MonolithStage({ scrollTargetId }: { scrollTargetId: string }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [support, setSupport] = useState<"pending" | "webgl" | "none">("pending");
+  const [support, setSupport] = useState<"pending" | "webgl" | "none">(
+    "pending",
+  );
   const [lite, setLite] = useState(false);
   const [ready, setReady] = useState(false);
 
@@ -60,23 +65,48 @@ export function MonolithStage({ scrollTargetId }: { scrollTargetId: string }) {
   }, [scrollTargetId]);
 
   return (
-    <div ref={ref} className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-navy" data-nexus-stage="monolith">
-      <picture>
-        <source media="(max-width: 767px)" srcSet="/monolith/still-mobile.webp" />
-        <img
-          src="/monolith/still.webp"
-          alt=""
-          aria-hidden
-          decoding="async"
-          fetchPriority="high"
-          className={`absolute inset-0 h-full w-full object-cover object-[66%_50%] transition-opacity duration-700 max-md:object-[50%_30%] ${ready ? "opacity-0" : "opacity-100"}`}
+    <>
+      {/* Caption for the hovered / signalled part of the helix; positioned every frame by the scene. */}
+      <div
+        id="dna-label"
+        aria-hidden
+        className="pointer-events-none fixed left-0 top-0 z-20 w-max max-w-[16.5rem] rounded-xl border border-line bg-navy-deep/75 px-4 py-3 opacity-0 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.7)] backdrop-blur-md transition-opacity duration-300"
+        style={{ willChange: "transform" }}
+      >
+        <p data-index className="type-label text-jade" />
+        <p
+          data-title
+          className="mt-1.5 text-[0.95rem] font-medium leading-snug text-ink"
         />
-      </picture>
-      {support === "webgl" && (
-        <div className={`absolute inset-0 transition-opacity duration-[1400ms] ease-out ${ready ? "opacity-100" : "opacity-0"}`}>
-          <MonolithCanvas lite={lite} pointerTarget={ref} />
-        </div>
-      )}
-    </div>
+        <p data-line className="mt-1 text-[0.8125rem] leading-snug text-mist" />
+      </div>
+      <div
+        ref={ref}
+        className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-navy"
+        data-nexus-stage="monolith"
+      >
+        <picture>
+          <source
+            media="(max-width: 767px)"
+            srcSet="/monolith/still-mobile.webp"
+          />
+          <img
+            src="/monolith/still.webp"
+            alt=""
+            aria-hidden
+            decoding="async"
+            fetchPriority="high"
+            className={`absolute inset-0 h-full w-full object-cover object-[66%_50%] transition-opacity duration-700 max-md:object-[50%_30%] ${ready ? "opacity-0" : "opacity-100"}`}
+          />
+        </picture>
+        {support === "webgl" && (
+          <div
+            className={`absolute inset-0 transition-opacity duration-[1400ms] ease-out ${ready ? "opacity-100" : "opacity-0"}`}
+          >
+            <MonolithCanvas lite={lite} pointerTarget={ref} />
+          </div>
+        )}
+      </div>
+    </>
   );
 }

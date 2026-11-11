@@ -5,6 +5,10 @@ export const monolithState = {
   scroll: 0,
   reducedMotion: false,
   ready: false,
+  /** How far the sculpture is open (0–1); written by the Monolith, read by the helix. */
+  open: 0,
+  /** Jade Signal position along the helix (0–1), or −1 when idle; written by the helix. */
+  pulse: -1,
 };
 
 const listeners = new Set<() => void>();
