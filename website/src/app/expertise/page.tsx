@@ -6,6 +6,7 @@ import { PageHero } from "@/components/site/PageHero";
 import { Reveal } from "@/components/editorial/SplitLines";
 import { BLOCK_COLOURS } from "@/lib/blocks";
 import { DISCIPLINES } from "@/lib/site";
+import { PHOTO } from "@/lib/photos";
 
 export const metadata: Metadata = {
   title: "Expertise",
@@ -13,9 +14,9 @@ export const metadata: Metadata = {
 };
 
 const PHOTOS = [
-  { photo: "towers", position: "center" },
-  { photo: "floor", position: "center 40%" },
-  { photo: "growth", position: "center" },
+  { photo: PHOTO.expertiseStrategy, position: "center" },
+  { photo: PHOTO.expertiseEngineering, position: "center" },
+  { photo: PHOTO.expertiseGrowth, position: "center" },
 ] as const;
 
 export default function ExpertisePage() {
@@ -25,9 +26,8 @@ export default function ExpertisePage() {
         label="Expertise"
         lines={["Three disciplines.", "One connected", "system."]}
         accent={2}
-        photo="engineering"
+        photo={PHOTO.expertiseHero}
         block={1}
-        position="center 35%"
         lede="Business strategy sets direction. AI engineering builds the systems that deliver it. Market growth turns both into commercial momentum. Each is stronger because of the others."
       />
 
@@ -41,7 +41,7 @@ export default function ExpertisePage() {
                 <AngledPhoto photo={PHOTOS[i].photo} block={block} position={PHOTOS[i].position} className="h-[56vw] max-h-[34rem] min-h-[14rem]" />
               </div>
               <div className={`lg:col-span-5 ${flip ? "lg:order-1" : "lg:col-start-8"}`}>
-                <DisciplineLabel block={block} label={`${d.index} · ${d.title}`} />
+                <DisciplineLabel block={block} label={`${d.index} · ${d.title}`} trail={false} />
                 <Reveal as="h2" delay={80} className="type-title mt-5 text-ink">
                   <span id={`${d.id}-title`}>{d.line}</span>
                 </Reveal>

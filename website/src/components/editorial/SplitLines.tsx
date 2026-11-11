@@ -41,15 +41,16 @@ export function Reveal({
   delay = 0,
   className = "",
   as: Tag = "div",
+  ...rest
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
   as?: keyof JSX.IntrinsicElements;
-}) {
+} & Record<`data-${string}`, string>) {
   const El = Tag as "div";
   return (
-    <El data-reveal="" className={className} style={{ "--d": delay } as React.CSSProperties}>
+    <El data-reveal="" className={className} style={{ "--d": delay } as React.CSSProperties} {...rest}>
       {children}
     </El>
   );

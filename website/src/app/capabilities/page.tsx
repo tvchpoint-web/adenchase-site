@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { PHOTO } from "@/lib/photos";
 import { PageHero } from "@/components/site/PageHero";
 import { CtaBand } from "@/components/site/CtaBand";
 import { Reveal } from "@/components/editorial/SplitLines";
-import { BlockIndex } from "@/components/brand/AngledPhoto";
+import { BrandBlock } from "@/components/brand/AngledPhoto";
 import { CAPABILITIES, DISCIPLINES } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -19,7 +20,7 @@ export default function CapabilitiesPage() {
         label="Selected Capabilities"
         lines={["Built for the", "opportunity", "in front of you."]}
         accent={1}
-        photo="analytics"
+        photo={PHOTO.capabilitiesHero}
         block={2}
         lede="The capabilities below describe the work we are equipped to do. Every engagement is scoped around the specific opportunity — never assembled from a package."
       />
@@ -32,7 +33,7 @@ export default function CapabilitiesPage() {
                   <div className="flex items-center justify-between">
                     <span className="type-label text-jade">{String(i + 1).padStart(2, "0")}</span>
                     <span className="flex items-center gap-2.5">
-                      <BlockIndex active={discipline[c.discipline].region} className="h-3 w-auto" />
+                      <BrandBlock block={discipline[c.discipline].region} className="h-3 w-auto" />
                       <span className="type-label text-haze">{discipline[c.discipline].title}</span>
                     </span>
                   </div>

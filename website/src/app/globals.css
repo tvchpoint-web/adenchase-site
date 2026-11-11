@@ -37,15 +37,16 @@
 }
 
 @layer base {
+  /* The page gradient lives on the root (canvas), so the circuit backdrop can sit between it and the content. */
   html {
-    background: var(--navy-deep);
+    background:
+      radial-gradient(120% 90% at 70% 35%, color-mix(in oklab, var(--sapphire) 26%, var(--navy)) 0%, var(--navy) 46%, var(--navy-deep) 100%) fixed,
+      var(--navy-deep);
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
   }
   body {
     min-height: 100svh;
-    background:
-      radial-gradient(120% 90% at 70% 35%, color-mix(in oklab, var(--sapphire) 26%, var(--navy)) 0%, var(--navy) 46%, var(--navy-deep) 100%) fixed;
     color: var(--ink);
     font-family: var(--font-sans);
     font-feature-settings: "ss01", "cv11";
@@ -249,5 +250,242 @@ html[data-opening-hide-header="1"] .site-logo {
 @media (prefers-reduced-motion: reduce) {
   .angled-clip {
     transition: none;
+  }
+}
+
+/* ------------------------------------------------- strategic process */
+.process-line {
+  transform: scaleX(0);
+  transition: transform 1100ms var(--ease) 200ms;
+}
+.process-step {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 600ms var(--ease),
+    transform 600ms var(--ease);
+  transition-delay: calc(var(--i) * 140ms + 150ms);
+}
+[data-on="1"] .process-line {
+  transform: scaleX(1);
+}
+[data-on="1"] .process-step {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .process-line,
+  .process-step {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------- decision framework & capability paths */
+.decision-rail,
+.rail-line {
+  transform: scaleY(0);
+  transition: transform 1200ms var(--ease);
+}
+.decision-row,
+.rail-step,
+.ascent-step {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 650ms var(--ease),
+    transform 650ms var(--ease);
+  transition-delay: calc(var(--i) * 110ms + 120ms);
+}
+.ascent-step {
+  transform: translate(-18px, 14px);
+}
+.ascent {
+  --ascent-shift: 0px;
+}
+@media (min-width: 1024px) {
+  .ascent {
+    --ascent-shift: 22px;
+  }
+}
+.ascent-arrow {
+  opacity: 0;
+  transition: opacity 600ms var(--ease) 800ms;
+}
+[data-in="1"] .decision-rail,
+[data-in="1"].decision .decision-rail,
+[data-in="1"] .rail-line,
+[data-in="1"].rail .rail-line {
+  transform: none;
+}
+[data-in="1"] .decision-row,
+[data-in="1"] .rail-step,
+[data-in="1"] .ascent-step,
+[data-in="1"] .ascent-arrow {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .decision-rail,
+  .rail-line,
+  .decision-row,
+  .rail-step,
+  .ascent-step,
+  .ascent-arrow {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------- AI demos, outcomes, engagement */
+.demo-in,
+.outcome-tile {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 700ms var(--ease),
+    transform 700ms var(--ease);
+  transition-delay: calc(var(--i) * 110ms);
+}
+[data-in="1"] .demo-in,
+[data-in="1"] .outcome-tile {
+  opacity: 1;
+  transform: none;
+}
+.outcome-art * {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.group:hover .art-ping {
+  animation: art-ping 1.6s var(--ease) infinite;
+}
+.group:hover .art-ping-2 {
+  animation-delay: 300ms;
+}
+.group:hover .art-left {
+  transform: translateX(2px);
+}
+.group:hover .art-right {
+  transform: translateX(-2px);
+}
+.art-left,
+.art-right,
+.art-needle,
+.art-out,
+.art-bar {
+  transition: transform 500ms var(--ease);
+}
+.art-needle {
+  transform-origin: 0% 100%;
+}
+.group:hover .art-needle {
+  transform: rotate(18deg);
+}
+.group:hover .art-out {
+  transform: scale(1.12);
+}
+.group:hover .art-bar {
+  animation: art-bar 700ms var(--ease) both;
+}
+@keyframes art-ping {
+  from {
+    transform: scale(0.8);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+@keyframes art-bar {
+  from {
+    transform: scaleY(0.4);
+    transform-origin: bottom;
+  }
+  to {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+}
+.engagement-fill {
+  transform: scaleY(var(--fill));
+  transition: transform 200ms linear;
+}
+@media (min-width: 1024px) {
+  .engagement-fill {
+    transform: scaleX(var(--fill));
+  }
+}
+.stage[data-on="1"] .stage-node {
+  border-color: rgba(131, 253, 128, 0.55);
+  color: #83fd80;
+  box-shadow: 0 0 26px -8px rgba(131, 253, 128, 0.6);
+}
+.stage[data-on="1"] .stage-purpose {
+  color: #83fd80;
+}
+@media (prefers-reduced-motion: reduce) {
+  .demo-in,
+  .outcome-tile,
+  .engagement-fill {
+    transition: none;
+  }
+  .outcome-pulse {
+    display: none;
+  }
+  .group:hover .art-ping,
+  .group:hover .art-bar {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------- final call to action */
+.final-streaks {
+  opacity: 0.5;
+  background-image: repeating-linear-gradient(124deg, transparent 0 46px, rgba(0, 211, 251, 0.07) 46px 47px, transparent 47px 140px);
+  background-size: 400px 400px;
+  mask-image: linear-gradient(90deg, transparent 30%, #000 75%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 30%, #000 75%);
+  animation: final-drift 26s linear infinite;
+}
+@keyframes final-drift {
+  to {
+    background-position: 400px -400px;
+  }
+}
+.final-block {
+  opacity: 0;
+  transform: translate(-68px, 100px);
+  transition:
+    opacity 700ms var(--ease),
+    transform 1100ms var(--ease);
+  transition-delay: calc(var(--i) * 160ms);
+}
+.final-wordmark {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 900ms var(--ease) 650ms,
+    transform 900ms var(--ease) 650ms;
+}
+[data-in="1"] .final-block,
+[data-in="1"] .final-wordmark {
+  opacity: 1;
+  transform: none;
+}
+/* Anchors the jade trail reaches light softly. */
+[data-trail-anchor] img {
+  transition: filter 500ms var(--ease);
+}
+[data-trail-anchor][data-lit="1"] img {
+  filter: drop-shadow(0 0 6px rgba(131, 253, 128, 0.55));
+}
+@media (prefers-reduced-motion: reduce) {
+  .final-streaks {
+    animation: none;
+  }
+  .final-block,
+  .final-wordmark {
+    transition: none;
+    opacity: 1;
+    transform: none;
   }
 }

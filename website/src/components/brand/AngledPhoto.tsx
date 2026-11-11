@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { BLOCKS, BLOCK_COLOURS, K, type Quad } from "@/lib/blocks";
+import { BLOCK_COLOURS, K, type Quad } from "@/lib/blocks";
 
 const poly = (q: Quad) => `polygon(${q.map(([x, y]) => `${x.toFixed(1)}px ${y.toFixed(1)}px`).join(",")})`;
 
@@ -90,23 +90,22 @@ export function AngledPhoto({
   );
 }
 
-/** The mark's three blocks as a discipline index: the active block filled, the others drawn in outline. */
-export function BlockIndex({ active, className = "" }: { active: 0 | 1 | 2; className?: string }) {
-  // Drawn from the measured coordinates of the official artwork — true proportions, no redraw.
-  return (
-    <svg viewBox="832 234 497 112" className={className} aria-hidden>
-      {BLOCKS.map((q, i) => (
-        <polygon
-          key={i}
-          points={q.map(([x, y]) => `${x},${y}`).join(" ")}
-          fill={i === active ? BLOCK_COLOURS[i] : "transparent"}
-          stroke={BLOCK_COLOURS[i]}
-          strokeOpacity={i === active ? 1 : 0.6}
-          strokeWidth={i === active ? 0 : 1.5}
-          vectorEffect="non-scaling-stroke"
-        />
-      ))}
-    </svg>
-  );
+/**
+ * The mark's three solid blocks, taken from the official artwork (public/brand/aden-chase-blocks.png,
+ * cropped from the logo with its navy field removed) — never redrawn or outlined.
+ */
+export function BrandBlocks({ className = "h-4 w-auto" }: { className?: string }) {
+  // eslint-disable-next-line @next/next/no-img-element -- tiny decorative brand crop
+  return <img src="/brand/aden-chase-blocks.png" width={493} height={108} alt="" aria-hidden className={`select-none ${className}`} draggable={false} />;
 }
 
+/** One block of the mark (0 green, 1 cyan, 2 blue), cut from the official artwork. */
+export function BrandBlock({ block, className = "h-4 w-auto" }: { block: 0 | 1 | 2; className?: string }) {
+  const size = [
+    [193, 108],
+    [193, 108],
+    [210, 108],
+  ][block];
+  // eslint-disable-next-line @next/next/no-img-element -- tiny decorative brand crop
+  return <img src={`/photos/logo-block-${block}.png`} width={size[0]} height={size[1]} alt="" aria-hidden className={`select-none ${className}`} draggable={false} />;
+}

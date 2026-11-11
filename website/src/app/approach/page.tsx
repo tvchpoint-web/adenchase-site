@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PHOTO } from "@/lib/photos";
 import { PageHero, SectionIntro } from "@/components/site/PageHero";
 import { CtaBand } from "@/components/site/CtaBand";
 import { Reveal } from "@/components/editorial/SplitLines";
@@ -17,7 +18,7 @@ export default function ApproachPage() {
         label="Our Approach"
         lines={["Identify.", "Engineer.", "Accelerate."]}
         accent={2}
-        photo="strategy"
+        photo={PHOTO.approachHero}
         block={0}
         lede="Every engagement follows the same discipline: understand the business deeply, build what the opportunity actually requires, then create momentum — measuring progress at every stage."
       />

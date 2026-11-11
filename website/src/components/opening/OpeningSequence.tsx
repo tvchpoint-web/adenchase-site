@@ -2,6 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import { BLOCKS, BLOCK_COLOURS, BLOCK_TEXT, K, LOGO_H, LOGO_W, para, type Pt, type Quad } from "@/lib/blocks";
+import { PHOTO } from "@/lib/photos";
+import { StrategyProcess } from "@/components/home/StrategyProcess";
+import { BrandBlock } from "@/components/brand/AngledPhoto";
 
 /**
  * Opening prototype — storyboard v2.
@@ -57,15 +60,15 @@ const show = (el: HTMLElement | null, o: number, dy = 0) => {
 /* --------------------------------------------------------------- copy */
 
 const SLICES = [
-  { key: "strategy", label: "Strategy", line: "See the opportunity before the market does." },
-  { key: "engineering", label: "AI Engineering", line: "Systems that carry strategy into operation." },
-  { key: "intelligence", label: "Intelligence", line: "Better information at the moment it matters." },
-  { key: "growth", label: "Market Growth", line: "Direction turned into commercial momentum." },
+  { key: "strategy", photo: PHOTO.sliceStrategy, label: "Strategy", line: "See the opportunity before the market does." },
+  { key: "engineering", photo: PHOTO.sliceEngineering, label: "AI Engineering", line: "Systems that carry strategy into operation." },
+  { key: "intelligence", photo: PHOTO.sliceIntelligence, label: "Intelligence", line: "Better information at the moment it matters." },
+  { key: "growth", photo: PHOTO.sliceGrowth, label: "Market Growth", line: "Direction turned into commercial momentum." },
 ];
 const PORTALS = [
-  { photo: "towers", label: "Business Strategy", line: "Identify opportunity. Establish direction." },
-  { photo: "intelligence", label: "AI Engineering", line: "Engineer intelligent systems that improve how businesses operate." },
-  { photo: "earth", label: "Market Growth", line: "Turn direction into commercial momentum." },
+  { photo: PHOTO.portalStrategy, label: "Business Strategy", line: "Identify opportunity. Establish direction." },
+  { photo: PHOTO.portalEngineering, label: "AI Engineering", line: "Engineer intelligent systems that improve operations." },
+  { photo: PHOTO.portalGrowth, label: "Market Growth", line: "Turn direction into commercial momentum." },
 ];
 
 /* ------------------------------------------------------------ component */
@@ -157,6 +160,12 @@ export function OpeningSequence() {
           photo = easeOut(seg(p, 0.68, 0.78));
         }
         placeQuad(el, q);
+        const inMark = p < 0.4 || (p < 0.64 && collapse >= 0.999) || (p >= 0.64 && toPortals <= 0.001);
+        const fill = inMark ? `url(/photos/logo-block-${i}.png) 0 0 / 100% 100% no-repeat` : BLOCK_COLOURS[i];
+        if (el.dataset.fill !== fill) {
+          el.style.background = fill;
+          el.dataset.fill = fill;
+        }
         el.style.opacity = alpha.toFixed(3);
         el.style.visibility = alpha < 0.005 ? "hidden" : "visible";
         const ph = els[`blockPhoto${i}`];
@@ -178,14 +187,20 @@ export function OpeningSequence() {
           ];
           inner.style.clipPath = `polygon(${iq.map(([x, y]) => `${(x - x0).toFixed(1)}px ${(y - y0).toFixed(1)}px`).join(",")})`;
         }
-        // Portal labels sit inside the lower part of each portal.
+        // Portal labels sit inside each parallelogram: the left edge is taken at the label's top,
+        // and the width is reduced by the slant across the label's height, so no line crosses an edge.
         const label = els[`portalLabel${i}`];
         if (label && p >= 0.64) {
           const pq = portalQuad(i, W, H, mobile);
           const h = pq[3][1] - pq[0][1];
-          label.style.left = `${pq[3][0] + K * h * 0.14 + (mobile ? 14 : 24)}px`;
-          label.style.bottom = `${H - pq[3][1] + h * 0.12}px`;
-          label.style.width = `${(pq[2][0] - pq[3][0]) - (mobile ? 24 : 40)}px`;
+          const w = pq[2][0] - pq[3][0];
+          const pad = mobile ? 12 : 22;
+          // A fixed fitting height (not the measured one, which would feed back into the width).
+          const lh = mobile ? 52 : 128;
+          const bottom = h * (mobile ? 0.1 : 0.11);
+          label.style.left = `${pq[3][0] + K * (bottom + lh) + pad}px`;
+          label.style.top = `${pq[3][1] - bottom - lh}px`;
+          label.style.width = `${Math.max(80, w - K * lh - 2 * pad)}px`;
         }
       });
 
@@ -250,6 +265,7 @@ export function OpeningSequence() {
       PORTALS.forEach((_, i) => show(els[`portalLabel${i}`], easeOut(seg(p, 0.72 + i * 0.015, 0.78 + i * 0.015)) * (1 - seg(p, 0.8, 0.84))));
       const f6c = easeOut(seg(p, 0.88, 0.96));
       show(els.f6, f6c, (1 - f6c) * 18);
+      if (els.f6) els.f6.dataset.on = f6c > 0.6 ? "1" : "";
       show(els.f6shade, open);
 
       /* ---- header: hidden while the large mark is on screen (frames 1 and 4) */
@@ -276,7 +292,7 @@ export function OpeningSequence() {
 
         {/* Frame 2: skyline */}
         <div data-k="sky" className="absolute inset-0 overflow-hidden" style={{ visibility: "hidden" }}>
-          <div data-k="skyImg" data-photo="skyline" className="photo absolute inset-0 bg-cover bg-center" />
+          <div data-k="skyImg" data-photo={PHOTO.skyline} className="photo absolute inset-0 bg-cover bg-center" />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,10,48,0.9)_0%,rgba(0,10,48,0.55)_40%,transparent_66%)] max-md:bg-[linear-gradient(180deg,rgba(0,10,48,0.2)_0%,rgba(0,10,48,0.4)_40%,rgba(0,10,48,0.94)_72%)]" />
         </div>
         <div data-k="band" className="absolute left-0 top-0 bg-[#6EFA2E] will-change-transform" style={{ visibility: "hidden" }} />
@@ -284,14 +300,14 @@ export function OpeningSequence() {
         {/* Frame 3: four slices */}
         {SLICES.map((s, i) => (
           <div key={s.key} data-k={`slice${i}`} className="absolute left-0 top-0 overflow-hidden will-change-transform" style={{ visibility: "hidden" }}>
-            <div data-k={`sliceImg${i}`} data-photo={s.key} className="photo absolute -inset-[4%] bg-cover bg-center" />
+            <div data-k={`sliceImg${i}`} data-photo={s.photo} className="photo absolute -inset-[4%] bg-cover bg-center" />
             <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(0,10,48,0.88),rgba(0,10,48,0.15)_60%)]" />
           </div>
         ))}
 
         {/* The mark: the official wordmark layer plus the three blocks as separate layers */}
         {/* eslint-disable-next-line @next/next/no-img-element -- positioned every frame; must stay a plain layer */}
-        <img data-k="wordmark" src="/photos/logo-wordmark.png" alt="" className="absolute left-0 top-0 h-auto mix-blend-lighten will-change-transform select-none" style={{ opacity: 0 }} draggable={false} />
+        <img data-k="wordmark" src="/photos/logo-wordmark.webp" alt="" className="absolute left-0 top-0 h-auto will-change-transform select-none" style={{ opacity: 0 }} draggable={false} />
         {BLOCKS.map((_, i) => (
           <div key={i} data-k={`block${i}`} className="absolute left-0 top-0 will-change-transform" style={{ background: BLOCK_COLOURS[i], opacity: 0 }}>
             <div data-k={`blockInset${i}`} className="absolute inset-0 overflow-hidden">
@@ -364,7 +380,8 @@ export function OpeningSequence() {
           </div>
           {PORTALS.map((pt, i) => (
             <div key={pt.label} data-k={`portalLabel${i}`} className="portal-label absolute" data-i={i} style={{ opacity: 0 }}>
-              <p className="type-label max-md:text-[10px]" style={{ color: BLOCK_TEXT[i] }}>
+              <p className="type-label flex items-center gap-2.5 max-md:text-[10px]" style={{ color: BLOCK_TEXT[i] }}>
+                <BrandBlock block={i as 0 | 1 | 2} className="h-2.5 w-auto" />
                 0{i + 1}
               </p>
               <p className="mt-1.5 text-[1.05rem] font-semibold tracking-[-0.015em] text-ink lg:mt-2 lg:text-[1.55rem]">{pt.label}</p>
@@ -383,18 +400,7 @@ export function OpeningSequence() {
             <p className="mt-4 text-[0.95rem] leading-relaxed text-mist lg:type-lede lg:mt-5">
               We examine the business as it actually operates — market, customers, economics and constraints — to find the opportunities worth pursuing and the direction that makes them achievable.
             </p>
-            <div className="mt-5 grid grid-cols-3 gap-3 border-t border-line pt-4 lg:mt-6 lg:gap-5 lg:pt-5">
-              {[
-                ["Opportunity", "Where growth can realistically come from."],
-                ["Position", "How to compete, and where not to."],
-                ["Direction", "A prioritised plan the team can act on."],
-              ].map(([t, d]) => (
-                <div key={t}>
-                  <p className="text-[0.9375rem] font-semibold text-ink">{t}</p>
-                  <p className="mt-1 hidden text-[0.84rem] leading-relaxed text-mist lg:block">{d}</p>
-                </div>
-              ))}
-            </div>
+            <StrategyProcess />
             <div className="mt-6 flex flex-col gap-3 sm:flex-row lg:mt-7">
               <a href="/engagement" className="btn btn-primary justify-center">
                 Request a Strategic Introduction <span aria-hidden className="btn-arrow">→</span>
@@ -431,13 +437,13 @@ function sliceQuad(i: number, W: number, H: number, mobile: boolean): Quad {
 function portalQuad(i: number, W: number, H: number, mobile: boolean): Quad {
   if (mobile) {
     const top = 150;
-    const h = (H - top - 70 - 24) / 3;
-    const w = W * 0.5;
-    return para(20 + i * 14, top + i * (h + 12) + h, w, h);
+    const h = (H - top - 60 - 24) / 3;
+    const w = W * 0.56;
+    return para(16 + i * 12, top + i * (h + 12) + h, w, h);
   }
-  const h = H * 0.58;
-  const w = Math.min(300, W * 0.16);
-  const gap = 30;
+  const h = H * 0.6;
+  const w = Math.min(340, W * 0.185);
+  const gap = 26;
   const total = 3 * w + 2 * gap + K * h;
   const x0 = W - total - Math.max(48, W * 0.05);
   return para(x0 + i * (w + gap), H * 0.3 + h, w, h);

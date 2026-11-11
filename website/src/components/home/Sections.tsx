@@ -1,16 +1,23 @@
 import Link from "next/link";
-import { AngledPhoto, BlockIndex } from "@/components/brand/AngledPhoto";
+import { AngledPhoto, BrandBlock } from "@/components/brand/AngledPhoto";
+import { Icon, type IconName } from "@/components/brand/Icons";
 import { Reveal } from "@/components/editorial/SplitLines";
-import { BLOCK_COLOURS, BLOCK_TEXT } from "@/lib/blocks";
-import { CAPABILITIES, CTA_INTRO, DISCIPLINES, ENGAGEMENT_STEPS, FRAMEWORK, OUTCOMES, SITE } from "@/lib/site";
+import { AiDemos } from "@/components/home/AiDemos";
+import { CapabilityPath, type PathItem } from "@/components/home/CapabilityPath";
+import { EngagementPath } from "@/components/home/EngagementPath";
+import { Outcomes } from "@/components/home/Outcomes";
+import { StrategyQuestions } from "@/components/home/StrategyQuestions";
+import { BLOCK_TEXT } from "@/lib/blocks";
+import { PHOTO } from "@/lib/photos";
+import { CAPABILITIES, DISCIPLINES, FRAMEWORK } from "@/lib/site";
 
-const wrap = "mx-auto w-full max-w-[96rem] px-5 sm:px-8 lg:px-12";
+const wrap = "relative z-10 mx-auto w-full max-w-[96rem] px-5 sm:px-8 lg:px-12";
 
-/** Section opener shared by the three disciplines: the mark's blocks as an index, then the label. */
-export function DisciplineLabel({ block, label }: { block: 0 | 1 | 2; label: string }) {
+/** Section opener for the three disciplines: one solid block from the mark, then the label. The jade trail passes through it. */
+export function DisciplineLabel({ block, label, trail = true }: { block: 0 | 1 | 2; label: string; trail?: boolean }) {
   return (
-    <Reveal className="flex items-center gap-4">
-      <BlockIndex active={block} className="h-4 w-auto" />
+    <Reveal className="flex items-center gap-3.5" {...(trail ? { "data-trail-anchor": "" } : {})}>
+      <BrandBlock block={block} className="h-3.5 w-auto" />
       <span className="type-label" style={{ color: BLOCK_TEXT[block] }}>
         {label}
       </span>
@@ -18,25 +25,48 @@ export function DisciplineLabel({ block, label }: { block: 0 | 1 | 2; label: str
   );
 }
 
-function Applications({ items, block }: { items: string[]; block: 0 | 1 | 2 }) {
-  return (
-    <ul className="grid gap-x-8 border-t border-line sm:grid-cols-2">
-      {items.map((a) => (
-        <li key={a} className="flex gap-3 border-b border-line py-4 text-[0.98rem] text-ink/90">
-          <span aria-hidden className="mt-[0.55em] h-1.5 w-2.5 shrink-0 -skew-x-[34deg]" style={{ background: BLOCK_COLOURS[block] }} />
-          {a}
-        </li>
-      ))}
-    </ul>
-  );
-}
+const STRATEGY_ITEMS: PathItem[] = [
+  { title: "Growth strategy and opportunity assessment", line: "Where growth can come from, and what it would take.", icon: "assessment" },
+  { title: "Competitive and market positioning", line: "Clarity on where to compete — and how.", icon: "compete" },
+  { title: "Strategic partnership development", line: "Alliances that open markets and capabilities.", icon: "partnership" },
+  { title: "Prioritised roadmaps that connect direction to execution", line: "Sequenced steps the team can act on.", icon: "roadmap" },
+  { title: "Decision support for leadership teams", line: "Evidence and options when decisions matter.", icon: "decision" },
+];
+
+const AI_ITEMS: PathItem[] = [
+  { title: "AI workflow engineering and intelligent assistants", line: "AI designed into specific workflows, people in the loop.", icon: "assistant" },
+  { title: "Business process automation", line: "Repetitive manual work, removed.", icon: "automation" },
+  { title: "Integration of disconnected systems and data", line: "Tools and data that work together.", icon: "integration" },
+  { title: "Digital visibility for AI-driven search and discovery", line: "Accurately represented in AI-generated answers.", icon: "visibility" },
+  { title: "Responsible adoption", line: "Evaluation, guardrails and team enablement.", icon: "guardrail" },
+];
+
+const GROWTH_ITEMS: PathItem[] = [
+  { title: "Digital visibility and positioning", line: "Found, and chosen, where buyers look.", icon: "visibility" },
+  { title: "Customer experience strategy", line: "Redesigning the moments that shape trust.", icon: "customer" },
+  { title: "Revenue opportunity development", line: "New revenue from existing strengths.", icon: "revenue" },
+  { title: "Go-to-market sequencing and measurement", line: "The right order of moves, measured as they land.", icon: "sequence" },
+  { title: "International and new-market entry planning", line: "Considered entry: partners, sequencing, risk.", icon: "globe" },
+];
+
+const CAPABILITY_ICON: Record<string, IconName> = {
+  "Business Growth Strategy": "assessment",
+  "Digital Transformation": "integration",
+  "AI Workflow Engineering": "assistant",
+  "Business Process Automation": "automation",
+  "Digital Visibility and AI Discovery": "visibility",
+  "Customer Experience Strategy": "customer",
+  "Strategic Partnerships": "partnership",
+  "International Market Entry": "globe",
+  "Revenue Opportunity Development": "revenue",
+};
 
 /* --------------------------------------------------------- 01 · in practice */
 export function StrategyInPractice() {
   const d = DISCIPLINES[0];
   return (
     <section id="business-strategy" aria-labelledby="strategy-title" className="relative scroll-mt-20 border-t border-line">
-      <div className={`${wrap} grid gap-12 py-24 lg:grid-cols-12 lg:py-32`}>
+      <div className={`${wrap} grid gap-14 py-24 lg:grid-cols-12 lg:py-32`}>
         <div className="lg:col-span-5">
           <DisciplineLabel block={0} label="01 · Business Strategy — in practice" />
           <Reveal as="h2" delay={80} className="type-title mt-6 text-ink">
@@ -45,22 +75,21 @@ export function StrategyInPractice() {
           <Reveal as="p" delay={140} className="type-lede mt-6 text-mist">
             Strategy is where every engagement begins — the foundation the engineering and growth work is built on.
           </Reveal>
-          <Reveal delay={200} className="mt-10">
-            <h3 className="type-label text-haze">Questions we help answer</h3>
-            <ul className="mt-5 space-y-4">
-              {d.questions.map((q) => (
-                <li key={q} className="border-l-2 pl-4 text-[1.05rem] leading-relaxed text-ink" style={{ borderColor: BLOCK_COLOURS[0] }}>
-                  {q}
-                </li>
-              ))}
-            </ul>
+          <Reveal as="h3" delay={180} className="type-label mt-12 text-haze">
+            A strategic decision framework
           </Reveal>
+          <div className="mt-5">
+            <StrategyQuestions />
+          </div>
         </div>
-        <div className="lg:col-span-7 lg:col-start-6">
-          <AngledPhoto photo="strategy" block={0} className="h-[46vw] max-h-[30rem] min-h-[15rem]" />
-          <Reveal delay={120} className="mt-10">
-            <Applications items={d.applications} block={0} />
+        <div className="lg:col-span-6 lg:col-start-7">
+          <AngledPhoto photo={PHOTO.strategyPractice} block={0} className="h-[46vw] max-h-[28rem] min-h-[15rem]" />
+          <Reveal as="h3" className="type-label mt-12 text-haze">
+            What strategy work delivers
           </Reveal>
+          <div className="mt-5">
+            <CapabilityPath items={STRATEGY_ITEMS} block={0} />
+          </div>
         </div>
       </div>
     </section>
@@ -70,20 +99,15 @@ export function StrategyInPractice() {
 /* ------------------------------------------------------- 02 · AI Engineering */
 export function AiEngineering() {
   const d = DISCIPLINES[1];
-  const shows = [
-    ["Automation", "Repetitive work moved off people’s desks, with people kept in the loop."],
-    ["Intelligent assistants", "Answers, drafts and research where the work actually happens."],
-    ["Connected systems", "Data that flows between tools instead of being re-keyed."],
-  ];
   return (
-    <section id="ai-engineering" aria-labelledby="ai-title" className="relative scroll-mt-20 overflow-hidden border-t border-line bg-navy-deep/60">
+    <section id="ai-engineering" aria-labelledby="ai-title" className="relative scroll-mt-20 border-t border-line">
       <div className={`${wrap} py-24 lg:py-32`}>
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-6">
             <DisciplineLabel block={1} label="02 · AI Engineering" />
             <Reveal as="h2" delay={80} className="type-headline mt-6 text-ink">
               <span id="ai-title">
-                Engineer intelligent systems that improve how businesses <span style={{ color: BLOCK_COLOURS[1] }}>operate and grow.</span>
+                Engineer intelligent systems that improve how businesses <span style={{ color: BLOCK_TEXT[1] }}>operate and grow.</span>
               </span>
             </Reveal>
           </div>
@@ -92,25 +116,31 @@ export function AiEngineering() {
           </Reveal>
         </div>
 
-        <div className="relative mt-14 lg:mt-20">
-          <AngledPhoto photo="engineering" block={1} className="h-[56vw] max-h-[38rem] min-h-[16rem]" position="center 35%" />
-          <div className="relative -mt-16 ml-auto w-[58%] sm:-mt-24 sm:w-[44%] lg:-mt-40 lg:w-[34%]">
-            <AngledPhoto photo="intelligence" block={1} className="h-[30vw] max-h-[17rem] min-h-[8rem]" />
+        <div className="mt-14 grid gap-6 lg:mt-16 lg:grid-cols-12">
+          <div className="lg:col-span-8">
+            <AngledPhoto photo={PHOTO.aiMain} block={1} className="h-[52vw] max-h-[30rem] min-h-[15rem]" position="center 40%" />
+          </div>
+          <div className="lg:col-span-4 lg:pt-24">
+            <AngledPhoto photo={PHOTO.aiDetail} block={1} className="h-[44vw] max-h-[20rem] min-h-[12rem]" />
           </div>
         </div>
 
-        <div className="mt-14 grid gap-12 lg:mt-16 lg:grid-cols-12">
-          <Reveal className="grid gap-8 sm:grid-cols-3 lg:col-span-7">
-            {shows.map(([t, line]) => (
-              <div key={t}>
-                <p className="text-[1.15rem] font-semibold tracking-[-0.01em] text-ink">{t}</p>
-                <p className="mt-2 text-[0.95rem] leading-relaxed text-mist">{line}</p>
-              </div>
-            ))}
-          </Reveal>
-          <Reveal delay={120} className="lg:col-span-5">
-            <Applications items={d.applications} block={1} />
-          </Reveal>
+        <Reveal as="h3" className="type-label mt-16 text-haze">
+          What this looks like in practice
+        </Reveal>
+        <div className="mt-5">
+          <AiDemos />
+        </div>
+
+        <div className="mt-16 grid gap-10 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <Reveal as="h3" className="type-title text-ink">
+              Practical technology, measured by how the business runs.
+            </Reveal>
+          </div>
+          <div className="lg:col-span-7 lg:col-start-6">
+            <CapabilityPath items={AI_ITEMS} block={1} />
+          </div>
         </div>
       </div>
     </section>
@@ -124,13 +154,13 @@ export function MarketGrowth() {
     <section id="market-growth" aria-labelledby="growth-title" className="relative scroll-mt-20 border-t border-line">
       <div className={`${wrap} py-24 lg:py-32`}>
         <div className="grid gap-12 lg:grid-cols-12">
-          <div className="order-2 lg:order-1 lg:col-span-7">
-            <AngledPhoto photo="growth" block={2} className="h-[50vw] max-h-[34rem] min-h-[15rem]" />
-            <div className="relative -mt-14 w-[56%] sm:-mt-20 sm:w-[42%] lg:-mt-28 lg:ml-[8%] lg:w-[40%]">
-              <AngledPhoto photo="analytics" block={2} className="h-[28vw] max-h-[16rem] min-h-[8rem]" />
+          <div className="order-2 lg:order-1 lg:col-span-6">
+            <AngledPhoto photo={PHOTO.growthMain} block={2} className="h-[50vw] max-h-[32rem] min-h-[15rem]" />
+            <div className="relative -mt-14 w-[56%] sm:-mt-20 sm:w-[42%] lg:-mt-28 lg:ml-[8%] lg:w-[44%]">
+              <AngledPhoto photo={PHOTO.growthDetail} block={2} className="h-[28vw] max-h-[15rem] min-h-[8rem]" />
             </div>
           </div>
-          <div className="order-1 lg:order-2 lg:col-span-5">
+          <div className="order-1 lg:order-2 lg:col-span-5 lg:col-start-8">
             <DisciplineLabel block={2} label="03 · Market Growth" />
             <Reveal as="h2" delay={80} className="type-headline mt-6 text-ink">
               <span id="growth-title">
@@ -140,31 +170,27 @@ export function MarketGrowth() {
             <Reveal as="p" delay={140} className="type-lede mt-6 text-mist">
               {d.description}
             </Reveal>
-            <Reveal delay={200} className="mt-10">
-              <Applications items={d.applications} block={2} />
-            </Reveal>
+            <div className="mt-10">
+              <CapabilityPath items={GROWTH_ITEMS} block={2} variant="ascent" />
+            </div>
           </div>
         </div>
 
-        <div className="mt-20 grid gap-10 border-t border-line pt-14 lg:grid-cols-12">
+        <div className="mt-24 grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-4">
             <Reveal as="p" className="type-label text-haze">
               Where progress shows up
             </Reveal>
-            <Reveal as="p" delay={80} className="mt-4 text-[1.05rem] leading-relaxed text-mist">
+            <Reveal as="h3" delay={60} className="type-title mt-4 text-ink">
+              Six outcomes. One connected system.
+            </Reveal>
+            <Reveal as="p" delay={120} className="mt-5 text-[1.02rem] leading-relaxed text-mist">
               The measures that matter are agreed before work begins — then reported against honestly, including what is not yet working.
             </Reveal>
           </div>
-          <Reveal delay={120} as="ul" className="grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:col-span-8 lg:grid-cols-3">
-            {OUTCOMES.map((o, i) => (
-              <li key={o} className="bg-navy-deep px-5 py-6">
-                <span className="type-label" style={{ color: BLOCK_TEXT[i % 3] }}>
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <p className="mt-3 text-[1.05rem] font-medium text-ink">{o}</p>
-              </li>
-            ))}
-          </Reveal>
+          <div className="lg:col-span-8">
+            <Outcomes />
+          </div>
         </div>
       </div>
     </section>
@@ -174,11 +200,11 @@ export function MarketGrowth() {
 /* ------------------------------------------------ Capabilities & business value */
 export function CapabilitiesValue() {
   return (
-    <section id="capabilities" aria-labelledby="cap-title" className="relative scroll-mt-20 border-t border-line bg-navy-deep/60">
+    <section id="capabilities" aria-labelledby="cap-title" className="relative scroll-mt-20 border-t border-line">
       <div className={`${wrap} py-24 lg:py-32`}>
         <div className="grid gap-8 lg:grid-cols-12">
           <div className="lg:col-span-6">
-            <Reveal as="p" className="type-label flex items-center gap-3 text-haze">
+            <Reveal as="p" className="type-label flex items-center gap-3 text-haze" data-trail-anchor="">
               <span aria-hidden className="h-px w-8 bg-jade" />
               Selected capabilities
             </Reveal>
@@ -191,18 +217,29 @@ export function CapabilitiesValue() {
           </Reveal>
         </div>
 
-        <div className="mt-14 grid gap-px overflow-hidden rounded-3xl border border-line bg-line lg:grid-cols-3">
+        <div className="mt-14 grid gap-5 lg:grid-cols-3">
           {DISCIPLINES.map((d) => (
-            <Reveal key={d.id} delay={d.region * 100} className="flex flex-col bg-navy-deep p-7 sm:p-9">
-              <div className="flex items-center gap-3">
-                <BlockIndex active={d.region} className="h-3.5 w-auto" />
-                <span className="type-label text-haze">{d.title}</span>
+            <Reveal key={d.id} delay={d.region * 110} className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/[0.07] bg-[linear-gradient(170deg,rgba(10,30,82,0.7),rgba(0,10,40,0.85))] p-7 transition-[border-color,transform] duration-300 ease-brand hover:-translate-y-1 hover:border-white/[0.14] sm:p-9">
+              <span aria-hidden className="pointer-events-none absolute -right-2 -top-6 select-none text-[7.5rem] font-semibold leading-none tracking-[-0.06em] text-white/[0.035]">
+                {d.index}
+              </span>
+              <div className="relative flex items-center gap-3">
+                <BrandBlock block={d.region} className="h-5 w-auto" />
+                <span className="type-label" style={{ color: BLOCK_TEXT[d.region] }}>
+                  {d.title}
+                </span>
               </div>
-              <ul className="mt-7 space-y-6">
+              <p className="relative mt-4 text-[0.95rem] leading-relaxed text-mist">{d.line}</p>
+              <ul className="relative mt-7 space-y-5 border-t border-white/[0.07] pt-6">
                 {CAPABILITIES.filter((c) => c.discipline === d.id).map((c) => (
-                  <li key={c.title}>
-                    <p className="text-[1.15rem] font-medium tracking-[-0.01em] text-ink">{c.title}</p>
-                    <p className="mt-1.5 text-[0.93rem] leading-relaxed text-mist">{c.description}</p>
+                  <li key={c.title} className="flex gap-3.5">
+                    <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/10 bg-navy-deep" style={{ color: BLOCK_TEXT[d.region] }}>
+                      <Icon name={CAPABILITY_ICON[c.title] ?? "assessment"} className="h-4 w-4" />
+                    </span>
+                    <span>
+                      <span className="block text-[1.02rem] font-semibold text-ink">{c.title}</span>
+                      <span className="mt-1 block text-[0.88rem] leading-relaxed text-mist">{c.description}</span>
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -226,9 +263,9 @@ export function CapabilitiesValue() {
           </div>
           <ol className="grid gap-8 sm:grid-cols-3 lg:col-span-8">
             {FRAMEWORK.map((s, i) => (
-              <Reveal as="li" key={s.word} delay={i * 100} className="border-t-2 pt-5" >
-                <span className="block h-0.5 -mt-[1.4rem] mb-5 w-10 -skew-x-[34deg]" style={{ background: BLOCK_COLOURS[i] }} aria-hidden />
-                <p className="text-[1.1rem] font-semibold text-ink">{s.title}</p>
+              <Reveal as="li" key={s.word} delay={i * 100} className="border-t border-white/[0.08] pt-5">
+                <BrandBlock block={i as 0 | 1 | 2} className="h-3 w-auto" />
+                <p className="mt-4 text-[1.1rem] font-semibold text-ink">{s.title}</p>
                 <p className="mt-2 text-[0.93rem] leading-relaxed text-mist">{s.body}</p>
               </Reveal>
             ))}
@@ -243,71 +280,27 @@ export function CapabilitiesValue() {
 export function PrivateEngagement() {
   return (
     <section id="engagement" aria-labelledby="eng-title" className="relative scroll-mt-20 border-t border-line">
-      <div className={`${wrap} grid gap-12 py-24 lg:grid-cols-12 lg:py-32`}>
-        <div className="lg:col-span-6">
-          <AngledPhoto photo="office" block={0} className="h-[52vw] max-h-[34rem] min-h-[15rem]" />
+      <div className={`${wrap} py-24 lg:py-32`}>
+        <div className="grid items-end gap-12 lg:grid-cols-12">
+          <div className="lg:col-span-6">
+            <Reveal as="p" className="type-label flex items-center gap-3 text-haze" data-trail-anchor="">
+              <span aria-hidden className="h-px w-8 bg-jade" />
+              Private Engagement
+            </Reveal>
+            <Reveal as="h2" delay={80} className="type-title mt-5 text-ink">
+              <span id="eng-title">Considered from the first conversation.</span>
+            </Reveal>
+            <Reveal as="p" delay={140} className="mt-5 max-w-xl text-[1.05rem] leading-relaxed text-mist">
+              We work with a small number of clients at a time so each engagement receives senior attention. There are no packages or public price lists — every engagement moves through the same considered path, from opportunity to growth.
+            </Reveal>
+          </div>
+          <div className="lg:col-span-5 lg:col-start-8">
+            <AngledPhoto photo={PHOTO.engagement} block={0} className="h-[40vw] max-h-[20rem] min-h-[12rem]" />
+          </div>
         </div>
-        <div className="lg:col-span-5 lg:col-start-8">
-          <Reveal as="p" className="type-label flex items-center gap-3 text-haze">
-            <span aria-hidden className="h-px w-8 bg-jade" />
-            Private Engagement
-          </Reveal>
-          <Reveal as="h2" delay={80} className="type-title mt-5 text-ink">
-            <span id="eng-title">Considered from the first conversation.</span>
-          </Reveal>
-          <Reveal as="p" delay={140} className="mt-5 text-[1.05rem] leading-relaxed text-mist">
-            We work with a small number of clients at a time so each engagement receives senior attention. There are no packages or public price lists.
-          </Reveal>
-          <ol className="mt-8 border-t border-line">
-            {ENGAGEMENT_STEPS.map((s, i) => (
-              <Reveal as="li" key={s.title} delay={i * 60} className="grid grid-cols-[2.5rem_1fr] gap-3 border-b border-line py-4">
-                <span className="type-label pt-1 text-jade">0{i + 1}</span>
-                <div>
-                  <p className="font-medium text-ink">{s.title}</p>
-                  <p className="mt-1 text-[0.92rem] leading-relaxed text-mist">{s.body}</p>
-                </div>
-              </Reveal>
-            ))}
-          </ol>
+        <div className="mt-16 lg:mt-20">
+          <EngagementPath />
         </div>
-      </div>
-    </section>
-  );
-}
-
-/* --------------------------------------------------- Final strategic introduction */
-export function FinalCta() {
-  return (
-    <section aria-labelledby="final-title" className="relative overflow-hidden border-t border-line">
-      <div aria-hidden className="photo absolute inset-0 bg-cover bg-center" data-photo="earth" />
-      <div aria-hidden className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,10,48,0.92)_0%,rgba(0,10,48,0.6)_55%,rgba(0,10,48,0.35)_100%)]" />
-      <div aria-hidden className="absolute bottom-0 right-[8%] top-0 hidden w-24 lg:block">
-        {BLOCK_COLOURS.map((c, i) => (
-          <span key={c} className="absolute top-[22%] h-[56%] w-2.5 -skew-x-[34deg]" style={{ background: c, left: `${i * 26}px` }} />
-        ))}
-      </div>
-      <div className={`${wrap} relative py-28 lg:py-40`}>
-        <Reveal as="p" className="type-label flex items-center gap-3 text-haze">
-          <span aria-hidden className="h-px w-8 bg-jade" />
-          {SITE.statement}
-        </Reveal>
-        <Reveal as="h2" delay={80} className="type-display mt-6 max-w-4xl text-ink">
-          <span id="final-title">
-            Your next opportunity <span className="text-jade">starts here.</span>
-          </span>
-        </Reveal>
-        <Reveal as="p" delay={160} className="type-lede mt-7 max-w-[32rem] text-mist">
-          A private, considered approach to business strategy, intelligent engineering, and market growth.
-        </Reveal>
-        <Reveal delay={240} className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
-          <Link href="/engagement" className="btn btn-primary justify-center">
-            {CTA_INTRO}
-            <span aria-hidden className="btn-arrow">→</span>
-          </Link>
-          <a href={SITE.portalUrl} className="link-quiet text-sm underline-offset-4 hover:underline" rel="noopener">
-            Existing client? Sign in to the portal
-          </a>
-        </Reveal>
       </div>
     </section>
   );

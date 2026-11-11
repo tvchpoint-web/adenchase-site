@@ -4,6 +4,7 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { RevealController } from "@/components/editorial/RevealController";
 import { PhotoLoader } from "@/components/site/PhotoLoader";
+import { CircuitBackdrop } from "@/components/motion/CircuitBackdrop";
 import { SITE } from "@/lib/site";
 import "./globals.css";
 
@@ -52,6 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
+        <CircuitBackdrop />
         <SiteHeader />
         {children}
         <SiteFooter />
