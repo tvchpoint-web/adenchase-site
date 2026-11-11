@@ -9,11 +9,16 @@ export type Quad = [Pt, Pt, Pt, Pt]; // TL, TR, BR, BL
 export const LOGO_W = 1397;
 export const LOGO_H = 473;
 
+// Pixel-measured: the blocks (and the underline that runs into the green one) occupy rows 234–345;
+// each quad is also the exact crop box of its layer in public/photos/logo-block-N.png.
 export const BLOCKS: Quad[] = [
-  [[909, 236], [1027, 236], [955, 344], [834, 344]],
-  [[1047, 236], [1168, 236], [1096, 344], [975, 344]],
-  [[1190, 236], [1327, 236], [1254, 344], [1117, 344]],
+  [[908, 234], [1030, 234], [955, 346], [832, 346]],
+  [[1048, 234], [1171, 234], [1096, 346], [973, 346]],
+  [[1190, 234], [1329, 234], [1253, 346], [1114, 346]],
 ];
+
+/** The green underline in the artwork: from its left end (x0) to where it meets the green block (x1), centre row y. */
+export const UNDERLINE = { x0: 47, x1: 905, y: 244 } as const;
 
 /** Sampled from the artwork. */
 export const BLOCK_COLOURS = ["#6EFA2E", "#00F6FE", "#005FFE"] as const;
@@ -41,7 +46,7 @@ export function blocksNormalised(): Quad[] {
   const h = Math.max(...ys) - y0;
   return BLOCKS.map((q) => q.map(([x, y]) => [(x - x0) / w, (y - y0) / h]) as Quad);
 }
-export const BLOCKS_ASPECT = (1327 - 834) / (344 - 236);
+export const BLOCKS_ASPECT = (1329 - 832) / (346 - 234);
 
 /**
  * The block colours for use as TEXT on Midnight Navy. Green and cyan are used as-is; the logo's

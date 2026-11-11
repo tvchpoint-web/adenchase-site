@@ -96,15 +96,15 @@ export function AngledPhoto({
  */
 export function BrandBlocks({ className = "h-4 w-auto" }: { className?: string }) {
   // eslint-disable-next-line @next/next/no-img-element -- tiny decorative brand crop
-  return <img src="/brand/aden-chase-blocks.png" width={493} height={108} alt="" aria-hidden className={`select-none ${className}`} draggable={false} />;
+  return <img src="/brand/aden-chase-blocks.png" width={497} height={112} alt="" aria-hidden className={`select-none ${className}`} draggable={false} />;
 }
 
 /** One block of the mark (0 green, 1 cyan, 2 blue), cut from the official artwork. */
 export function BrandBlock({ block, className = "h-4 w-auto" }: { block: 0 | 1 | 2; className?: string }) {
   const size = [
-    [193, 108],
-    [193, 108],
-    [210, 108],
+    [198, 112],
+    [198, 112],
+    [215, 112],
   ][block];
   // eslint-disable-next-line @next/next/no-img-element -- tiny decorative brand crop
   return <img src={`/photos/logo-block-${block}.png`} width={size[0]} height={size[1]} alt="" aria-hidden className={`select-none ${className}`} draggable={false} />;

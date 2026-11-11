@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { BLOCKS, BLOCK_COLOURS, BLOCK_TEXT, K, LOGO_H, LOGO_W, para, type Pt, type Quad } from "@/lib/blocks";
+import { BLOCKS, BLOCK_COLOURS, BLOCK_TEXT, K, LOGO_H, LOGO_W, UNDERLINE, para, type Pt, type Quad } from "@/lib/blocks";
 import { PHOTO } from "@/lib/photos";
 import { StrategyProcess } from "@/components/home/StrategyProcess";
 import { BrandBlock } from "@/components/brand/AngledPhoto";
@@ -59,12 +59,22 @@ const show = (el: HTMLElement | null, o: number, dy = 0) => {
 
 /* --------------------------------------------------------------- copy */
 
+const { x0: UL_X0, x1: UL_X1, y: UL_Y } = UNDERLINE;
+/** When each block activates in the intro: green as the underline arrives, then cyan, then sapphire. */
+const BLOCK_IN = [0.54, 0.64, 0.72];
+
 const SLICES = [
   { key: "strategy", photo: PHOTO.sliceStrategy, label: "Strategy", line: "See the opportunity before the market does." },
   { key: "engineering", photo: PHOTO.sliceEngineering, label: "AI Engineering", line: "Systems that carry strategy into operation." },
   { key: "intelligence", photo: PHOTO.sliceIntelligence, label: "Intelligence", line: "Better information at the moment it matters." },
   { key: "growth", photo: PHOTO.sliceGrowth, label: "Market Growth", line: "Direction turned into commercial momentum." },
 ];
+const WM_LAYERS = [
+  ["wmText", "text"],
+  ["wmUnderline", "underline"],
+  ["wmStrategies", "strategies"],
+  ["wmDescriptor", "descriptor"],
+] as const;
 const PORTALS = [
   { photo: PHOTO.portalStrategy, label: "Business Strategy", line: "Identify opportunity. Establish direction." },
   { photo: PHOTO.portalEngineering, label: "AI Engineering", line: "Engineer intelligent systems that improve operations." },
@@ -86,7 +96,13 @@ export function OpeningSequence() {
     let t0 = -1;
     let mobile = false;
 
-    const setMobile = () => (mobile = window.innerWidth < 768);
+    // Slice-copy heights, measured once per layout (not every frame) — reset on resize and font load.
+    let copyH: number[] = [];
+    const setMobile = () => {
+      mobile = window.innerWidth < 768;
+      copyH = [];
+    };
+    document.fonts?.ready.then(() => (copyH = []));
     setMobile();
 
     const frame = (now: number) => {
@@ -101,7 +117,7 @@ export function OpeningSequence() {
       if (Math.abs(shown - target) < 0.0002) shown = target;
       const p = shown;
       if (t0 < 0) t0 = now;
-      const intro = reduced ? 1 : clamp01((now - t0) / 1900);
+      const intro = reduced ? 1 : clamp01((now - t0) / 2600);
 
       /* ---- logo placement: frame 1 (centre, large) and frame 4 (upper, smaller) */
       const f1w = mobile ? Math.min(W - 36, 420) : Math.min(1000, W * 0.56);
@@ -119,16 +135,52 @@ export function OpeningSequence() {
       const toPortals = ease(seg(p, 0.64, 0.76)); // F4 → F5
       const open = ease(seg(p, 0.8, 0.92)); // F5 → F6
 
-      /* ---- wordmark: present in F1 (after intro) and F4 */
-      const wmBox = p < 0.4 ? f1p : f4;
-      const wmVisible = p < 0.4 ? easeOut(seg(intro, 0, 0.55)) * (1 - seg(p, 0.08, 0.15)) : seg(p, 0.54, 0.6) * (1 - seg(p, 0.64, 0.7));
-      const wm = els.wordmark;
-      if (wm) {
-        wm.style.width = `${wmBox.width}px`;
-        wm.style.transform = `translate3d(${wmBox.left}px, ${wmBox.top + (1 - easeOut(seg(intro, 0, 0.55))) * 14}px, 0)`;
-        wm.style.opacity = wmVisible.toFixed(3);
-        wm.style.visibility = wmVisible < 0.005 ? "hidden" : "visible";
+      /* ---- the wordmark, in four layers cut from the official artwork (never redrawn):
+         F1 entrance — ambient light, ADEN-CHASE, the underline lit left→right into the green
+         block, cyan and sapphire blocks in turn, then STRATEGIES and the descriptor. F4: whole. */
+      const inF1 = p < 0.4;
+      const wmBox = inF1 ? f1p : f4;
+      const leave = 1 - seg(p, 0.08, 0.15);
+      const f4vis = seg(p, 0.54, 0.6) * (1 - seg(p, 0.64, 0.7));
+      const textIn = easeOut(seg(intro, 0.1, 0.38));
+      const underline = ease(seg(intro, 0.3, 0.56));
+      const stratIn = easeOut(seg(intro, 0.74, 0.94));
+      const descIn = easeOut(seg(intro, 0.8, 1));
+      const layers: [string, number, number][] = [
+        ["wmText", textIn, (1 - textIn) * 12],
+        ["wmUnderline", underline > 0 ? 1 : 0, 0],
+        ["wmStrategies", stratIn, (1 - stratIn) * 6],
+        ["wmDescriptor", descIn, (1 - descIn) * 6],
+      ];
+      layers.forEach(([k, a, dy]) => {
+        const el = els[k];
+        if (!el) return;
+        const o = inF1 ? a * leave : f4vis;
+        el.style.width = `${wmBox.width}px`;
+        el.style.transform = `translate3d(${wmBox.left}px, ${wmBox.top + (inF1 ? dy : 0)}px, 0)`;
+        el.style.opacity = o.toFixed(3);
+        el.style.visibility = o < 0.005 ? "hidden" : "visible";
+      });
+      const ul = els.wmUnderline;
+      const sc = wmBox.width / LOGO_W;
+      if (ul) {
+        // Lit from the left edge of the underline (x 47) to where it meets the green block (≈ x 905).
+        const front = UL_X0 + (UL_X1 - UL_X0) * (inF1 ? underline : 1);
+        ul.style.clipPath = `inset(0 ${(100 - (front / LOGO_W) * 100).toFixed(2)}% 0 0)`;
       }
+      const spark = els.spark;
+      if (spark) {
+        // The light at the underline's leading edge, carried into the first block.
+        const into = easeOut(seg(intro, 0.54, 0.66));
+        const ax = inF1 && underline < 1 ? UL_X0 + (UL_X1 - UL_X0) * underline : lerp(UL_X1, 900, into);
+        const ay = inF1 && underline < 1 ? UL_Y : lerp(UL_Y, 292, into);
+        const so = inF1 ? Math.min(seg(intro, 0.3, 0.34), 1 - seg(intro, 0.62, 0.7)) * leave : 0;
+        spark.style.transform = `translate3d(${(f1p.left + ax * sc - 40).toFixed(1)}px, ${(f1p.top + ay * sc - 40).toFixed(1)}px, 0)`;
+        spark.style.opacity = so.toFixed(3);
+        spark.style.visibility = so < 0.005 ? "hidden" : "visible";
+      }
+      const amb = els.ambient;
+      if (amb) amb.style.opacity = (0.35 + 0.65 * easeOut(seg(intro, 0, 0.4))).toFixed(3);
 
       /* ---- the three blocks */
       const run = K * H;
@@ -140,9 +192,9 @@ export function OpeningSequence() {
         let photo = 0;
         if (p < 0.4) {
           // Frame 1: slide in along their own diagonal, one after another; leave with the sweep.
-          const step = easeOut(seg(intro, 0.25 + i * 0.12, 0.62 + i * 0.12));
+          const step = easeOut(seg(intro, BLOCK_IN[i], BLOCK_IN[i] + 0.12));
           const rest = logoQuad(f1p, b);
-          const off = (1 - step) * 40;
+          const off = (1 - step) * 26;
           q = rest.map(([x, y]) => [x - off * K * 0.5, y + off * 0.5]) as Quad;
           alpha = step * (1 - seg(p, 0.08, 0.15));
         } else if (p < 0.64) {
@@ -166,6 +218,8 @@ export function OpeningSequence() {
           el.style.background = fill;
           el.dataset.fill = fill;
         }
+        // At rest in the mark the artwork crop carries its own shape; no clip edge to resample.
+        if (inMark) el.style.clipPath = "none";
         el.style.opacity = alpha.toFixed(3);
         el.style.visibility = alpha < 0.005 ? "hidden" : "visible";
         const ph = els[`blockPhoto${i}`];
@@ -223,7 +277,7 @@ export function OpeningSequence() {
         band.style.opacity = String(bv);
         band.style.visibility = bv ? "visible" : "hidden";
       }
-      show(els.f1tag, easeOut(seg(intro, 0.55, 1)) * (1 - seg(p, 0.05, 0.1)));
+      show(els.f1tag, easeOut(seg(intro, 0.86, 1)) * (1 - seg(p, 0.05, 0.1)));
       show(els.f2, f2copy, (1 - f2copy) * 16);
 
       /* ---- frame 3: four slices on the logo's angle */
@@ -248,9 +302,16 @@ export function OpeningSequence() {
             copy.style.top = `${base[0][1] + 14}px`;
             copy.style.width = `${W * 0.55}px`;
           } else {
-            copy.style.left = `${base[3][0] + K * h * 0.12 + 26}px`;
-            copy.style.top = `${base[0][1] + h * 0.72}px`;
-            copy.style.width = `${base[2][0] - base[3][0] - 40}px`;
+            // Same fitting rule as the portal labels: the block sits a fixed distance above each slice's
+            // base, its left edge taken on the slant at the block's top, and one shared width — so all
+            // four align and wrap identically. The width does not depend on the height, so measuring
+            // the real height here cannot feed back.
+            const lh = (copyH[i] ||= Math.max(110, copy.offsetHeight));
+            const bottom = h * 0.06;
+            const step = sliceQuad(1, W, H, mobile)[3][0] - sliceQuad(0, W, H, mobile)[3][0];
+            copy.style.left = `${base[3][0] + K * (bottom + lh) + 18}px`;
+            copy.style.top = `${base[3][1] - bottom - lh}px`;
+            copy.style.width = `${Math.max(150, step - 26)}px`;
           }
         }
         show(copy, stagger * (1 - seg(p, 0.48, 0.53)), (1 - stagger) * 18);
@@ -288,7 +349,7 @@ export function OpeningSequence() {
       {/* A solid Midnight Navy backdrop inside the pinned stage, so the official logo's darker navy field
           dissolves into it (the stage is its own stacking context for the logo's lighten blend). */}
       <div className="sticky top-0 h-svh overflow-hidden bg-navy" aria-hidden>
-        <div className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_46%,rgba(0,95,254,0.16),transparent_70%)]" />
+        <div data-k="ambient" className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_46%,rgba(0,95,254,0.2),transparent_70%)]" style={{ opacity: 0.35 }} />
 
         {/* Frame 2: skyline */}
         <div data-k="sky" className="absolute inset-0 overflow-hidden" style={{ visibility: "hidden" }}>
@@ -306,8 +367,11 @@ export function OpeningSequence() {
         ))}
 
         {/* The mark: the official wordmark layer plus the three blocks as separate layers */}
-        {/* eslint-disable-next-line @next/next/no-img-element -- positioned every frame; must stay a plain layer */}
-        <img data-k="wordmark" src="/photos/logo-wordmark.webp" alt="" className="absolute left-0 top-0 h-auto will-change-transform select-none" style={{ opacity: 0 }} draggable={false} />
+        {WM_LAYERS.map(([k, file]) => (
+          // eslint-disable-next-line @next/next/no-img-element -- positioned every frame; must stay a plain layer
+          <img key={k} data-k={k} src={`/photos/logo-${file}.webp`} alt="" className="absolute left-0 top-0 h-auto will-change-transform select-none" style={{ opacity: 0 }} draggable={false} />
+        ))}
+        <div data-k="spark" className="opening-spark absolute left-0 top-0 h-20 w-20" style={{ opacity: 0 }} />
         {BLOCKS.map((_, i) => (
           <div key={i} data-k={`block${i}`} className="absolute left-0 top-0 will-change-transform" style={{ background: BLOCK_COLOURS[i], opacity: 0 }}>
             <div data-k={`blockInset${i}`} className="absolute inset-0 overflow-hidden">
@@ -350,10 +414,10 @@ export function OpeningSequence() {
 
           {SLICES.map((s, i) => (
             <div key={s.key} data-k={`sliceCopy${i}`} className="slice-copy absolute" data-i={i} style={{ opacity: 0 }}>
-              <p className="type-label text-jade max-md:text-[10px]">
+              <p className="type-label whitespace-nowrap text-jade max-md:text-[10px]">
                 0{i + 1} · {s.label}
               </p>
-              <p className="mt-2 text-[1.05rem] font-medium leading-snug text-ink lg:mt-3 lg:text-[1.45rem] lg:tracking-[-0.01em]">{s.line}</p>
+              <p className="mt-2 text-[1.05rem] font-medium leading-snug text-ink lg:mt-3 lg:text-[1.3rem] lg:tracking-[-0.01em]">{s.line}</p>
             </div>
           ))}
           <p data-k="f3" className="type-lede absolute bottom-[5svh] left-5 right-5 text-mist sm:left-8 lg:left-12 lg:max-w-[46rem]" style={{ opacity: 0 }}>

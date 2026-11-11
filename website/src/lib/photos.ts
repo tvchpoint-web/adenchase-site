@@ -13,7 +13,7 @@ export const PHOTO = {
   sliceEngineering: "engineering",
   sliceIntelligence: "intelligence",
   sliceGrowth: "growth",
-  portalStrategy: "towers",
+  portalStrategy: "decision",
   portalEngineering: "intelligence",
   portalGrowth: "earth",
   // Home sections
@@ -27,7 +27,7 @@ export const PHOTO = {
   // Inner pages
   approachHero: "strategy",
   expertiseHero: "analytics",
-  expertiseStrategy: "towers",
+  expertiseStrategy: "decision",
   expertiseEngineering: "systems",
   expertiseGrowth: "growth",
   capabilitiesHero: "analytics",

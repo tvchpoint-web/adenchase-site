@@ -1,7 +1,7 @@
 import { OpeningSequence } from "@/components/opening/OpeningSequence";
 import { AiEngineering, CapabilitiesValue, MarketGrowth, PrivateEngagement, StrategyInPractice } from "@/components/home/Sections";
 import { FinalCta } from "@/components/home/FinalCta";
-import { ScrollTrail } from "@/components/motion/ScrollTrail";
+import { LivingCircuit } from "@/components/motion/LivingCircuit";
 import { DISCIPLINES } from "@/lib/site";
 
 /**
@@ -24,7 +24,7 @@ export default function Home() {
         </ul>
       </div>
       <div className="relative">
-        <ScrollTrail />
+        <LivingCircuit />
         <StrategyInPractice />
         <AiEngineering />
         <MarketGrowth />

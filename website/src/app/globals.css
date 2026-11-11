@@ -489,3 +489,52 @@ html[data-opening-hide-header="1"] .site-logo {
     transform: none;
   }
 }
+
+/* ------------------------------------------------------------ Living Circuit */
+/* The photographed board: present across the story, almost invisible until the signal's light reaches it. */
+.lc-board {
+  opacity: 0.035;
+}
+.lc-lamp {
+  will-change: transform, opacity;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, rgba(0, 0, 0, 0.62) 26%, rgba(0, 0, 0, 0.22) 50%, transparent 70%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 0%, rgba(0, 0, 0, 0.62) 26%, rgba(0, 0, 0, 0.22) 50%, transparent 70%);
+  transition: opacity 260ms linear;
+}
+/* The light itself: a jade core with a restrained cyan spill. */
+.lc-glow {
+  will-change: transform;
+  mix-blend-mode: screen;
+  background: radial-gradient(circle at 50% 50%, rgba(131, 253, 128, 0.22) 0%, rgba(0, 211, 251, 0.1) 30%, rgba(0, 66, 172, 0.06) 52%, transparent 70%);
+  transition: opacity 300ms linear;
+}
+@media (max-width: 767px) {
+  .lc-board {
+    opacity: 0.04;
+  }
+}
+
+/* The light that runs along the logo's underline during the opening. */
+.opening-spark {
+  will-change: transform, opacity;
+  mix-blend-mode: screen;
+  background: radial-gradient(circle at 50% 50%, rgba(240, 255, 238, 0.95) 0%, rgba(131, 253, 128, 0.55) 14%, rgba(0, 211, 251, 0.14) 38%, transparent 66%);
+}
+
+/* Integration-layer demo: each flow traces itself in. */
+.flow-trace {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: flow-trace 900ms var(--ease) forwards;
+}
+@keyframes flow-trace {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flow-trace {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
