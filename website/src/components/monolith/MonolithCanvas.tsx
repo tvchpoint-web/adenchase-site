@@ -40,7 +40,7 @@ function CameraRig() {
     const aspect = size.width / Math.max(1, size.height);
     const narrow = aspect < 1.1;
     // Narrow screens widen the lens rather than retreating into the fog, so the sculpture keeps its presence.
-    const fit = narrow ? 1.2 : aspect < 1.45 ? 1.1 : 1;
+    const fit = narrow ? THREE.MathUtils.lerp(1.2, 0.92, r.scroll) : aspect < 1.45 ? 1.1 : 1;
     const lens = narrow ? Math.min(2.4, 1.05 / aspect) : 1;
 
     const az = THREE.MathUtils.lerp(0.5, 0.24, k) - r.az;
@@ -52,7 +52,8 @@ function CameraRig() {
     const cam = camera as THREE.PerspectiveCamera;
     cam.fov = THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(15)) * lens));
     const ax = narrow ? 0.5 : THREE.MathUtils.lerp(0.66, 0.63, k);
-    const ay = narrow ? 0.27 : 0.5;
+    // On phones the copy scrolls away above, so the sculpture settles lower as it opens.
+    const ay = narrow ? THREE.MathUtils.lerp(0.27, 0.6, r.scroll) : 0.5;
     cam.setViewOffset(size.width, size.height, (0.5 - ax) * size.width, (0.5 - ay) * size.height, size.width, size.height);
   });
   return null;

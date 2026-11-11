@@ -213,7 +213,7 @@ export function Monolith({ lite }: { lite: boolean }) {
 
     /* ---- the helix signal also runs along the seam inlay (same axis, same moment) */
     const pulse = monolithState.pulse;
-    const scan = pulse > -0.5 ? 0.5 + (pulse - 0.5) * (3.3 / SEAM_LEN) : -1;
+    const scan = pulse > -0.5 ? 0.5 + (pulse - 0.5) * (2.85 / SEAM_LEN) : -1;
 
     const inlay = inlayRef.current?.material.uniforms;
     if (inlay) {

@@ -13,11 +13,11 @@ import { monolithState } from "./state";
  * B-form proportions: pitch ≈ 1.6 × diameter, ~10.5 base pairs per turn, and the second
  * strand offset by 0.8π so the helix shows its characteristic major and minor grooves.
  */
-const LENGTH = 3.3;
+const LENGTH = 2.85;
 const RADIUS = 0.36;
-const TURNS = 3;
+const TURNS = 2.6;
 const PHASE_B = 0.8 * Math.PI;
-const BASE_PAIRS = 32;
+const BASE_PAIRS = 28;
 const STRAND_RADIUS = 0.036;
 const KEY_T = DNA_DISCIPLINES.map((_, k) => (k + 0.5) / DNA_DISCIPLINES.length);
 
@@ -359,7 +359,7 @@ export function Helix({ lite, occluders }: { lite: boolean; occluders: React.Ref
       s.level[i] = THREE.MathUtils.lerp(s.level[i], target, 1 - Math.exp(-(target > s.level[i] ? 10 : 2.2) * dt));
       applyActivation(mats.keyMetal[i], mats.keyGlow[i], s.level[i]);
       const g = keyGroups.current[i];
-      if (g) g.scale.setScalar(1 + s.level[i] * 0.12);
+      if (g) g.scale.setScalar(1.45 * (1 + s.level[i] * 0.12));
     });
 
     /* ---- strands */
@@ -404,11 +404,16 @@ export function Helix({ lite, occluders }: { lite: boolean; occluders: React.Ref
           if (L.line) L.line.textContent = line;
           L.shown = key;
         }
-        anchor.project(camera);
-        const x = ((anchor.x + 1) / 2) * size.width;
-        const y = ((1 - anchor.y) / 2) * size.height;
-        const flip = x > size.width * 0.72;
-        L.el.style.transform = `translate(${Math.round(x + (flip ? -24 : 24))}px, ${Math.round(y - 18)}px) translateX(${flip ? "-100%" : "0"})`;
+        if (size.width < 768) {
+          // Phones: a steady caption at the foot of the screen, never over the copy.
+          L.el.style.transform = `translate(16px, ${Math.round(size.height - (L.el.offsetHeight || 96) - 20)}px)`;
+        } else {
+          anchor.project(camera);
+          const x = ((anchor.x + 1) / 2) * size.width;
+          const y = ((1 - anchor.y) / 2) * size.height;
+          const flip = x > size.width * 0.72;
+          L.el.style.transform = `translate(${Math.round(x + (flip ? -24 : 24))}px, ${Math.round(y - 18)}px) translateX(${flip ? "-100%" : "0"})`;
+        }
         L.el.style.opacity = "1";
       } else {
         L.el.style.opacity = "0";
@@ -433,7 +438,7 @@ export function Helix({ lite, occluders }: { lite: boolean; occluders: React.Ref
         {keys.map((k, i) => (
           <group key={i} position={k.mid} quaternion={k.quat}>
             <mesh geometry={geo.rod} material={mats.keyMetal[i]} scale={[0.017, k.len, 0.017]} />
-            <group ref={(g) => void (keyGroups.current[i] = g)}>
+            <group ref={(g) => void (keyGroups.current[i] = g)} scale={1.45}>
               <DisciplineForm index={i} metal={mats.keyMetal[i]} glass={mats.sapphire} glow={mats.keyGlow[i]} />
             </group>
             {/* Invisible hover target, generous enough for a fingertip. */}

@@ -70,7 +70,7 @@ export function MonolithStage({ scrollTargetId }: { scrollTargetId: string }) {
       <div
         id="dna-label"
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-20 w-max max-w-[16.5rem] rounded-xl border border-line bg-navy-deep/75 px-4 py-3 opacity-0 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.7)] backdrop-blur-md transition-opacity duration-300"
+        className="pointer-events-none fixed left-0 top-0 z-20 w-max max-w-[min(16.5rem,calc(100vw-2rem))] rounded-xl border border-line bg-navy-deep/75 px-4 py-3 opacity-0 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.7)] backdrop-blur-md transition-opacity duration-300"
         style={{ willChange: "transform" }}
       >
         <p data-index className="type-label text-jade" />
