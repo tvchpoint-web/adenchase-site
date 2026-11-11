@@ -11,7 +11,7 @@ It has its own dependencies, environment variables and Vercel project.
 
 ## Stack
 
-Next.js 16 (App Router, TypeScript) · React 19 · React Three Fiber + Three.js + Drei · GSAP ScrollTrigger · Tailwind CSS 4 · Inter Tight (SIL OFL 1.1, self-hosted).
+Next.js 16 (App Router, TypeScript) · React 19 · React Three Fiber + Three.js + Drei · @react-three/postprocessing · GSAP ScrollTrigger · Tailwind CSS 4 · Inter Tight (SIL OFL 1.1, self-hosted).
 
 ## Commands
 
@@ -32,10 +32,13 @@ src/
     engagement/actions.ts   inquiry server action (honest about delivery)
   components/
     nexus/                  The Nexus
-      layout.ts             nodes, glass modules, pathways, Jade Signal routes, 5 scene configs
-      engine.ts             per-frame engine (instanced glass, nodes, hairlines, signal, heat)
-      shaders.ts            in-shader lighting — reads well without bloom
-      NexusCanvas.tsx       R3F canvas, camera choreography, adaptive DPR
+      architecture.ts       groups, bevelled glass/metal pieces, energy channels, signal routes,
+                            per-scene poses and orbital camera shots
+      rig.ts                scene graph + per-frame choreography (poses, emergence, Jade Signal,
+                            channels, junction nodes, pointer light, region focus)
+      materials.ts          transmissive sapphire glass, structural metal, light strips, channel shader
+      tube.ts               energy conduits that follow the moving architecture
+      NexusCanvas.tsx       camera choreography, lighting environment, reflective floor, backdrop, bloom
       NexusStage.tsx        WebGL detection, lazy loading, static still fallback
       store.ts              DOM ↔ WebGL bridge (scroll, pointer, focus) — no React re-renders
     story/                  homepage scroll controller, discovery lenses, service pillars
@@ -49,12 +52,20 @@ public/
 
 ### How the Nexus works
 
-- Every element has a pose in each of the five scene configurations. The engine blends between them from a smoothed scroll value, so **scrolling backward retraces exactly the same states**. Nothing is a one-shot animation.
-- Scroll is read natively, with no scroll-jacking. ScrollTrigger only reports progress.
-- **Pointer:** magnetic parallax (±5° / ±3°, ~330 ms critically-damped settle), camera depth parallax, screen-space proximity lighting of cyan junctions, and Jade Signal routing that favours the pathway nearest the pointer. The signal always travels on real connections; the unit tests enforce this.
-- **Service pillars and discovery lenses:** hover, keyboard focus or tap highlights the matching region or pathway.
-- **Reduced motion:** no entrance, drift, parallax or travelling light. The scene's principal pathway is held softly lit instead, and scene changes are immediate.
-- **Mobile / low-power:** detail modules dropped, DPR capped at 1.5, ground plane removed, adaptive DPR via `PerformanceMonitor`. Rendering pauses when the stage is off-screen.
+- **Architecture.** A twisting tower of thick, bevelled glass floor plates on a metal frame, with a jade "heart". Around it are three wings (Strategy: cantilevered planes; AI Engineering: a glass engine block; Market Growth: ascending volumes), eight satellite monoliths and 3D energy conduits.
+- **Materials and light.** Physically based glass (transmission, thickness, sapphire attenuation, clearcoat), metallic structure, emissive cyan light strips, and an image-based lighting environment built from brand-coloured light panels. A key light casts shadows; cyan and sapphire rim lights separate the structure from the night. The floor reflects, and distant monoliths with fog give depth. Bloom is restrained and only catches emissive light.
+- **Scenes.** Every group and piece has an explicit pose per scene:
+  - Arrival: partially assembled, upper plates still hovering.
+  - Discovery: plates separate and fan open, wings pull away, hidden conduits appear.
+  - Engineering: plates rotate into alignment and the wings turn into three aligned systems.
+  - Growth: satellites rise from the floor and connect.
+  - Engagement: the iconic twisted composition, with a conduit leading toward the call to action.
+  The camera orbits between shots in spherical coordinates. Everything is a function of smoothed scroll progress, so **scrolling backward retraces exactly the same states**.
+- **Pointer.** Orbital parallax plus structure tilt (±6° / ±3.5°, ~350 ms settle), a cyan light that follows the pointer across the glass, and proximity activation of junction nodes.
+- **Jade Signal.** A pulse travels inside the conduits along defined routes, carrying a real point light that illuminates the glass it passes, and leaves a residual charge behind it. Unit tests check that every route uses real conduits.
+- **Service pillars and discovery lenses.** Hover, focus or tap brightens the matching region's light and glass, or sends the signal along the matching pathway.
+- **Reduced motion.** No entrance, drift, parallax or travelling light; the scene's principal conduits are held charged and scene changes are immediate.
+- **Mobile / low-power.** No transmission pass (reflective translucent glass instead), no reflections, shadows or bloom, detail pieces dropped, DPR capped at 1.5, adaptive DPR. Rendering pauses off-screen.
 
 ### Regenerating the fallback stills
 
