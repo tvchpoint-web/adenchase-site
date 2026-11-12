@@ -8,13 +8,22 @@ import { buildGrid, chamfer, lengthAtDepth, pointAt, route, snapFree, track, typ
 const OBSTACLES = "h1,h2,h3,h4,p,a,button,img,figure,svg,ol,ul,input,textarea,select,label,blockquote,[data-photo],[data-obstacle],.demo-panel";
 /** Underline start in the artwork: where the signal enters the mark. */
 const UNDERLINE = { x: UL.x0 / LOGO_W, y: UL.y / LOGO_H };
-/** The illuminated history behind the head: offset along the track, intensity, radius scale. */
+/**
+ * The light. Diffuse lamps reveal the photographed board along the signal's recent path (the head
+ * brightest, older positions fading); a tighter highlight lamp adds the glints on metal — pins,
+ * pads, solder — that only appear close to a real light source.
+ */
 const LAMPS = [
-  { back: 0, a: 0.72, r: 1 },
-  { back: 150, a: 0.42, r: 0.82 },
-  { back: 330, a: 0.22, r: 0.7 },
-  { back: 560, a: 0.1, r: 0.6 },
+  { back: 0, a: 0.78, r: 1 },
+  { back: 170, a: 0.44, r: 0.84 },
+  { back: 360, a: 0.22, r: 0.72 },
+  { back: 600, a: 0.09, r: 0.6 },
 ];
+/** The board photographs (natural size). Phones get the centre of the board at full resolution. */
+const BOARD = {
+  desktop: { src: "/photos/pcb.webp", spec: "/photos/pcb-spec.webp", w: 1920, h: 1280 },
+  mobile: { src: "/photos/pcb-m.webp", spec: "/photos/pcb-spec-m.webp", w: 960, h: 1280 },
+};
 
 interface Geo {
   w: number;
@@ -23,10 +32,9 @@ interface Geo {
   t: Track | null;
   nodes: { x: number; y: number; l: number }[];
   mobile: boolean;
-  tile: { w: number; h: number; x: number; src: string };
 }
 
-const EMPTY: Geo = { w: 0, h: 0, d: "", t: null, nodes: [], mobile: false, tile: { w: 0, h: 0, x: 0, src: "" } };
+const EMPTY: Geo = { w: 0, h: 0, d: "", t: null, nodes: [], mobile: false };
 
 function rel(r: DOMRect, box: DOMRect): Rect {
   return { x: r.left - box.left, y: r.top - box.top, w: r.width, h: r.height };
@@ -176,9 +184,7 @@ export function LivingCircuit() {
         const q = pointAt(t, l);
         return { x: q.x, y: q.y, l };
       });
-      const tw = mobile ? 760 : 1250;
-      const th = tw * (mobile ? 1094 / 1100 : 1990 / 2000);
-      setGeo({ w: W, h: H, d, t, nodes, mobile, tile: { w: tw, h: th, x: (W - tw) / 2, src: mobile ? "/photos/pcb-m.webp" : "/photos/pcb.webp" } });
+      setGeo({ w: W, h: H, d, t, nodes, mobile });
     };
     const schedule = () => {
       window.clearTimeout(timer);
@@ -209,38 +215,91 @@ export function LivingCircuit() {
     const lit = el.querySelector<SVGPathElement>("[data-lit-path]");
     const tail = el.querySelector<SVGPathElement>("[data-tail]");
     const head = el.querySelector<SVGGElement>("[data-head]");
+    const stage = el.querySelector<HTMLElement>("[data-stage]");
+    const board = el.querySelector<HTMLElement>("[data-board]");
     const glow = el.querySelector<HTMLElement>("[data-glow]");
+    const specLamp = el.querySelector<HTMLElement>("[data-spec]");
     const lamps = Array.from(el.querySelectorAll<HTMLElement>("[data-lamp]"));
     const nodeEls = Array.from(el.querySelectorAll<SVGCircleElement>("[data-node]"));
     const anchors = Array.from(root.querySelectorAll<HTMLElement>("[data-trail-anchor], [data-trail-end]"));
-    if (!lit || !tail || !head || !glow) return;
+    if (!lit || !tail || !head || !glow || !stage || !board || !specLamp) return;
+    const img = geo.mobile ? BOARD.mobile : BOARD.desktop;
     const total = t.total;
-    const R = geo.mobile ? 170 : 300;
+    // The light scales with the viewport so it stays in the open space around the signal.
+    const vw = window.innerWidth;
+    const R = Math.round(Math.min(300, Math.max(160, vw * 0.2)));
+    const RS = Math.round(R * 0.55);
+    const TRAVEL = geo.mobile ? 240 : 320;
     const TAIL = geo.mobile ? 260 : 520;
     lit.style.strokeDasharray = `${total} ${total}`;
     tail.style.strokeDasharray = `${TAIL} ${total + TAIL}`;
     lamps.forEach((lamp, i) => (lamp.style.width = lamp.style.height = `${(2 * R * LAMPS[i].r).toFixed(0)}px`));
+    specLamp.style.width = specLamp.style.height = `${2 * RS}px`;
     let cur = -1;
     let target = 0;
     let raf = 0;
+    let lastSize = "";
+    let lastClip = "";
+    /**
+     * The board is ONE photograph on a deeper layer, held to the viewport and drifting slowly as the
+     * page scrolls (parallax): no tiling, no seams, and a sense of depth beneath the surface. The
+     * lamps live in the same viewport space, so the light and the board can never slip apart.
+     */
     const paint = (l: number) => {
+      const W = window.innerWidth;
+      const Hv = window.innerHeight;
+      const box = root.getBoundingClientRect();
+      const visible = box.bottom > 0 && box.top < Hv;
+      stage.style.visibility = visible ? "visible" : "hidden";
+      if (visible) {
+        const top = Math.max(0, box.top);
+        const bottom = Math.max(0, Hv - box.bottom);
+        const clip = top > 0 || bottom > 0 ? `inset(${top.toFixed(0)}px 0 ${bottom.toFixed(0)}px 0)` : "none";
+        if (clip !== lastClip) {
+          stage.style.clipPath = clip;
+          lastClip = clip;
+        }
+      }
+      const sc = Math.max(W / img.w, (Hv + TRAVEL) / img.h);
+      const dw = img.w * sc;
+      const dh = img.h * sc;
+      const prog = Math.min(1, Math.max(0, -box.top / Math.max(1, box.height - Hv)));
+      const bx = (W - dw) / 2;
+      const by = -(dh - Hv) * prog;
+      const size = `${dw.toFixed(1)}px ${dh.toFixed(1)}px`;
+      if (size !== lastSize) {
+        board.style.width = `${dw.toFixed(1)}px`;
+        board.style.height = `${dh.toFixed(1)}px`;
+        lamps.forEach((lamp) => (lamp.style.backgroundSize = size));
+        specLamp.style.backgroundSize = size;
+        lastSize = size;
+      }
+      board.style.transform = `translate3d(${bx.toFixed(1)}px, ${by.toFixed(1)}px, 0)`;
+
       lit.style.strokeDashoffset = `${total - l}`;
       tail.style.strokeDashoffset = `${-(l - TAIL)}`;
       const on = l > 2 && l < total - 2;
       const p = pointAt(t, l);
       head.setAttribute("transform", `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})`);
       head.style.opacity = on ? "1" : "0";
-      glow.style.transform = `translate3d(${(p.x - 90).toFixed(1)}px, ${(p.y - 90).toFixed(1)}px, 0)`;
+      const hx = box.left + p.x;
+      const hy = box.top + p.y;
+      glow.style.transform = `translate3d(${(hx - 90).toFixed(1)}px, ${(hy - 90).toFixed(1)}px, 0)`;
       glow.style.opacity = on ? "1" : "0";
+      // Place a lamp of radius r at a viewport point, showing the board exactly as it lies beneath.
+      const place = (node: HTMLElement, x: number, y: number, r: number) => {
+        node.style.transform = `translate3d(${(x - r).toFixed(1)}px, ${(y - r).toFixed(1)}px, 0)`;
+        node.style.backgroundPosition = `${(bx - x + r).toFixed(1)}px ${(by - y + r).toFixed(1)}px`;
+      };
       lamps.forEach((lamp, i) => {
         const spec = LAMPS[i];
         const ll = l - spec.back;
         const q = pointAt(t, Math.max(0, ll));
-        const r = R * spec.r;
-        lamp.style.transform = `translate3d(${(q.x - r).toFixed(1)}px, ${(q.y - r).toFixed(1)}px, 0)`;
-        lamp.style.backgroundPosition = `${(geo.tile.x - q.x + r).toFixed(1)}px ${(-q.y + r).toFixed(1)}px`;
+        place(lamp, box.left + q.x, box.top + q.y, R * spec.r);
         lamp.style.opacity = on && ll > 0 ? `${spec.a}` : "0";
       });
+      place(specLamp, hx, hy, RS);
+      specLamp.style.opacity = on ? "0.85" : "0";
       nodeEls.forEach((n, i) => (n.style.opacity = geo.nodes[i].l <= l + 4 ? "1" : "0"));
       anchors.forEach((a, i) => {
         const on2 = i < geo.nodes.length ? geo.nodes[i].l <= l + 4 : l >= total - 4;
@@ -260,8 +319,10 @@ export function LivingCircuit() {
       if (!raf) raf = requestAnimationFrame(frame);
     };
     if (reduced) {
+      // Reduced motion: the route drawn quietly in full; no moving light and no parallax board.
       lit.style.strokeDashoffset = "0";
       tail.style.opacity = "0";
+      stage.style.display = "none";
       nodeEls.forEach((n) => (n.style.opacity = "1"));
       anchors.forEach((a) => (a.dataset.lit = "1"));
       return;
@@ -274,23 +335,21 @@ export function LivingCircuit() {
     };
   }, [geo]);
 
-  const bg = geo.tile.src
-    ? {
-        backgroundImage: `url(${geo.tile.src})`,
-        backgroundSize: `${geo.tile.w}px ${geo.tile.h}px`,
-        backgroundRepeat: "repeat",
-      }
-    : undefined;
+  const img = geo.mobile ? BOARD.mobile : BOARD.desktop;
+  const ready = !!geo.t;
+  const boardBg = ready ? { backgroundImage: `url(${img.src})`, backgroundRepeat: "no-repeat" } : undefined;
 
   return (
     <div ref={host} aria-hidden className="living-circuit pointer-events-none absolute inset-0 overflow-hidden">
-      {/* The board: present everywhere, almost invisible. */}
-      <div className="lc-board absolute inset-0" style={bg && { ...bg, backgroundPosition: `${geo.tile.x}px 0px` }} />
-      {/* The light travelling with the signal: the same photograph, revealed locally. */}
-      {LAMPS.map((_, i) => (
-        <div key={i} data-lamp className="lc-lamp absolute left-0 top-0" style={{ ...bg, opacity: 0 }} />
-      ))}
-      <div data-glow className="lc-glow absolute left-0 top-0 h-[180px] w-[180px]" style={{ opacity: 0 }} />
+      {/* Viewport-space stage, clipped to this part of the page: the board beneath, and its light. */}
+      <div data-stage className="lc-stage fixed inset-0 overflow-hidden" style={{ visibility: "hidden" }}>
+        <div data-board className="lc-board absolute left-0 top-0" style={boardBg && { ...boardBg, backgroundSize: "100% 100%" }} />
+        {LAMPS.map((_, i) => (
+          <div key={i} data-lamp className="lc-lamp absolute left-0 top-0" style={{ ...boardBg, opacity: 0 }} />
+        ))}
+        <div data-spec className="lc-spec absolute left-0 top-0" style={ready ? { backgroundImage: `url(${img.spec})`, backgroundRepeat: "no-repeat", opacity: 0 } : { opacity: 0 }} />
+        <div data-glow className="lc-glow absolute left-0 top-0 h-[180px] w-[180px]" style={{ opacity: 0 }} />
+      </div>
       <svg className="absolute inset-0 z-[5] overflow-visible" width={geo.w} height={geo.h}>
         <defs>
           <radialGradient id="lc-head">

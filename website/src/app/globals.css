@@ -491,27 +491,29 @@ html[data-opening-hide-header="1"] .site-logo {
 }
 
 /* ------------------------------------------------------------ Living Circuit */
-/* The photographed board: present across the story, almost invisible until the signal's light reaches it. */
+/* The photographed board: present beneath the story, almost entirely concealed in Midnight Navy. */
 .lc-board {
   opacity: 0.035;
+  will-change: transform;
 }
-.lc-lamp {
+/* The signal's light. A Gaussian falloff (no visible edge) reveals the photograph near the signal. */
+.lc-lamp,
+.lc-spec {
   will-change: transform, opacity;
-  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, rgba(0, 0, 0, 0.62) 26%, rgba(0, 0, 0, 0.22) 50%, transparent 70%);
-  mask-image: radial-gradient(circle at 50% 50%, #000 0%, rgba(0, 0, 0, 0.62) 26%, rgba(0, 0, 0, 0.22) 50%, transparent 70%);
-  transition: opacity 260ms linear;
+  -webkit-mask-image: radial-gradient(closest-side, #000 0%, rgba(0,0,0,0.95) 10%, rgba(0,0,0,0.82) 20%, rgba(0,0,0,0.64) 30%, rgba(0,0,0,0.45) 40%, rgba(0,0,0,0.29) 50%, rgba(0,0,0,0.17) 60%, rgba(0,0,0,0.09) 70%, rgba(0,0,0,0.04) 80%, rgba(0,0,0,0.015) 90%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 0%, rgba(0,0,0,0.95) 10%, rgba(0,0,0,0.82) 20%, rgba(0,0,0,0.64) 30%, rgba(0,0,0,0.45) 40%, rgba(0,0,0,0.29) 50%, rgba(0,0,0,0.17) 60%, rgba(0,0,0,0.09) 70%, rgba(0,0,0,0.04) 80%, rgba(0,0,0,0.015) 90%, transparent 100%);
+  transition: opacity 320ms linear;
 }
-/* The light itself: a jade core with a restrained cyan spill. */
+/* Glints on metal close to the light: added light, so it is screened over the revealed board. */
+.lc-spec {
+  mix-blend-mode: screen;
+}
+/* The light source itself: a jade core with a restrained Ocean Blue spill. */
 .lc-glow {
   will-change: transform;
   mix-blend-mode: screen;
-  background: radial-gradient(circle at 50% 50%, rgba(131, 253, 128, 0.22) 0%, rgba(0, 211, 251, 0.1) 30%, rgba(0, 66, 172, 0.06) 52%, transparent 70%);
+  background: radial-gradient(closest-side, rgba(131, 253, 128, 0.26) 0%, rgba(131, 253, 128, 0.12) 18%, rgba(0, 211, 251, 0.07) 40%, rgba(0, 66, 172, 0.03) 65%, transparent 100%);
   transition: opacity 300ms linear;
-}
-@media (max-width: 767px) {
-  .lc-board {
-    opacity: 0.04;
-  }
 }
 
 /* The light that runs along the logo's underline during the opening. */

@@ -13,7 +13,6 @@ and Sapphire in CSS (`.photo`).
 | intelligence | 1558494949-ef010cbdcc31 | Opening slices + portal; AI Engineering detail |
 | growth | 1494412574643-ff11b0a5c1c3 | Opening slices; Market Growth |
 | decision | 1528819622765-d6bcf132f793 | Strategy portal; Expertise (strategic thinking: chess study, no people) |
-| pcb (+ pcb-m) | 1592659762303-90081d34b277 | Living Circuit board texture (homepage). Cropped to the sharp region, graded to navy/sapphire, mirrored into a seamless vertical tile |
 | earth | 1451187580459-43490279c0fa | Growth portal; final call to action |
 | analytics | 1460925895917-afdab827c52f | Market Growth detail; Capabilities |
 | systems | 1544197150-b99a580bb7a8 | AI Engineering detail; Expertise (network patch panel) |
@@ -32,5 +31,6 @@ Supplied by ADEN-CHASE for this site (licence status to be confirmed by ADEN-CHA
 | handshake | Private Engagement (home) | Faces silhouetted and out of focus |
 | team-overhead | Market Growth detail | Overhead; faces not visible |
 | counsel | Private Engagement page hero | Cropped to remove the scales on the left |
+| pcb, pcb-spec (+ -m) | Living Circuit board (homepage) | Supplied macro photograph of a circuit board (1920×1280). One frame, no tiling: lightly graded toward Midnight Navy with material colours kept; `pcb-spec` keeps only the brightest metal for the light's glints; phones get the centre at full resolution |
 
 Not used: a high-five image (faces prominent) and a chart image carrying a "Magnific" watermark.
