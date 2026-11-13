@@ -9,3 +9,6 @@ next-env.d.ts
 !.env.example
 .vercel
 npm-debug.log*
+
+# QA output (regenerate with npm run qa)
+qa-report/

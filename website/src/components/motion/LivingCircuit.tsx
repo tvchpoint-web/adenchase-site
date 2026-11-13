@@ -4,8 +4,60 @@ import { useEffect, useRef, useState } from "react";
 import { K, LOGO_H, LOGO_W, UNDERLINE as UL } from "@/lib/blocks";
 import { buildGrid, chamfer, lengthAtDepth, pointAt, route, snapFree, track, type P, type Rect, type Track } from "@/lib/route";
 
-/** Content the signal must never cross. */
-const OBSTACLES = "h1,h2,h3,h4,p,a,button,img,figure,svg,ol,ul,input,textarea,select,label,blockquote,[data-photo],[data-obstacle],.demo-panel";
+/** Content blocks the signal must never cross (in addition to every line of text and every surface). */
+const OBSTACLES = "h1,h2,h3,h4,p,a,button,img,figure,svg,ol,ul,input,textarea,select,label,blockquote,video,canvas,[data-photo],[data-obstacle],.demo-panel";
+
+/**
+ * Everything visible the signal must route around, measured as rendered: content blocks, every line
+ * of text (wherever it sits — spans and labels included), and every visible surface (cards, panels,
+ * chips: anything with a background, border or shadow). Full-bleed backdrops and decorative,
+ * aria-hidden text are not content.
+ */
+function contentRects(root: HTMLElement, skip: (n: Element) => boolean, box: DOMRect): Rect[] {
+  const W = box.width;
+  const out: Rect[] = [];
+  const add = (r: DOMRect) => {
+    if (r.width < 2 || r.height < 2) return;
+    if (r.width > W * 0.92 && r.height > 260) return;
+    out.push(rel(r, box));
+  };
+  root.querySelectorAll<HTMLElement>(OBSTACLES).forEach((n) => {
+    if (!skip(n) && !n.closest("[aria-hidden='true'].absolute")) add(n.getBoundingClientRect());
+  });
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode: (t) => {
+      const p = t.parentElement;
+      if (!p || !t.textContent?.trim() || skip(p) || p.closest("[aria-hidden='true'], .sr-only")) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    },
+  });
+  const range = document.createRange();
+  for (let t = walker.nextNode(); t; t = walker.nextNode()) {
+    range.selectNodeContents(t);
+    for (const r of Array.from(range.getClientRects())) add(r);
+  }
+  // Surfaces: only elements whose classes or inline style can draw one are inspected (cheap filter),
+  // then confirmed from computed style. Decorative aria-hidden overlays (hover glows, rails) are not
+  // surfaces.
+  const MAY_DRAW = /(^|\s)(bg-|border|shadow|outline|ring|photo|demo-panel|rounded)/;
+  root.querySelectorAll<HTMLElement>("section *").forEach((n) => {
+    if (skip(n) || !(MAY_DRAW.test(n.getAttribute("class") || "") || n.hasAttribute("style"))) return;
+    if (n.closest("[aria-hidden='true'].absolute")) return;
+    const cs = getComputedStyle(n);
+    // Opacity is deliberately not checked: cards that fade in on scroll are still content.
+    if (cs.visibility === "hidden" || cs.display === "none" || cs.position === "fixed") return;
+    const side = (s: "Top" | "Right" | "Bottom" | "Left") => parseFloat(cs.getPropertyValue(`border-${s.toLowerCase()}-width`)) > 0 && cs.getPropertyValue(`border-${s.toLowerCase()}-style`) !== "none" && cs.getPropertyValue(`border-${s.toLowerCase()}-color`) !== "rgba(0, 0, 0, 0)";
+    const surface =
+      (cs.backgroundColor !== "rgba(0, 0, 0, 0)" && cs.backgroundColor !== "transparent") ||
+      cs.backgroundImage !== "none" ||
+      (["Top", "Right", "Bottom", "Left"] as const).some(side) ||
+      cs.boxShadow !== "none" ||
+      (cs.outlineStyle !== "none" && parseFloat(cs.outlineWidth) > 0);
+    if (surface) add(n.getBoundingClientRect());
+  });
+  return out;
+}
+
 /** Underline start in the artwork: where the signal enters the mark. */
 const UNDERLINE = { x: UL.x0 / LOGO_W, y: UL.y / LOGO_H };
 /**
@@ -82,14 +134,7 @@ export function LivingCircuit() {
       const cell = mobile ? 5 : tablet ? 6 : 10;
       const inflate = mobile ? 7 : tablet ? 9 : 22;
       const end = root.querySelector<HTMLElement>("[data-trail-end]");
-      const obstacles: Rect[] = [];
-      root.querySelectorAll<HTMLElement>(OBSTACLES).forEach((n) => {
-        if (el.contains(n) || end?.contains(n) || n.closest("[aria-hidden='true'].absolute")) return;
-        const r = n.getBoundingClientRect();
-        if (r.width < 2 || r.height < 2) return;
-        if (r.width > W * 0.92 && r.height > 260) return; // full-bleed backdrops are not content
-        obstacles.push(rel(r, box));
-      });
+      const obstacles = contentRects(root, (n) => el.contains(n) || !!end?.contains(n), box);
       // Keep the signal off the very edge of the viewport.
       // (Rects are inflated by the grid, so these are offset to block exactly `edge` px.)
       const edge = mobile ? 3 : 8;
@@ -174,7 +219,7 @@ export function LivingCircuit() {
         const a = arr[i - 1];
         const c = arr[i + 1];
         return !((Math.abs(a.x - p.x) < 0.5 && Math.abs(p.x - c.x) < 0.5) || (Math.abs(a.y - p.y) < 0.5 && Math.abs(p.y - c.y) < 0.5));
-      }), mobile ? 10 : 22, K);
+      }), Math.min(mobile ? 10 : 22, inflate * 0.8), K);
       const t = track(pts, mobile ? 110 : 220);
       const d = pts.map((p, i) => `${i ? "L" : "M"}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
       const nodes = anchors.map((a) => {
@@ -306,12 +351,19 @@ export function LivingCircuit() {
         if ((a.dataset.lit === "1") !== on2) a.dataset.lit = on2 ? "1" : "";
       });
     };
-    const frame = () => {
+    // Time-based smoothing (time constant TAU): the signal settles in the same ~0.4 s at 120, 60 or
+    // 20 frames per second, so slow devices never leave it trailing the scroll position.
+    const TAU = 110;
+    let last = 0;
+    const frame = (now: number) => {
       raf = 0;
-      cur = cur < 0 ? target : cur + (target - cur) * 0.16;
+      const dt = last ? Math.min(100, now - last) : 16;
+      last = now;
+      cur = cur < 0 ? target : cur + (target - cur) * (1 - Math.exp(-dt / TAU));
       if (Math.abs(target - cur) < 0.5) cur = target;
       paint(cur);
       if (cur !== target) raf = requestAnimationFrame(frame);
+      else last = 0;
     };
     const onScroll = () => {
       const box = root.getBoundingClientRect();

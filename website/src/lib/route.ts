@@ -50,17 +50,47 @@ export function buildGrid(width: number, height: number, cell: number, obstacles
   return { cell, cols, rows, blocked, near };
 }
 
-/** Nearest free cell centre to a point, searching outward along the row first, then nearby rows. */
-export function snapFree(g: Grid, p: P): P {
+/**
+ * Nearest free cell centre to a point (true Euclidean distance), searched outward ring by ring, so a
+ * waypoint that lands on content moves to the closest open space rather than jumping across it.
+ */
+export function snapFree(g: Grid, p: P, maxRadius = 80): P {
   const cx = Math.min(g.cols - 1, Math.max(0, Math.floor(p.x / g.cell)));
   const cy = Math.min(g.rows - 1, Math.max(0, Math.floor(p.y / g.cell)));
-  for (let dy = 0; dy < 12; dy++) for (const sy of dy ? [cy + dy, cy - dy] : [cy]) {
-    if (sy < 0 || sy >= g.rows) continue;
-    for (let dx = 0; dx < g.cols; dx++) for (const sx of dx ? [cx - dx, cx + dx] : [cx]) {
-      if (sx >= 0 && sx < g.cols && !g.blocked[sy * g.cols + sx]) return { x: (sx + 0.5) * g.cell, y: (sy + 0.5) * g.cell };
+  const centre = (x: number, y: number): P => ({ x: (x + 0.5) * g.cell, y: (y + 0.5) * g.cell });
+  if (!g.blocked[cy * g.cols + cx]) return centre(cx, cy);
+  let best: [number, number] | null = null;
+  let bd = Infinity;
+  // Ring r holds cells at Euclidean distance ≥ r, so once r² exceeds the best found, nothing closer remains.
+  for (let r = 1; r <= maxRadius && r * r <= bd; r++) {
+    for (let dy = -r; dy <= r; dy++) {
+      for (let dx = -r; dx <= r; dx++) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+        const x = cx + dx;
+        const y = cy + dy;
+        if (x < 0 || y < 0 || x >= g.cols || y >= g.rows || g.blocked[y * g.cols + x]) continue;
+        const d = dx * dx + dy * dy;
+        if (d < bd) {
+          bd = d;
+          best = [x, y];
+        }
+      }
     }
   }
-  return p;
+  if (!best) {
+    // Rare: no open space within the radius. Scan the whole grid rather than start inside content.
+    for (let y = 0; y < g.rows; y++) {
+      for (let x = 0; x < g.cols; x++) {
+        if (g.blocked[y * g.cols + x]) continue;
+        const d = (x - cx) ** 2 + (y - cy) ** 2;
+        if (d < bd) {
+          bd = d;
+          best = [x, y];
+        }
+      }
+    }
+  }
+  return best ? centre(best[0], best[1]) : p;
 }
 
 const DX = [1, 0, -1, 0];

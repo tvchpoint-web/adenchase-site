@@ -1,75 +1,62 @@
-# ADEN-CHASE Strategies — The Living Opportunity Engine
+# ADEN-CHASE Strategies — corporate website
 
-Corporate website for ADEN-CHASE Strategies (`adenchase.com`). The design is photographic and editorial. The homepage opens logo-first: the official mark resolves, its green block sweeps into a business skyline, four slices cut at the mark's angle carry Strategy, AI Engineering, Intelligence and Market Growth, and the slices resolve back into the mark. Its three angled blocks then become portals, and the first opens into Business Strategy. The full story follows in one editorial system, and every photo frame and transition reuses the logo's three blocks.
+Corporate website for ADEN-CHASE Strategies (`adenchase.com`): **Business Development • AI Engineering • Market Growth**. The site is photographic and editorial.
+
+- **Opening.** The homepage opens logo-first. The authentic mark assembles from layers cut from the official artwork: the underline lights into the green block, then the cyan and sapphire blocks follow. A pinned scroll timeline then carries the visitor through a skyline, four angled slices, and three portals cut on the logo's slant.
+- **The story.** It continues with Business Strategy, AI Engineering, Market Growth, capabilities and private engagement.
+- **The Living Circuit.** A Neon Jade signal is routed through the page's open space and never crosses content. Its light reveals a real macro photograph of a circuit board hidden beneath the navy.
+
+Working standards (brand, logo, motion, QA gate, isolation, deployment) live in **[CLAUDE.md](./CLAUDE.md)**.
 
 This folder is a **self-contained project**. It shares nothing with:
 
 - the **ADEN-CHASE Client Portal** (`tvchpoint-web/aden-chase-portal`), a separate app this site only links to;
 - the **AdenChase Labs** static site at the root of this repository, which is untouched.
 
-It has its own dependencies, environment variables and Vercel project.
-
 ## Stack
 
-Next.js 16 (App Router, TypeScript) · React 19 · GSAP ScrollTrigger · Tailwind CSS 4 · Inter Tight (SIL OFL 1.1, self-hosted).
+Next.js 16 (App Router, TypeScript) · React 19 · Tailwind CSS 4 · GSAP ScrollTrigger (editorial reveals) · Inter Tight (SIL OFL 1.1, self-hosted). Everything is DOM, CSS and SVG; there is no WebGL.
 
 ## Commands
 
 ```bash
 npm install
-npm run dev        # http://localhost:3000
+npm run dev          # http://localhost:3000
+npm run check        # lint + typecheck + unit tests (routing, logo geometry, brand guards)
 npm run build
-npm run typecheck
-npm run lint
-npm test           # Nexus layout invariants + inquiry validation
+npm run qa           # build + full QA → qa-report/index.html (see CLAUDE.md §2)
+npm run qa:visual    # screenshots at 1440 / 834 / 390, motion frames, circuit overlap, reverse scroll
+npm run qa:a11y      # axe-core WCAG 2.2 A/AA
+npm run qa:perf      # Lighthouse (mobile + desktop)
 ```
+
+The QA tools are dev-dependencies: Playwright 1.63, axe-core and Lighthouse. Playwright uses the Chromium installed on the machine; on a new machine, run `npx playwright install chromium` once.
 
 ## Structure
 
 ```
 src/
-  app/                      routes: / /approach /expertise /capabilities /engagement
-    engagement/actions.ts   inquiry server action (honest about delivery)
+  app/                        routes: / /approach /expertise /capabilities /engagement (+ 404)
+    engagement/actions.ts     inquiry server action (honest about delivery)
+    globals.css               tokens (palette, type), photo grading, motion styles
   components/
-    nexus/                  The Nexus
-      architecture.ts       groups, bevelled glass/metal pieces, energy channels, signal routes,
-                            per-scene poses and orbital camera shots
-      rig.ts                scene graph + per-frame choreography (poses, emergence, Jade Signal,
-                            channels, junction nodes, pointer light, region focus)
-      materials.ts          transmissive sapphire glass, structural metal, light strips, channel shader
-      tube.ts               energy conduits that follow the moving architecture
-      NexusCanvas.tsx       camera choreography, lighting environment, reflective floor, backdrop, bloom
-      NexusStage.tsx        WebGL detection, lazy loading, static still fallback
-      store.ts              DOM ↔ WebGL bridge (scroll, pointer, focus) — no React re-renders
-    story/                  homepage scroll controller, discovery lenses, service pillars
-    editorial/              line-by-line headline reveal (ScrollTrigger, reversible)
-    site/                   header, footer, page hero, CTA band, region tracker
-  lib/site.ts               all copy, navigation, disciplines, capabilities
+    opening/OpeningSequence   logo-first pinned opening (layered authentic mark → slices → portals)
+    motion/LivingCircuit      routed Neon Jade signal + photographic board revealed by its light
+    motion/InView             reversible in-view state
+    home/                     homepage sections, AI demos, outcomes, engagement path, final CTA
+    brand/                    AngledPhoto (slanted photo frames), BrandBlock(s), line icons
+    editorial/                line-by-line headline reveal (ScrollTrigger, reversible)
+    site/                     header, footer, page hero, CTA band, photo loader
+  lib/
+    blocks.ts                 logo geometry measured from the artwork (blocks, slant, underline)
+    route.ts                  occupancy grid + A* routing + scroll mapping for the Living Circuit
+    photos.ts                 the photo map (one place to change imagery)
+    site.ts                   copy, navigation, disciplines, capabilities
 public/
-  brand/aden-chase-logo.png the official logo artwork (byte-identical copy from the portal)
-  nexus/still-*.webp        stills rendered from the live Nexus (first paint, no-JS / no-WebGL fallback)
+  brand/                      master logo (never modified) + transparent and block derivatives
+  photos/                     graded photography, logo layers, circuit board; CREDITS.md lists every source
+qa/                           QA harness: config.mjs (thresholds), checks/, run.mjs → qa-report/
 ```
-
-### How the Nexus works
-
-- **Architecture.** A twisting tower of thick, bevelled glass floor plates on a metal frame, with a jade "heart". Around it are three wings (Strategy: cantilevered planes; AI Engineering: a glass engine block; Market Growth: ascending volumes), eight satellite monoliths and 3D energy conduits.
-- **Materials and light.** Physically based glass (transmission, thickness, sapphire attenuation, clearcoat), metallic structure, emissive cyan light strips, and an image-based lighting environment built from brand-coloured light panels. A key light casts shadows; cyan and sapphire rim lights separate the structure from the night. The floor reflects, and distant monoliths with fog give depth. Bloom is restrained and only catches emissive light.
-- **Scenes.** Every group and piece has an explicit pose per scene:
-  - Arrival: partially assembled, upper plates still hovering.
-  - Discovery: plates separate and fan open, wings pull away, hidden conduits appear.
-  - Engineering: plates rotate into alignment and the wings turn into three aligned systems.
-  - Growth: satellites rise from the floor and connect.
-  - Engagement: the iconic twisted composition, with a conduit leading toward the call to action.
-  The camera orbits between shots in spherical coordinates. Everything is a function of smoothed scroll progress, so **scrolling backward retraces exactly the same states**.
-- **Pointer.** Orbital parallax plus structure tilt (±6° / ±3.5°, ~350 ms settle), a cyan light that follows the pointer across the glass, and proximity activation of junction nodes.
-- **Jade Signal.** A pulse travels inside the conduits along defined routes, carrying a real point light that illuminates the glass it passes, and leaves a residual charge behind it. Unit tests check that every route uses real conduits.
-- **Service pillars and discovery lenses.** Hover, focus or tap brightens the matching region's light and glass, or sends the signal along the matching pathway.
-- **Reduced motion.** No entrance, drift, parallax or travelling light; the scene's principal conduits are held charged and scene changes are immediate.
-- **Mobile / low-power.** No transmission pass (reflective translucent glass instead), no reflections, shadows or bloom, detail pieces dropped, DPR capped at 1.5, adaptive DPR. Rendering pauses off-screen.
-
-### Regenerating the fallback stills
-
-The stills in `public/nexus/` are screenshots of the real renderer with the UI hidden. If the Nexus layout or scene cameras change, re-capture them at 1600×1000 (desktop), with an iPhone 13 profile (mobile), and per sub-page stage. Save them as WebP.
 
 ## Environment variables
 
@@ -81,10 +68,10 @@ See `.env.example`.
 | `NEXT_PUBLIC_PORTAL_URL` | Client Portal sign-in link. Defaults to `https://aden-chase-portal.vercel.app/login`. Change it to `https://portal.adenchase.com/login` once that domain exists. |
 | `RESEND_API_KEY`, `INQUIRY_TO`, `INQUIRY_FROM` | Inquiry delivery. **Until `RESEND_API_KEY` and `INQUIRY_TO` are set, the form validates input but tells visitors plainly that nothing was sent.** Use credentials created for this site, not the AdenChase Labs or portal keys. |
 
-## Deployment (Vercel) — needs approval
+## Deployment (Vercel): previews only
 
-1. Create a **new** Vercel project from this repository with **Root Directory = `website`** (framework: Next.js). Do not reuse the AdenChase Labs or Client Portal projects.
-2. Set the environment variables above.
-3. Assign `adenchase.com` only when ready. DNS changes need explicit approval.
+- **Project.** The Vercel project `adenchase-site` (root directory `website`) already exists.
+- **Previews.** Each review round is deployed as a new **preview** from the pushed branch commit (see CLAUDE.md §8). Previews are behind Vercel authentication.
+- **Production.** Promoting to production, assigning `adenchase.com` and changing DNS each need explicit approval.
 
 Note: if this branch is ever merged into `main`, the existing AdenChase Labs static deployment would also publish the `website/` folder as raw files. Keeping this site in its own repository (recommended) or excluding the folder from that project avoids that.
