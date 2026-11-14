@@ -263,10 +263,17 @@ export function LivingCircuit() {
       }
       setGeo({ w: W, h: H, d, t, nodes, mobile, clear });
     };
+    // Routing is a long main-thread task (hundreds of ms on a phone). The homepage's opening intro
+    // plays first and the signal is below it, so measuring waits until the intro has finished
+    // (it used to land mid-intro and make it skip ahead).
+    const introRunning = () => document.documentElement.dataset.openingIntro === "running";
     const schedule = () => {
       window.clearTimeout(timer);
-      timer = window.setTimeout(measure, 180);
+      if (introRunning()) return;
+      // Checked again when the timer fires: the opening may have mounted after this component.
+      timer = window.setTimeout(() => !introRunning() && measure(), 180);
     };
+    window.addEventListener("opening:intro-done", schedule);
     const ro = new ResizeObserver(schedule);
     ro.observe(root);
     window.addEventListener("resize", schedule);
@@ -279,6 +286,7 @@ export function LivingCircuit() {
       ro.disconnect();
       window.removeEventListener("resize", schedule);
       window.removeEventListener("load", schedule);
+      window.removeEventListener("opening:intro-done", schedule);
       window.clearTimeout(timer);
     };
   }, []);

@@ -1,36 +1,39 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Icon, type IconName } from "@/components/brand/Icons";
 import { K } from "@/lib/blocks";
 
 /**
- * The Integration Nexus: six existing business systems connected through one intelligent core.
+ * Connected systems: six business systems as dimensional modules around the ADEN-CHASE hub.
  *
- * Built in the site's own language: the core is a silicon package (etched pins, a die, fine
- * concentric rings with micro-ticks; nothing spins or moves), the connections are PCB traces whose corners
- * are cut on the logo's slant, and light appears only where information moves. Everything is
- * quiet at rest; the motion is the message.
+ * A real CSS 3D scene (no WebGL, no images except the logo's own artwork):
+ * - the integration deck is a plane tilted away from the viewer; its engraved rings, pads and
+ *   traces (corners cut on the logo's slant) are drawn on it, so they sit in true perspective;
+ * - the hub is a stepped, machined ring housing with an upright glass plaque carrying the
+ *   authentic three blocks of the ADEN-CHASE mark (`/brand/aden-chase-blocks.png`, cut from the
+ *   master; never redrawn or tinted). The plaque always faces the viewer, so the mark is never
+ *   distorted;
+ * - each system is a glass-and-metal slab built as an actual box (front, sides, top), standing on a
+ *   short stem above its pad, turned slightly towards the hub so its thickness shows, with a contact
+ *   shadow on the deck. One key light, from the top left, for every object.
  *
- * Choreography (only while on screen): a jade pulse arrives from the page's signal and wakes the
- * core → each pathway acknowledges in turn → a real workflow (CRM → core → Scheduling → core →
- * Support) → occasional coordination thereafter. Desktop hover highlights a system's pathway and its
- * workflow partners. Reduced motion: a composed still of the same workflow.
- *
- * Two geometries share one component: a wide one for roomy cards and a compact portrait one for
- * narrow cards and phones (chosen by container width, not viewport). Labels are HTML so they stay
- * readable at any scale; the whole figure is decorative (the card caption carries the meaning).
+ * Motion (only while on screen): a jade signal rises into the hub and wakes it; the modules
+ * acknowledge in turn; a real workflow travels CRM → ADEN-CHASE → Scheduling → ADEN-CHASE → Support
+ * along the deck; then an occasional flow. Desktop: the pointer turns the deck a few degrees and
+ * hovering a module lifts it and lights its pathways. Touch: a slow drift instead. Reduced motion: a
+ * composed still with the workflow lit. The figure is decorative; the card caption carries meaning.
  */
 
 type Id = "crm" | "finance" | "operations" | "scheduling" | "support" | "inventory";
 
-const SYSTEMS: { id: Id; label: string; icon: IconName; side: -1 | 1; row: 0 | 1 | 2 }[] = [
-  { id: "crm", label: "CRM", icon: "customer", side: -1, row: 0 },
-  { id: "finance", label: "Finance", icon: "revenue", side: -1, row: 1 },
-  { id: "operations", label: "Operations", icon: "efficiency", side: -1, row: 2 },
-  { id: "scheduling", label: "Scheduling", icon: "calendar", side: 1, row: 0 },
-  { id: "support", label: "Support", icon: "assistant", side: 1, row: 1 },
-  { id: "inventory", label: "Inventory", icon: "inventory", side: 1, row: 2 },
+const SYSTEMS: { id: Id; label: string; icon: IconName }[] = [
+  { id: "crm", label: "CRM", icon: "customer" },
+  { id: "finance", label: "Finance", icon: "revenue" },
+  { id: "operations", label: "Operations", icon: "efficiency" },
+  { id: "scheduling", label: "Scheduling", icon: "calendar" },
+  { id: "support", label: "Support", icon: "assistant" },
+  { id: "inventory", label: "Inventory", icon: "inventory" },
 ];
 
 /** Workflow relationships shown on hover. */
@@ -52,155 +55,239 @@ const FLOWS: { from: Id; to: Id; text: string }[] = [
 ];
 
 const IDLE = "Existing systems. Intelligent connections. Better operations.";
+const STILL = "CRM → Scheduling → Support: a request is booked, confirmed, and shared with the team.";
 
-interface Geometry {
+/* --------------------------------------------------------------- layouts */
+
+interface Layout {
+  /** Design size of the scene (px before scaling) and the deck's centre within it. */
   w: number;
   h: number;
   cx: number;
   cy: number;
-  chip: number; // half-size of the package
-  nodeX: number; // inset of the node columns from the sides
-  rows: [number, number, number];
-  channel: number; // x offset of the vertical trace channel from the core
+  tilt: number; // deck tilt, degrees
+  persp: number;
+  maxScale: number;
+  mod: { w: number; h: number; d: number; label: number; icon: number };
+  plaque: { w: number; h: number; d: number; z: number };
+  rings: number[]; // radii of the housing, bottom → top
+  /** Deck position (x right, y towards the viewer), stem height and turn of each module. */
+  pos: Record<Id, { x: number; y: number; z: number; turn: number }>;
 }
 
-const WIDE: Geometry = { w: 320, h: 200, cx: 160, cy: 100, chip: 17, nodeX: 38, rows: [34, 100, 166], channel: 48 };
-const NARROW: Geometry = { w: 240, h: 244, cx: 120, cy: 122, chip: 15, nodeX: 30, rows: [40, 122, 204], channel: 38 };
+/** Three depth layers, asymmetric: Finance and Inventory behind, CRM and Scheduling either side of
+ *  the hub, Operations and Support in front, so the workflow sweeps towards the viewer. */
+const WIDE: Layout = {
+  w: 440,
+  h: 262,
+  cx: 220,
+  cy: 146,
+  tilt: 50,
+  persp: 1700,
+  maxScale: 1.3,
+  mod: { w: 92, h: 56, d: 13, label: 13.5, icon: 18 },
+  plaque: { w: 118, h: 42, d: 8, z: 19 },
+  rings: [52, 44, 36],
+  pos: {
+    finance: { x: -98, y: -112, z: 16, turn: 6 },
+    inventory: { x: 112, y: -104, z: 18, turn: -6 },
+    crm: { x: -162, y: -6, z: 12, turn: 8 },
+    scheduling: { x: 160, y: -20, z: 14, turn: -8 },
+    operations: { x: -118, y: 96, z: 8, turn: 5 },
+    support: { x: 128, y: 92, z: 10, turn: -5 },
+  },
+};
 
-const pinY = (g: Geometry, row: number) => g.cy + (row - 1) * (g.chip * 0.55);
+/** Phones and narrow cards: a taller, deeper arrangement (not the wide scene shrunk). */
+const COMPACT: Layout = {
+  w: 300,
+  h: 292,
+  cx: 150,
+  cy: 168,
+  tilt: 48,
+  persp: 1200,
+  maxScale: 1.15,
+  mod: { w: 88, h: 52, d: 12, label: 13.2, icon: 17 },
+  plaque: { w: 100, h: 36, d: 7, z: 17 },
+  rings: [44, 37, 30],
+  pos: {
+    finance: { x: -70, y: -142, z: 14, turn: 5 },
+    inventory: { x: 74, y: -136, z: 16, turn: -5 },
+    crm: { x: -94, y: -28, z: 12, turn: 7 },
+    scheduling: { x: 98, y: -40, z: 12, turn: -7 },
+    operations: { x: -80, y: 96, z: 8, turn: 4 },
+    support: { x: 84, y: 90, z: 9, turn: -4 },
+  },
+};
 
-/** A trace from a system node to its pin on the core: orthogonal, corners cut on the brand slant. */
-function trace(g: Geometry, side: -1 | 1, row: number) {
-  const sx = side < 0 ? g.nodeX : g.w - g.nodeX;
-  const sy = g.rows[row];
-  const px = g.cx + side * g.chip;
-  const py = pinY(g, row);
-  const chx = g.cx + side * g.channel;
-  if (Math.abs(py - sy) < 0.5) return `M${sx} ${sy}H${px}`;
-  const dir = Math.sign(py - sy);
-  const c = 7; // vertical extent of each cut; horizontal is K·c
-  return `M${sx} ${sy}H${chx + side * K * c}L${chx} ${sy + dir * c}V${py - dir * c}L${chx - side * K * c} ${py}H${px}`;
+/** The deck's drawing area (deck units). */
+const DECK = { w: 520, h: 380 };
+
+/** A trace from a module's pad to the hub ring: level, then one bend on the logo's slant. */
+function trace(px: number, py: number, r: number) {
+  const a = Math.atan2(py, px);
+  const ex = Math.cos(a) * r;
+  const ey = Math.sin(a) * r;
+  const run = K * Math.abs(py - ey) * Math.sign(px - ex);
+  const cx = ex + run;
+  if (Math.abs(cx - ex) >= Math.abs(px - ex)) return `M${px.toFixed(1)} ${py.toFixed(1)}L${ex.toFixed(1)} ${ey.toFixed(1)}`;
+  return `M${px.toFixed(1)} ${py.toFixed(1)}H${cx.toFixed(1)}L${ex.toFixed(1)} ${ey.toFixed(1)}`;
 }
 
-function Figure({ g, variant }: { g: Geometry; variant: "wide" | "narrow" }) {
-  const id = (s: string) => `nx-${variant}-${s}`;
-  const R = g.chip * 2.05;
-  // 72 micro-ticks drawn as two paths (short and long) rather than 72 elements.
-  const ticks = (long: boolean) =>
-    Array.from({ length: 72 }, (_, i) => i)
-      .filter((i) => (i % 6 === 0) === long)
-      .map((i) => {
-        const a = (i / 72) * Math.PI * 2;
-        const r1 = R + 1.6;
-        const r2 = R + (long ? 4.2 : 2.6);
-        const f = (n: number) => n.toFixed(2);
-        return `M${f(g.cx + Math.cos(a) * r1)} ${f(g.cy + Math.sin(a) * r1)}L${f(g.cx + Math.cos(a) * r2)} ${f(g.cy + Math.sin(a) * r2)}`;
-      })
-      .join("");
+/* ---------------------------------------------------------------- parts */
+
+function Deck({ L }: { L: Layout }) {
+  const R = L.rings[0];
+  const ticks = Array.from({ length: 96 }, (_, i) => {
+    const a = (i / 96) * Math.PI * 2;
+    const r1 = R + 10;
+    const r2 = R + (i % 8 === 0 ? 16 : 13);
+    return `M${(Math.cos(a) * r1).toFixed(2)} ${(Math.sin(a) * r1).toFixed(2)}L${(Math.cos(a) * r2).toFixed(2)} ${(Math.sin(a) * r2).toFixed(2)}`;
+  }).join("");
   return (
-    <div className={`relative ${variant === "wide" ? "hidden @[21rem]:block" : "@[21rem]:hidden"}`}>
-      <svg viewBox={`0 0 ${g.w} ${g.h}`} className="block w-full overflow-visible" aria-hidden>
-        <defs>
-          <radialGradient id={id("glass")} cx="50%" cy="38%" r="70%">
-            <stop offset="0" stopColor="#0b2b78" />
-            <stop offset="1" stopColor="#020c30" />
-          </radialGradient>
-          <linearGradient id={id("die")} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#123a8c" />
-            <stop offset="1" stopColor="#051540" />
-          </linearGradient>
-          {/* The inlet fades in from beyond the card: the page's signal arriving, not a stub. */}
-          <linearGradient id={id("inlet")} gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2={g.cy - g.chip}>
-            <stop offset="0" stopColor="#00D3FB" stopOpacity="0" />
-            <stop offset="1" stopColor="#00D3FB" stopOpacity="0.55" />
-          </linearGradient>
-          <radialGradient id={id("aura")}>
-            <stop offset="0" stopColor="#00D3FB" stopOpacity="0.16" />
-            <stop offset="1" stopColor="#00D3FB" stopOpacity="0" />
-          </radialGradient>
-        </defs>
+    <svg className="nx3-deck" width={DECK.w} height={DECK.h} viewBox={`${-DECK.w / 2} ${-DECK.h / 2} ${DECK.w} ${DECK.h}`} aria-hidden>
+      <defs>
+        <radialGradient id="nx3-floor">
+          <stop offset="0" stopColor="#0042AC" stopOpacity="0.42" />
+          <stop offset="0.55" stopColor="#0042AC" stopOpacity="0.12" />
+          <stop offset="1" stopColor="#0042AC" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="nx3-core">
+          <stop offset="0" stopColor="#83FD80" stopOpacity="0.5" />
+          <stop offset="1" stopColor="#83FD80" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <ellipse cx="0" cy="0" rx={DECK.w * 0.5} ry={DECK.h * 0.5} fill="url(#nx3-floor)" />
+      {/* Engraving: an outer orbit, the tick ring and an inner register around the housing. */}
+      <circle r={R * 3.3} className="nx3-orbit" />
+      <circle r={R * 2.2} className="nx3-orbit nx3-orbit-fine" />
+      <path d={ticks} className="nx3-ticks" />
+      <circle r={R + 7} className="nx3-register" />
+      <circle r={R * 1.5} fill="url(#nx3-core)" className="nx3-core-glow" />
+      {SYSTEMS.map((s) => {
+        const p = L.pos[s.id];
+        const d = trace(p.x, p.y, R + 7);
+        return (
+          <g key={s.id} data-route={s.id}>
+            <path d={d} className="nx3-trace" />
+            <path d={d} className="nx3-trace-hi" />
+            <path d={d} pathLength={100} className="nx3-pulse-halo" />
+            <path d={d} pathLength={100} className="nx3-pulse" />
+            <circle cx={p.x} cy={p.y} r="11" className="nx3-pad" />
+            <circle cx={p.x} cy={p.y} r="3" className="nx3-pad-core" />
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
 
-        {/* Atmosphere: a faint Ocean Blue field behind the core only. */}
-        <circle cx={g.cx} cy={g.cy} r={R * 1.9} fill={`url(#${id("aura")})`} />
-
-        {/* The signal arriving from the page (the global Neon Jade signal's local continuation). */}
-        <g data-route="inlet">
-          {/* No resting trace above the core: the inlet only exists while the signal arrives. */}
-          <path d={`M${g.cx} 0V${g.cy - g.chip}`} className="nx-hi" style={{ stroke: `url(#${id("inlet")})` }} />
-          <path d={`M${g.cx} 0V${g.cy - g.chip}`} pathLength={100} className="nx-pulse-halo" />
-          <path d={`M${g.cx} 0V${g.cy - g.chip}`} pathLength={100} className="nx-pulse" />
-        </g>
-
-        {SYSTEMS.map((s) => {
-          const d = trace(g, s.side, s.row);
-          return (
-            <g key={s.id} data-route={s.id}>
-              <path d={d} className="nx-base" />
-              <path d={d} className="nx-hi" />
-              <path d={d} pathLength={100} className="nx-pulse-halo" />
-              <path d={d} pathLength={100} className="nx-pulse" />
-              <circle cx={g.cx + s.side * g.chip} cy={pinY(g, s.row)} r="1.4" className="nx-via" />
-            </g>
-          );
-        })}
-
-        {/* The core: rings with micro-etched ticks, a package with pins, a die. Nothing rotates. */}
-        <g className="nx-core">
-          <circle cx={g.cx} cy={g.cy} r={R} className="nx-ring" />
-          <circle cx={g.cx} cy={g.cy} r={R} className="nx-ring-pulse" />
-          <circle cx={g.cx} cy={g.cy} r={R * 0.8} className="nx-ring-inner" />
-          <path d={ticks(false)} className="nx-tick" />
-          <path d={ticks(true)} className="nx-tick nx-tick-long" />
-          <rect x={g.cx - g.chip} y={g.cy - g.chip} width={g.chip * 2} height={g.chip * 2} rx="3.2" fill={`url(#${id("glass")})`} className="nx-package" />
-          {[-1, 1].flatMap((side) =>
-            [0, 1, 2].map((row) => <rect key={`${side}${row}`} x={side < 0 ? g.cx - g.chip - 3 : g.cx + g.chip} y={pinY(g, row) - 0.7} width="3" height="1.4" className="nx-pin" />),
-          )}
-          {[-1, 0, 1].map((k) => (
-            <rect key={`t${k}`} x={g.cx + k * g.chip * 0.55 - 0.7} y={g.cy - g.chip - 3} width="1.4" height="3" className="nx-pin" />
-          ))}
-          <rect x={g.cx - g.chip * 0.5} y={g.cy - g.chip * 0.5} width={g.chip} height={g.chip} rx="1.6" fill={`url(#${id("die")})`} className="nx-die" />
-          {[-0.25, 0, 0.25].map((k) => (
-            <line key={k} x1={g.cx - g.chip * 0.32} x2={g.cx + g.chip * 0.32} y1={g.cy + k * g.chip * 0.8} y2={g.cy + k * g.chip * 0.8} className="nx-etch" />
-          ))}
-          <rect x={g.cx - g.chip * 0.5} y={g.cy - g.chip * 0.5} width={g.chip} height={g.chip} rx="1.6" className="nx-die-glow" />
-        </g>
-      </svg>
-
-      {/* System nodes: compact HTML so labels stay legible at every size. */}
-      {SYSTEMS.map((s) => (
-        <div
-          key={s.id}
-          data-node={s.id}
-          className="nx-node absolute flex -translate-x-1/2 -translate-y-[16px] flex-col items-center @[14rem]:-translate-y-[18px]"
-          style={{ left: `${((s.side < 0 ? g.nodeX : g.w - g.nodeX) / g.w) * 100}%`, top: `${(g.rows[s.row] / g.h) * 100}%` }}
-        >
-          <span className="nx-node-dot grid h-8 w-8 place-items-center rounded-full border @[14rem]:h-9 @[14rem]:w-9">
-            <Icon name={s.icon} className="h-3.5 w-3.5 @[14rem]:h-4 @[14rem]:w-4" />
-          </span>
-          <span className="nx-node-label mt-1 whitespace-nowrap text-[0.68rem] tracking-[0.01em] @[14rem]:mt-1.5 @[14rem]:text-[0.72rem]">{s.label}</span>
-        </div>
-      ))}
+/** A box standing on the deck: its front faces the viewer's side of the deck. */
+function Slab({ w, h, d, className, children }: { w: number; h: number; d: number; className: string; children?: React.ReactNode }) {
+  return (
+    <div className={`nx3-slab ${className}`} style={{ width: w, height: h, left: -w / 2, top: -h }}>
+      <div className="nx3-face nx3-top" style={{ width: w, height: d, top: (h - d) / 2, transform: `rotateX(90deg) translateZ(${h / 2}px)` }} />
+      <div className="nx3-face nx3-side nx3-left" style={{ width: d, height: h, left: (w - d) / 2, transform: `rotateY(-90deg) translateZ(${w / 2}px)` }} />
+      <div className="nx3-face nx3-side nx3-right" style={{ width: d, height: h, left: (w - d) / 2, transform: `rotateY(90deg) translateZ(${w / 2}px)` }} />
+      <div className="nx3-face nx3-front" style={{ width: w, height: h, transform: `translateZ(${d / 2}px)` }}>
+        {children}
+      </div>
     </div>
   );
 }
 
+function Hub({ L }: { L: Layout }) {
+  const P = L.plaque;
+  return (
+    <>
+      {/* The machined housing: three stepped rings, low contrast; the top one is the core. */}
+      {L.rings.map((r, i) => (
+        <div key={r} className={`nx3-ring nx3-ring-${i}`} style={{ width: r * 2, height: r * 2, left: -r, top: -r, transform: `translateZ(${i * 5 + 1}px)` }} />
+      ))}
+      {/* The column of light that carries the signal up into the plaque. */}
+      <div className="nx3-column" style={{ height: P.z - 10, transform: `translateZ(11px) rotateX(90deg)` }}>
+        <span data-column />
+      </div>
+      {/* The ADEN-CHASE plaque: always square to the viewer, so the mark is never distorted. */}
+      <div data-plaque className="nx3-plaque" style={{ transform: `translateZ(${P.z}px) rotateX(${-L.tilt}deg)` }}>
+        <div className="nx3-plaque-light" style={{ width: P.w * 1.1, height: P.h * 1.6, left: -P.w * 0.55, top: -P.h * 1.2 }} />
+        <div className="nx3-slab nx3-plaque-box" style={{ width: P.w, height: P.h, left: -P.w / 2, top: -P.h }}>
+          <div className="nx3-face nx3-top" style={{ width: P.w, height: P.d, top: (P.h - P.d) / 2, transform: `rotateX(90deg) translateZ(${P.h / 2}px)` }} />
+          <div className="nx3-face nx3-side nx3-left" style={{ width: P.d, height: P.h, left: (P.w - P.d) / 2, transform: `rotateY(-90deg) translateZ(${P.w / 2}px)` }} />
+          <div className="nx3-face nx3-side nx3-right" style={{ width: P.d, height: P.h, left: (P.w - P.d) / 2, transform: `rotateY(90deg) translateZ(${P.w / 2}px)` }} />
+          <div className="nx3-face nx3-plaque-front" style={{ width: P.w, height: P.h, transform: `translateZ(${P.d / 2}px)` }}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- authentic logo artwork, shown as-is */}
+            <img src="/brand/aden-chase-blocks.png" alt="" width={497} height={112} draggable={false} className="nx3-mark" style={{ width: P.w * 0.66 }} />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function Module({ L, id, label, icon }: { L: Layout; id: Id; label: string; icon: IconName }) {
+  const p = L.pos[id];
+  const M = L.mod;
+  return (
+    <div className="nx3-at" style={{ transform: `translate3d(${p.x}px, ${p.y}px, 0) rotateZ(${p.turn}deg)` }}>
+      <div className="nx3-shadow" style={{ width: M.w * 1.15, height: M.d * 2.6, left: (-M.w * 1.15) / 2, top: (-M.d * 2.6) / 2 }} />
+      <div data-route={id} className="nx3-stem" style={{ height: p.z, transform: "translateZ(1px) rotateX(90deg)" }} />
+      <div data-node={id} className="nx3-mod" style={{ transform: `translateZ(${p.z}px)` }}>
+        <div className="nx3-float" style={{ animationDuration: `${7 + ((p.x + 200) % 3)}s`, animationDelay: `${-((p.y + 200) % 5)}s` }}>
+          <Slab w={M.w} h={M.h} d={M.d} className="nx3-module">
+            <span className="nx3-icon" style={{ width: M.icon + 10, height: M.icon + 10 }}>
+              <Icon name={icon} className="h-full w-full" />
+            </span>
+            <span className="nx3-label" style={{ fontSize: M.label }}>
+              {label}
+            </span>
+          </Slab>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------- component */
+
 export function IntegrationNexus() {
   const root = useRef<HTMLDivElement>(null);
+  const stage = useRef<HTMLDivElement>(null);
   const caption = useRef<HTMLParagraphElement>(null);
+  const [fit, setFit] = useState<{ L: Layout; s: number } | null>(null);
 
+  // Layout and scale follow the card's width (container, not viewport).
   useEffect(() => {
     const el = root.current;
     if (!el) return;
-    const q = (sel: string) => Array.from(el.querySelectorAll<SVGElement | HTMLElement>(sel));
-    /** Only the figure that is actually displayed (container queries hide the other) is animated. */
-    const shown = () => Array.from(el.querySelectorAll<HTMLElement>(":scope > div")).find((d) => d.offsetParent !== null) ?? el;
+    const ro = new ResizeObserver(([e]) => {
+      const cw = e.contentRect.width;
+      const L = cw >= 360 ? WIDE : COMPACT;
+      const s = Math.min(L.maxScale, cw / L.w);
+      setFit((f) => (f && f.L === L && Math.abs(f.s - s) < 0.002 ? f : { L, s }));
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const L = fit?.L ?? WIDE;
+
+  useEffect(() => {
+    const el = root.current;
+    const st = stage.current;
+    if (!el || !st || !fit) return;
+    const Lc = fit.L;
+    const q = (sel: string) => Array.from(el.querySelectorAll<HTMLElement | SVGElement>(sel));
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
     // Routes lit by the choreography; while a visitor hovers, changes are deferred to this list.
     let focused = false;
     let lit: Element[] = [];
     const setOn = (id: string, on: boolean) => {
       const els = q(`[data-route="${id}"], [data-node="${id}"]`);
       if (focused) {
-        lit = on ? [...new Set([...lit, ...els])] : lit.filter((n) => !els.includes(n as SVGElement | HTMLElement));
+        lit = on ? [...new Set([...lit, ...els])] : lit.filter((n) => !els.includes(n as HTMLElement));
         return;
       }
       els.forEach((n) => n.classList.toggle("is-on", on));
@@ -211,7 +298,6 @@ export function IntegrationNexus() {
       const c = caption.current;
       if (!c || said === t) return;
       said = t;
-      // A short cross-fade, so the narration never jumps (or reflows) mid-read.
       c.classList.add("is-swapping");
       window.clearTimeout(swap);
       swap = window.setTimeout(() => {
@@ -220,16 +306,47 @@ export function IntegrationNexus() {
       }, 200);
     };
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    /* ---- camera: pointer on desktop, a slow drift on touch; time-based smoothing */
+    let yaw = 0;
+    let tilt = 0;
+    let goalYaw = 0;
+    let goalTilt = 0;
+    let raf = 0;
+    let last = -1;
+    let inView = false;
+    const pose = () => {
+      st.style.transform = `rotateX(${(Lc.tilt + tilt).toFixed(2)}deg) rotateZ(${yaw.toFixed(2)}deg)`;
+      // The plaque counter-turns, so the mark stays square to the viewer.
+      const pl = el.querySelector<HTMLElement>("[data-plaque]");
+      if (pl) pl.style.transform = `translateZ(${Lc.plaque.z}px) rotateZ(${(-yaw).toFixed(2)}deg) rotateX(${(-(Lc.tilt + tilt)).toFixed(2)}deg)`;
+    };
+    const loop = (now: number) => {
+      raf = 0;
+      const dt = last < 0 ? 16 : Math.min(now - last, 50);
+      last = now;
+      if (!fine && !reduced) goalYaw = Math.sin(now / 3200) * 2.2; // ~20 s period
+      const k = 1 - Math.exp(-dt / 220);
+      yaw += (goalYaw - yaw) * k;
+      tilt += (goalTilt - tilt) * k;
+      pose();
+      const settled = Math.abs(goalYaw - yaw) < 0.01 && Math.abs(goalTilt - tilt) < 0.01;
+      if (inView && (!settled || (!fine && !reduced))) raf = requestAnimationFrame(loop);
+      else last = -1;
+    };
+    const kick = () => {
+      if (!raf && inView) raf = requestAnimationFrame(loop);
+    };
+    pose();
+
+    if (reduced) {
       // A composed still: the workflow route lit, the core awake, no movement.
       ["crm", "scheduling", "support"].forEach((id) => setOn(id, true));
       el.dataset.core = "on";
-      if (caption.current) caption.current.textContent = "CRM → Scheduling → Support: a request is booked, confirmed, and shared with the team.";
-      return;
+      if (caption.current) caption.current.textContent = STILL;
+      return () => window.clearTimeout(swap);
     }
 
     let alive = true;
-    let inView = false;
     const visible = () => inView && !document.hidden;
     let resume: (() => void) | null = null;
     const wake = () => {
@@ -237,8 +354,8 @@ export function IntegrationNexus() {
         resume();
         resume = null;
       }
+      if (visible()) kick();
     };
-    // While a visitor is exploring a system by hover, the autonomous flows wait.
     let unfocus: (() => void) | null = null;
     const untilUnfocused = () => (focused ? new Promise<void>((r) => (unfocus = r)) : Promise.resolve());
     const io = new IntersectionObserver(
@@ -246,7 +363,7 @@ export function IntegrationNexus() {
         inView = e.isIntersecting;
         wake();
       },
-      { threshold: 0.4 },
+      { threshold: 0.35 },
     );
     io.observe(el);
     document.addEventListener("visibilitychange", wake);
@@ -265,32 +382,35 @@ export function IntegrationNexus() {
       await untilUnfocused();
     };
     const running = new Set<Animation>();
-    /** A short lit segment travelling the trace: into the core ("in") or out to the system ("out"). */
+    const track = (a: Animation) => {
+      running.add(a);
+      a.finished.finally(() => running.delete(a)).catch(() => undefined);
+      return a.finished.catch(() => undefined);
+    };
+    /** A short lit segment travelling the deck trace: into the hub ("in") or out to the module. */
     const pulse = (id: string, dir: "in" | "out", ms: number) => {
-      const fig = shown();
-      const paths = Array.from(fig.querySelectorAll<SVGElement>(`[data-route="${id}"] .nx-pulse, [data-route="${id}"] .nx-pulse-halo`));
-      const frames = dir === "in" ? [{ strokeDashoffset: 8 }, { strokeDashoffset: -100 }] : [{ strokeDashoffset: -100 }, { strokeDashoffset: 8 }];
-      const anims = paths.map((p) => {
-        const a = p.animate(frames, { duration: ms, easing: "cubic-bezier(0.45, 0, 0.25, 1)" });
-        running.add(a);
-        a.finished.finally(() => running.delete(a)).catch(() => undefined);
-        return a;
-      });
-      return Promise.all(anims.map((a) => a.finished.catch(() => undefined)));
+      const paths = q(`[data-route="${id}"] .nx3-pulse, [data-route="${id}"] .nx3-pulse-halo`);
+      const frames = dir === "in" ? [{ strokeDashoffset: 10 }, { strokeDashoffset: -100 }] : [{ strokeDashoffset: -100 }, { strokeDashoffset: 10 }];
+      return Promise.all(paths.map((p) => track(p.animate(frames, { duration: ms, easing: "cubic-bezier(0.45, 0, 0.25, 1)" }))));
     };
-    const coreFlash = () => {
+    /** The signal rising up the light column into the plaque. */
+    const rise = (ms: number) => {
+      const s = el.querySelector<HTMLElement>("[data-column]");
+      if (!s) return Promise.resolve();
+      return track(s.animate([{ transform: "translateY(-100%)", opacity: 1 }, { transform: "translateY(100%)", opacity: 1 }], { duration: ms, easing: "cubic-bezier(0.45, 0, 0.25, 1)" }));
+    };
+    const coreFlash = (ms = 420) => {
       el.dataset.core = "on";
-      later(() => (el.dataset.core = ""), 400);
+      later(() => (el.dataset.core = ""), ms);
     };
-    /** One workflow step: in to the core, a beat of processing, out to the next system. */
     const flow = async (f: (typeof FLOWS)[number], { keepTo = false } = {}) => {
       say(f.text);
       setOn(f.from, true);
-      await pulse(f.from, "in", 720);
+      await pulse(f.from, "in", 760);
       coreFlash();
-      await wait(140);
+      await wait(160);
       setOn(f.to, true);
-      await pulse(f.to, "out", 720);
+      await pulse(f.to, "out", 760);
       await wait(380);
       setOn(f.from, false);
       if (!keepTo) setOn(f.to, false);
@@ -299,24 +419,23 @@ export function IntegrationNexus() {
     const play = async () => {
       await untilVisible();
       if (!alive) return;
-      // Stage 2 — the signal arrives and wakes the core.
-      setOn("inlet", true);
-      await pulse("inlet", "in", 820);
-      coreFlash();
-      setOn("inlet", false);
-      await wait(420);
-      // Stage 3 — each pathway acknowledges in turn (at most two lit at any moment).
-      for (const id of ["crm", "scheduling", "finance", "support", "operations", "inventory"] as Id[]) {
+      await wait(500); // a quiet beat first
+      // Activation: the signal rises into the hub, which wakes.
+      await rise(900);
+      coreFlash(900);
+      await wait(500);
+      // Each module acknowledges in turn (at most two at once), front to back around the hub.
+      for (const id of ["crm", "finance", "inventory", "scheduling", "support", "operations"] as Id[]) {
         if (!alive) return;
         setOn(id, true);
-        later(() => setOn(id, false), 300);
-        await wait(280);
+        later(() => setOn(id, false), 320);
+        await wait(260);
       }
       await wait(700);
-      // Stage 4 — a real workflow: CRM → core → Scheduling → core → Support, one continuous chain.
+      // The workflow: CRM → ADEN-CHASE → Scheduling → ADEN-CHASE → Support, one continuous chain.
       await flow(FLOWS[0], { keepTo: true });
       await flow(FLOWS[1]);
-      // Stage 5 — ambient coordination, occasionally (every 9–12 s).
+      // Then, occasionally, other systems coordinate.
       let k = 2;
       while (alive) {
         await wait(1800);
@@ -329,9 +448,18 @@ export function IntegrationNexus() {
     };
     play();
 
-    // Desktop: hover a system to see its pathway and its workflow partners.
-    const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-    // A flow in progress is frozen while a system is explored, then resumes exactly where it was.
+    /* ---- desktop: the pointer turns the deck; hovering a module explores its connections */
+    const move = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect();
+      goalYaw = ((e.clientX - r.left) / r.width - 0.5) * 2 * 5;
+      goalTilt = ((e.clientY - r.top) / r.height - 0.5) * 2 * -3;
+      kick();
+    };
+    const out = () => {
+      goalYaw = 0;
+      goalTilt = 0;
+      kick();
+    };
     const enter = (e: Event) => {
       const id = (e.currentTarget as HTMLElement).dataset.node as Id;
       if (!focused) {
@@ -357,6 +485,8 @@ export function IntegrationNexus() {
     };
     const nodes = q("[data-node]");
     if (fine) {
+      el.addEventListener("pointermove", move);
+      el.addEventListener("pointerleave", out);
       nodes.forEach((n) => {
         n.addEventListener("pointerenter", enter);
         n.addEventListener("pointerleave", leave);
@@ -365,6 +495,7 @@ export function IntegrationNexus() {
 
     return () => {
       alive = false;
+      cancelAnimationFrame(raf);
       timers.forEach((t) => window.clearTimeout(t));
       window.clearTimeout(swap);
       running.forEach((a) => a.cancel());
@@ -373,19 +504,31 @@ export function IntegrationNexus() {
       io.disconnect();
       document.removeEventListener("visibilitychange", wake);
       if (fine) {
+        el.removeEventListener("pointermove", move);
+        el.removeEventListener("pointerleave", out);
         nodes.forEach((n) => {
           n.removeEventListener("pointerenter", enter);
           n.removeEventListener("pointerleave", leave);
         });
       }
     };
-  }, []);
+  }, [fit]);
 
+  const s = fit?.s ?? 1;
   return (
-    <div ref={root} className="nexus @container relative" aria-hidden>
-      <Figure g={WIDE} variant="wide" />
-      <Figure g={NARROW} variant="narrow" />
-      <p ref={caption} className="nx-caption mx-auto mt-4 min-h-[2.8em] max-w-[22rem] text-center text-[0.78rem] leading-snug text-mist">
+    <div className="@container" aria-hidden>
+      <div ref={root} className="nx3" data-ready={fit ? "1" : undefined}>
+        <div className="nx3-view" style={{ width: L.w, height: L.h, perspective: L.persp, perspectiveOrigin: `50% ${L.cy - L.h * 0.35}px`, transform: `translateX(-50%) scale(${s.toFixed(4)})` }}>
+          <div ref={stage} className="nx3-stage" style={{ left: L.cx, top: L.cy, transform: `rotateX(${L.tilt}deg)` }}>
+            <Deck L={L} />
+            <Hub L={L} />
+            {SYSTEMS.map((m) => (
+              <Module key={m.id} L={L} id={m.id} label={m.label} icon={m.icon} />
+            ))}
+          </div>
+        </div>
+      </div>
+      <p ref={caption} className="nx-caption mx-auto mt-3 min-h-[2.8em] max-w-[22rem] text-center text-[0.78rem] leading-snug text-mist">
         {IDLE}
       </p>
     </div>

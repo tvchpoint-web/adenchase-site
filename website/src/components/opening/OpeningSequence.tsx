@@ -62,8 +62,12 @@ const show = (el: HTMLElement | null, o: number, dy = 0) => {
 /* --------------------------------------------------------------- copy */
 
 const { x0: UL_X0, x1: UL_X1, y: UL_Y } = UNDERLINE;
-/** When each block activates in the intro: green as the underline arrives, then cyan, then sapphire. */
-const BLOCK_IN = [0.54, 0.64, 0.72];
+/** When each block activates in the intro. The green block lands exactly as the underline's light
+ *  reaches it (the underline completes at 0.56), so the two are joined from that moment on; then
+ *  cyan, then sapphire. */
+const BLOCK_IN = [0.44, 0.64, 0.72];
+/** Length of the intro, in ms of rendered frames (not wall-clock time; see `frame`). */
+const INTRO_MS = 2600;
 
 /** The operating philosophy: four connected steps (a real sequence, so the numbering is information). */
 const SLICES = [
@@ -101,9 +105,36 @@ export function OpeningSequence() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const root = document.documentElement;
     let raf = 0;
-    let shown = 0; // smoothed progress
-    let t0 = -1;
+    let shown = -1; // smoothed progress (-1 until the first frame)
+    // The intro is driven by rendered frame time, not wall-clock time, and starts only once the logo
+    // artwork it reveals is decoded. A main-thread stall therefore pauses the intro instead of
+    // skipping stages (a stall of 0.5 s during hydration used to jump it forward by a fifth), and no
+    // stage can play before its layer can paint.
+    let introMs = 0;
+    let last = -1;
+    let assetsReady = false;
+    let introDone = false;
     let cssIntroDone = false;
+    const art = [...WM_LAYERS.filter((l) => l.file !== "text").map((l) => `/photos/logo-${l.file}.webp`), ...BLOCKS.map((_, i) => `/photos/logo-block-${i}.png`)];
+    Promise.race([
+      Promise.all(
+        art.map((src) => {
+          const img = new Image();
+          img.src = src;
+          return img.decode().catch(() => undefined);
+        }),
+      ),
+      new Promise((r) => setTimeout(r, 1500)),
+    ]).then(() => (assetsReady = true));
+    // Work elsewhere on the page that is heavy on the main thread (the Living Circuit's routing)
+    // waits for this signal, so it never competes with the intro.
+    root.dataset.openingIntro = "running";
+    const finishIntro = () => {
+      if (introDone) return;
+      introDone = true;
+      root.dataset.openingIntro = "done";
+      window.dispatchEvent(new Event("opening:intro-done"));
+    };
     let mobile = false;
 
     // Slice-caption metrics, measured once per layout (reset on resize and font load).
@@ -128,11 +159,21 @@ export function OpeningSequence() {
       const stackSlices = mobile || W < 1280 || sideSliceWidth(W, H) < 170;
       const rect = tr.getBoundingClientRect();
       const target = clamp01(-rect.top / Math.max(1, rect.height - H));
-      shown = reduced ? target : lerp(shown, target, 0.12);
+      const dt = last < 0 ? 0 : Math.min(now - last, 34); // a stalled frame counts as at most ~2 frames
+      last = now;
+      if (shown < 0) {
+        // First frame. If the page opened part-way through the sequence (scroll restored on reload or
+        // on Back), start there at rest: no fast-forward from the top, and no intro over a later frame.
+        shown = target;
+        if (target > 0.01) introMs = INTRO_MS;
+      }
+      // Time-based smoothing (time constant 130 ms): the same feel at 60, 120 or 144 Hz.
+      shown = reduced ? target : lerp(shown, target, 1 - Math.exp(-dt / 130));
       if (Math.abs(shown - target) < 0.0002) shown = target;
       const p = shown;
-      if (t0 < 0) t0 = now;
-      const intro = reduced ? 1 : clamp01((now - t0) / 2600);
+      if (assetsReady || reduced) introMs += dt;
+      const intro = reduced ? 1 : clamp01(introMs / INTRO_MS);
+      if (intro >= 1) finishIntro();
 
       /* ---- logo placement: frame 1 (centre, large) and frame 4 (upper, smaller) */
       const f1w = mobile ? Math.min(W - 36, 560) : Math.min(1000, W * 0.56);
@@ -158,6 +199,8 @@ export function OpeningSequence() {
       const wmBox = inF1 ? f1p : f4;
       const leave = 1 - seg(p, 0.08, 0.15);
       const f4vis = seg(p, 0.54, 0.6) * (1 - seg(p, 0.64, 0.7));
+      // The underline joins the green block, so in frame 4 it appears only once the blocks have landed.
+      const f4underline = seg(p, 0.585, 0.6) * (1 - seg(p, 0.64, 0.7));
       // ADEN-CHASE itself enters by CSS (globals.css .opening-wm-text), so it paints before this
       // script has loaded; here it is simply present, and the rest of the intro follows from it.
       const textIn = 1;
@@ -179,7 +222,7 @@ export function OpeningSequence() {
       layers.forEach(([k, a, dy]) => {
         const el = els[k];
         if (!el) return;
-        const o = inF1 ? a * leave : f4vis;
+        const o = inF1 ? a * leave : k === "wmUnderline" ? f4underline : f4vis;
         el.style.width = `${wmBox.width}px`;
         const bandTop = (LAYER_Y[k] * wmBox.width) / LOGO_W;
         el.style.transform = `translate3d(${wmBox.left}px, ${wmBox.top + bandTop + (inF1 ? dy : 0)}px, 0)`;
@@ -383,6 +426,7 @@ export function OpeningSequence() {
     window.addEventListener("resize", setMobile);
     return () => {
       cancelAnimationFrame(raf);
+      finishIntro();
       window.removeEventListener("resize", setMobile);
       delete root.dataset.openingHideHeader;
     };

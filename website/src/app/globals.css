@@ -599,134 +599,302 @@ html[data-opening-hide-header="1"] .site-logo {
   mask-image: linear-gradient(180deg, transparent 0, #000 2.25rem);
 }
 
-/* ------------------------------------------------------------ Integration Nexus */
-/* Quiet structure; light only where information moves. Strokes stay hairline at any scale. */
-.nexus path,
-.nexus line,
-.nexus circle,
-.nexus rect {
+/* ------------------------------------------------------------ Connected systems (3D) */
+/* One key light, top left, for every object. Nothing on the 3D chain may use opacity < 1, filter,
+   clip-path, overflow or blend modes (they flatten preserve-3d, notably in Safari): fades are on
+   leaf faces only. */
+.nx3 {
+  position: relative;
+  margin-inline: auto;
+  aspect-ratio: 300 / 292;
+  max-width: calc(300px * 1.15);
+}
+@container (min-width: 360px) {
+  .nx3 {
+    aspect-ratio: 440 / 262;
+    max-width: calc(440px * 1.3);
+  }
+}
+.nx3-view {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform-origin: 50% 0;
+}
+.nx3:not([data-ready]) .nx3-view {
+  visibility: hidden;
+}
+.nx3-stage,
+.nx3-stage div {
+  position: absolute;
+  transform-style: preserve-3d;
+}
+.nx3-stage {
+  width: 0;
+  height: 0;
+}
+.nx3-deck {
+  position: absolute;
+  /* The deck drawing (520 × 380 deck units) is centred on the hub. */
+  left: -260px;
+  top: -190px;
+  overflow: visible;
+  -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 62%, transparent 100%);
+}
+.nx3-deck path,
+.nx3-deck circle {
   vector-effect: non-scaling-stroke;
-}
-.nexus .nx-base {
   fill: none;
-  stroke: color-mix(in oklab, var(--mist) 16%, transparent);
+}
+.nx3-orbit {
+  stroke: color-mix(in oklab, var(--ocean) 9%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 1 5;
+}
+.nx3-orbit-fine {
+  stroke: color-mix(in oklab, var(--ocean) 7%, transparent);
+  stroke-dasharray: none;
+}
+.nx3-ticks {
+  stroke: color-mix(in oklab, var(--ocean) 22%, transparent);
+  stroke-width: 0.8;
+}
+.nx3-register {
+  stroke: color-mix(in oklab, var(--ocean) 18%, transparent);
   stroke-width: 1;
 }
-.nexus .nx-hi {
-  fill: none;
-  stroke: color-mix(in oklab, var(--ocean) 55%, transparent);
-  stroke-width: 1;
+.nx3-deck .nx3-core-glow {
+  fill: url(#nx3-core);
   opacity: 0;
-  transition: opacity 220ms var(--ease);
+  transition: opacity 500ms var(--ease);
 }
-.nexus [data-route].is-on .nx-hi,
-.nexus [data-route].is-focus .nx-hi {
+[data-core="on"] .nx3-deck .nx3-core-glow {
+  opacity: 0.55;
+}
+.nx3-trace {
+  stroke: color-mix(in oklab, var(--mist) 20%, transparent);
+  stroke-width: 1;
+}
+.nx3-trace-hi {
+  stroke: color-mix(in oklab, var(--ocean) 60%, transparent);
+  stroke-width: 1.2;
+  opacity: 0;
+  transition: opacity 260ms var(--ease);
+}
+.nx3-pulse,
+.nx3-pulse-halo {
+  stroke-linecap: round;
+  stroke-dasharray: 10 200;
+  stroke-dashoffset: 10;
+}
+.nx3-pulse {
+  stroke: var(--jade);
+  stroke-width: 2;
+}
+.nx3-pulse-halo {
+  stroke: color-mix(in oklab, var(--jade) 22%, transparent);
+  stroke-width: 6;
+}
+.nx3-pad {
+  stroke: color-mix(in oklab, var(--ocean) 24%, transparent);
+  stroke-width: 1;
+}
+.nx3-deck .nx3-pad-core {
+  fill: color-mix(in oklab, var(--mist) 30%, transparent);
+  transition: fill 300ms var(--ease);
+}
+[data-route].is-on .nx3-trace-hi,
+[data-route].is-focus .nx3-trace-hi {
   opacity: 1;
 }
-.nexus .nx-pulse,
-.nexus .nx-pulse-halo {
-  fill: none;
-  stroke-linecap: round;
-  stroke-dasharray: 8 200;
-  stroke-dashoffset: 8;
-}
-.nexus .nx-pulse {
-  stroke: var(--jade);
-  stroke-width: 1.6;
-}
-.nexus .nx-pulse-halo {
-  stroke: color-mix(in oklab, var(--jade) 22%, transparent);
-  stroke-width: 5;
-}
-.nexus .nx-via {
-  fill: color-mix(in oklab, var(--mist) 35%, transparent);
-  transition: fill 380ms var(--ease);
-}
-.nexus [data-route].is-on .nx-via,
-.nexus [data-route].is-focus .nx-via {
+.nx3-deck [data-route].is-on .nx3-pad-core,
+.nx3-deck [data-route].is-focus .nx3-pad-core {
   fill: var(--jade);
 }
-.nexus .nx-ring {
-  fill: none;
-  stroke: color-mix(in oklab, var(--ocean) 13%, transparent);
-  stroke-width: 0.7;
+[data-focus]:not([data-focus=""]) .nx3-deck [data-route]:not(.is-focus) .nx3-trace {
+  stroke: color-mix(in oklab, var(--mist) 9%, transparent);
 }
-.nexus .nx-ring-inner {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.07);
-  stroke-width: 0.8;
+
+/* Faces: glass fronts, sapphire-to-navy metal edges, top faces catch the key light. */
+.nx3-slab {
+  transform-origin: 50% 100%;
+  transform: rotateX(-90deg);
 }
-.nexus .nx-ring-pulse {
-  fill: none;
-  stroke: color-mix(in oklab, var(--jade) 70%, transparent);
-  stroke-width: 0.8;
-  opacity: 0;
-  transition: opacity 400ms var(--ease);
+.nx3-face {
+  left: 0;
+  top: 0;
+  backface-visibility: hidden;
 }
-.nexus .nx-tick {
-  fill: none;
-  stroke: color-mix(in oklab, var(--ocean) 12%, transparent);
-  stroke-width: 0.6;
+.nx3-top {
+  background: linear-gradient(90deg, #34508a, #7f98c6 38%, #3d5a94);
+  box-shadow: inset 0 0 0 0.5px color-mix(in oklab, var(--ink) 30%, transparent);
 }
-.nexus .nx-tick-long {
-  stroke: color-mix(in oklab, var(--ocean) 22%, transparent);
+.nx3-left {
+  background: linear-gradient(180deg, #23498f, #0a2058);
 }
-.nexus .nx-package {
-  stroke: color-mix(in oklab, var(--ocean) 26%, transparent);
-  stroke-width: 0.8;
+.nx3-right {
+  background: linear-gradient(180deg, #123a8c, #041237);
 }
-.nexus .nx-pin {
-  fill: color-mix(in oklab, var(--mist) 45%, transparent);
+.nx3-front {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 8px 10px 9px;
+  border-radius: 1px;
+  background:
+    linear-gradient(118deg, color-mix(in oklab, var(--ink) 9%, transparent) 0 22%, transparent 22.5% 100%),
+    linear-gradient(165deg, #133f9a 0%, #072064 45%, #03123d 100%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--ocean) 55%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--ocean) 18%, transparent);
+  transition: box-shadow 320ms var(--ease);
 }
-.nexus .nx-die {
-  stroke: color-mix(in oklab, var(--jade) 18%, transparent);
-  stroke-width: 0.6;
+.nx3-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 5px;
+  border-radius: 6px;
+  color: color-mix(in oklab, var(--ocean) 80%, var(--ink));
+  background: color-mix(in oklab, var(--navy) 70%, transparent);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 20, 0.6), 0 0 0 1px color-mix(in oklab, var(--ocean) 16%, transparent);
+  transition: color 320ms var(--ease);
 }
-.nexus .nx-etch {
-  stroke: color-mix(in oklab, var(--mist) 16%, transparent);
-  stroke-width: 0.5;
+.nx3-label {
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  white-space: nowrap;
 }
-.nexus .nx-die-glow {
-  fill: var(--jade);
-  opacity: 0;
-  transition: opacity 400ms var(--ease);
+[data-node].is-on .nx3-front,
+[data-node].is-focus .nx3-front {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--jade) 80%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--jade) 45%, transparent);
 }
-.nexus[data-core="on"] .nx-die-glow {
-  opacity: 0.28;
-}
-.nexus[data-core="on"] .nx-ring-pulse {
-  opacity: 0.4;
-}
-.nexus .nx-node-dot {
-  background: color-mix(in oklab, var(--navy) 88%, var(--sapphire));
-  border-color: color-mix(in oklab, var(--mist) 22%, transparent);
-  color: color-mix(in oklab, var(--mist) 80%, transparent);
-  transition:
-    border-color 380ms var(--ease),
-    color 380ms var(--ease),
-    box-shadow 380ms var(--ease);
-}
-.nexus .nx-node-label {
-  color: var(--mist);
-  transition: color 380ms var(--ease);
-}
-.nexus .nx-node.is-on .nx-node-dot,
-.nexus .nx-node.is-focus .nx-node-dot {
-  border-color: color-mix(in oklab, var(--jade) 60%, transparent);
+[data-node].is-on .nx3-icon,
+[data-node].is-focus .nx3-icon {
   color: var(--jade);
-  box-shadow: 0 0 16px -6px color-mix(in oklab, var(--jade) 55%, transparent);
 }
-.nexus .nx-node.is-on .nx-node-label,
-.nexus .nx-node.is-focus .nx-node-label {
-  color: #fff;
+[data-node].is-on .nx3-top,
+[data-node].is-focus .nx3-top {
+  background: linear-gradient(90deg, #35705a, #8fcf98 40%, #3d7a62);
 }
-/* Hovering one system quietly recedes the rest. */
-.nexus[data-focus]:not([data-focus=""]) [data-route]:not(.is-focus) .nx-base {
-  stroke: color-mix(in oklab, var(--mist) 8%, transparent);
+
+/* Each module stands on a short stem above its pad; it lifts when active. */
+.nx3-mod {
+  transition: transform 420ms var(--ease);
 }
-.nexus .nx-caption {
+[data-node].is-on > .nx3-float,
+[data-node].is-focus > .nx3-float {
+  translate: 0 0 6px;
+}
+.nx3-float {
+  transition: translate 420ms var(--ease);
+  animation: nx3-float 8s ease-in-out infinite alternate;
+}
+@keyframes nx3-float {
+  from {
+    transform: translateZ(-2px);
+  }
+  to {
+    transform: translateZ(2.5px);
+  }
+}
+.nx3-shadow {
+  transform: translateZ(1px);
+  background: radial-gradient(closest-side, rgba(0, 3, 18, 0.75), rgba(0, 3, 18, 0.35) 55%, transparent);
+}
+.nx3-stem {
+  left: -0.5px;
+  top: 0;
+  width: 1px;
+  transform-origin: 50% 0;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--ocean) 35%, transparent), color-mix(in oklab, var(--ocean) 10%, transparent));
+}
+.nx3-stem.is-on,
+.nx3-stem.is-focus {
+  background: linear-gradient(180deg, var(--jade), color-mix(in oklab, var(--jade) 25%, transparent));
+}
+
+/* The hub: three stepped rings (low contrast), a light column, the plaque. */
+.nx3-ring {
+  border-radius: 50%;
+}
+.nx3-ring-0 {
+  background: radial-gradient(circle at 35% 30%, #0c2a6e, #020b2c 70%);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ocean) 14%, transparent), 0 0 0 1px rgba(0, 3, 18, 0.6);
+}
+.nx3-ring-1 {
+  background: radial-gradient(circle at 35% 30%, #123a8c, #041237 70%);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ocean) 20%, transparent);
+}
+.nx3-ring-2 {
+  background: radial-gradient(circle at 35% 30%, #1b4fae, #062063 75%);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--ocean) 30%, transparent);
+  transition: box-shadow 500ms var(--ease);
+}
+[data-core="on"] .nx3-ring-2 {
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--jade) 70%, transparent), inset 0 0 18px color-mix(in oklab, var(--jade) 25%, transparent);
+}
+.nx3-column {
+  left: -1px;
+  top: 0;
+  width: 2px;
+  transform-origin: 50% 0;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--ocean) 18%, transparent);
+}
+.nx3-column > span {
+  position: absolute;
+  inset: 0;
+  transform: translateY(-100%);
+  background: linear-gradient(180deg, transparent, var(--jade) 70%, transparent);
+}
+.nx3-plaque {
+  left: 0;
+  top: 0;
+}
+.nx3-plaque-light {
+  transform: translateZ(-2px);
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--jade) 26%, transparent), transparent);
+  opacity: 0.25;
+  transition: opacity 600ms var(--ease);
+}
+[data-core="on"] .nx3-plaque-light {
+  opacity: 1;
+}
+.nx3-plaque-box {
+  transform: none;
+}
+.nx3-plaque-front {
+  display: grid;
+  place-items: center;
+  border-radius: 2px;
+  background:
+    linear-gradient(118deg, color-mix(in oklab, var(--ink) 10%, transparent) 0 26%, transparent 26.5% 100%),
+    linear-gradient(170deg, #0a2a72, #020a2a 80%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--ocean) 70%, transparent),
+    inset 0 0 0 1px color-mix(in oklab, var(--ocean) 30%, transparent),
+    0 10px 24px -10px rgba(0, 0, 0, 0.8);
+}
+.nx3-mark {
+  height: auto;
+  user-select: none;
+}
+
+.nx-caption {
   transition: opacity 200ms var(--ease);
 }
-.nexus .nx-caption.is-swapping {
+.nx-caption.is-swapping {
   opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nx3-float {
+    animation: none;
+  }
 }
