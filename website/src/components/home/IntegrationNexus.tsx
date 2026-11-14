@@ -79,49 +79,49 @@ interface Layout {
  *  the hub, Operations and Support in front, so the workflow sweeps towards the viewer. */
 const WIDE: Layout = {
   w: 440,
-  h: 262,
+  h: 300,
   cx: 220,
-  cy: 146,
+  cy: 160,
   tilt: 50,
   persp: 1700,
   maxScale: 1.3,
-  mod: { w: 92, h: 56, d: 13, label: 13.5, icon: 18 },
-  plaque: { w: 118, h: 42, d: 8, z: 19 },
-  rings: [52, 44, 36],
+  mod: { w: 94, h: 56, d: 13, label: 14.5, icon: 18 },
+  plaque: { w: 118, h: 42, d: 14, z: 24 },
+  rings: [48, 41, 34],
   pos: {
-    finance: { x: -98, y: -112, z: 16, turn: 6 },
-    inventory: { x: 112, y: -104, z: 18, turn: -6 },
-    crm: { x: -162, y: -6, z: 12, turn: 8 },
-    scheduling: { x: 160, y: -20, z: 14, turn: -8 },
-    operations: { x: -118, y: 96, z: 8, turn: 5 },
-    support: { x: 128, y: 92, z: 10, turn: -5 },
+    finance: { x: -92, y: -150, z: 16, turn: 4 },
+    inventory: { x: 104, y: -142, z: 18, turn: -4 },
+    crm: { x: -152, y: -20, z: 12, turn: 5 },
+    scheduling: { x: 152, y: -32, z: 14, turn: -5 },
+    operations: { x: -110, y: 118, z: 8, turn: 3 },
+    support: { x: 118, y: 112, z: 10, turn: -3 },
   },
 };
 
 /** Phones and narrow cards: a taller, deeper arrangement (not the wide scene shrunk). */
 const COMPACT: Layout = {
   w: 300,
-  h: 292,
+  h: 312,
   cx: 150,
-  cy: 168,
+  cy: 172,
   tilt: 48,
   persp: 1200,
   maxScale: 1.15,
-  mod: { w: 88, h: 52, d: 12, label: 13.2, icon: 17 },
-  plaque: { w: 100, h: 36, d: 7, z: 17 },
-  rings: [44, 37, 30],
+  mod: { w: 84, h: 52, d: 12, label: 13.2, icon: 17 },
+  plaque: { w: 90, h: 33, d: 11, z: 20 },
+  rings: [40, 34, 28],
   pos: {
-    finance: { x: -70, y: -142, z: 14, turn: 5 },
-    inventory: { x: 74, y: -136, z: 16, turn: -5 },
-    crm: { x: -94, y: -28, z: 12, turn: 7 },
-    scheduling: { x: 98, y: -40, z: 12, turn: -7 },
-    operations: { x: -80, y: 96, z: 8, turn: 4 },
-    support: { x: 84, y: 90, z: 9, turn: -4 },
+    finance: { x: -66, y: -160, z: 14, turn: 3 },
+    inventory: { x: 70, y: -154, z: 16, turn: -3 },
+    crm: { x: -104, y: 10, z: 10, turn: 4 },
+    scheduling: { x: 106, y: 0, z: 10, turn: -4 },
+    operations: { x: -76, y: 128, z: 8, turn: 3 },
+    support: { x: 80, y: 122, z: 9, turn: -3 },
   },
 };
 
 /** The deck's drawing area (deck units). */
-const DECK = { w: 520, h: 380 };
+const DECK = { w: 540, h: 440 };
 
 /** A trace from a module's pad to the hub ring: level, then one bend on the logo's slant. */
 function trace(px: number, py: number, r: number) {
@@ -170,6 +170,7 @@ function Deck({ L }: { L: Layout }) {
         return (
           <g key={s.id} data-route={s.id}>
             <path d={d} className="nx3-trace" />
+            <path d={d} className="nx3-trace-glow" />
             <path d={d} className="nx3-trace-hi" />
             <path d={d} pathLength={100} className="nx3-pulse-halo" />
             <path d={d} pathLength={100} className="nx3-pulse" />
@@ -208,8 +209,14 @@ function Hub({ L }: { L: Layout }) {
       <div className="nx3-column" style={{ height: P.z - 10, transform: `translateZ(11px) rotateX(90deg)` }}>
         <span data-column />
       </div>
-      {/* The ADEN-CHASE plaque: always square to the viewer, so the mark is never distorted. */}
-      <div data-plaque className="nx3-plaque" style={{ transform: `translateZ(${P.z}px) rotateX(${-L.tilt}deg)` }}>
+      {/* A machined pedestal on the housing, with the plaque's contact shadow. */}
+      <div className="nx3-plaque-shadow" style={{ width: P.w * 0.9, height: P.d * 2.2, left: -P.w * 0.45, top: -P.d * 1.1, transform: `translateZ(${(L.rings.length - 1) * 5 + 2}px)` }} />
+      <div className="nx3-pedestal" style={{ transform: `translateZ(${(L.rings.length - 1) * 5 + 1}px)` }}>
+        <Slab w={P.w * 0.42} h={P.z - (L.rings.length - 1) * 5 - 1} d={P.d * 1.6} className="nx3-pedestal-box" />
+      </div>
+      {/* The ADEN-CHASE plaque: square to the viewer (leaning back 6° so its top edge catches the
+          light; the mark is never redrawn, tinted or skewed). */}
+      <div data-plaque className="nx3-plaque" style={{ transform: `translateZ(${P.z}px) rotateX(${6 - L.tilt}deg)` }}>
         <div className="nx3-plaque-light" style={{ width: P.w * 1.1, height: P.h * 1.6, left: -P.w * 0.55, top: -P.h * 1.2 }} />
         <div className="nx3-slab nx3-plaque-box" style={{ width: P.w, height: P.h, left: -P.w / 2, top: -P.h }}>
           <div className="nx3-face nx3-top" style={{ width: P.w, height: P.d, top: (P.h - P.d) / 2, transform: `rotateX(90deg) translateZ(${P.h / 2}px)` }} />
@@ -318,7 +325,7 @@ export function IntegrationNexus() {
       st.style.transform = `rotateX(${(Lc.tilt + tilt).toFixed(2)}deg) rotateZ(${yaw.toFixed(2)}deg)`;
       // The plaque counter-turns, so the mark stays square to the viewer.
       const pl = el.querySelector<HTMLElement>("[data-plaque]");
-      if (pl) pl.style.transform = `translateZ(${Lc.plaque.z}px) rotateZ(${(-yaw).toFixed(2)}deg) rotateX(${(-(Lc.tilt + tilt)).toFixed(2)}deg)`;
+      if (pl) pl.style.transform = `translateZ(${Lc.plaque.z}px) rotateZ(${(-yaw).toFixed(2)}deg) rotateX(${(6 - (Lc.tilt + tilt)).toFixed(2)}deg)`;
     };
     const loop = (now: number) => {
       raf = 0;
@@ -390,7 +397,7 @@ export function IntegrationNexus() {
     /** A short lit segment travelling the deck trace: into the hub ("in") or out to the module. */
     const pulse = (id: string, dir: "in" | "out", ms: number) => {
       const paths = q(`[data-route="${id}"] .nx3-pulse, [data-route="${id}"] .nx3-pulse-halo`);
-      const frames = dir === "in" ? [{ strokeDashoffset: 10 }, { strokeDashoffset: -100 }] : [{ strokeDashoffset: -100 }, { strokeDashoffset: 10 }];
+      const frames = dir === "in" ? [{ strokeDashoffset: 14 }, { strokeDashoffset: -100 }] : [{ strokeDashoffset: -100 }, { strokeDashoffset: 14 }];
       return Promise.all(paths.map((p) => track(p.animate(frames, { duration: ms, easing: "cubic-bezier(0.45, 0, 0.25, 1)" }))));
     };
     /** The signal rising up the light column into the plaque. */

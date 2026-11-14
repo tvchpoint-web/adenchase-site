@@ -194,10 +194,10 @@ function Assistant() {
 
 export function AiDemos() {
   return (
-    <InView className="demos grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {/* On tablets the dimensional scene takes the full row (a 3D scene cannot read at a third of a
-          tablet's width); the two other demos sit side by side beneath it, unchanged. */}
-      <div className="demo-in md:col-span-2 lg:col-span-1" style={{ "--i": 0 } as React.CSSProperties}>
+    <InView className="demos grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {/* Below 1280px the dimensional scene takes the full row (at a third of that width its labels
+          would fall below 12px); the two other demos sit side by side beneath it, unchanged. */}
+      <div className="demo-in md:col-span-2 xl:col-span-1" style={{ "--i": 0 } as React.CSSProperties}>
         <Panel title="Connected systems" caption="Intelligently connects your existing business systems and workflows—allowing information to move seamlessly between them without unnecessary duplication.">
           <IntegrationNexus />
         </Panel>

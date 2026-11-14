@@ -606,12 +606,12 @@ html[data-opening-hide-header="1"] .site-logo {
 .nx3 {
   position: relative;
   margin-inline: auto;
-  aspect-ratio: 300 / 292;
+  aspect-ratio: 300 / 312;
   max-width: calc(300px * 1.15);
 }
 @container (min-width: 360px) {
   .nx3 {
-    aspect-ratio: 440 / 262;
+    aspect-ratio: 440 / 300;
     max-width: calc(440px * 1.3);
   }
 }
@@ -635,9 +635,9 @@ html[data-opening-hide-header="1"] .site-logo {
 }
 .nx3-deck {
   position: absolute;
-  /* The deck drawing (520 × 380 deck units) is centred on the hub. */
-  left: -260px;
-  top: -190px;
+  /* The deck drawing (540 × 440 deck units) is centred on the hub. */
+  left: -270px;
+  top: -220px;
   overflow: visible;
   -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent 100%);
   mask-image: radial-gradient(closest-side, #000 62%, transparent 100%);
@@ -677,20 +677,27 @@ html[data-opening-hide-header="1"] .site-logo {
   stroke-width: 1;
 }
 .nx3-trace-hi {
-  stroke: color-mix(in oklab, var(--ocean) 60%, transparent);
-  stroke-width: 1.2;
+  stroke: color-mix(in oklab, var(--ocean) 75%, var(--ink));
+  stroke-width: 2;
+  opacity: 0;
+  transition: opacity 260ms var(--ease);
+}
+.nx3-trace-glow {
+  stroke: color-mix(in oklab, var(--ocean) 22%, transparent);
+  stroke-width: 6;
+  stroke-linecap: round;
   opacity: 0;
   transition: opacity 260ms var(--ease);
 }
 .nx3-pulse,
 .nx3-pulse-halo {
   stroke-linecap: round;
-  stroke-dasharray: 10 200;
-  stroke-dashoffset: 10;
+  stroke-dasharray: 14 200;
+  stroke-dashoffset: 14;
 }
 .nx3-pulse {
   stroke: var(--jade);
-  stroke-width: 2;
+  stroke-width: 2.4;
 }
 .nx3-pulse-halo {
   stroke: color-mix(in oklab, var(--jade) 22%, transparent);
@@ -705,7 +712,9 @@ html[data-opening-hide-header="1"] .site-logo {
   transition: fill 300ms var(--ease);
 }
 [data-route].is-on .nx3-trace-hi,
-[data-route].is-focus .nx3-trace-hi {
+[data-route].is-focus .nx3-trace-hi,
+[data-route].is-on .nx3-trace-glow,
+[data-route].is-focus .nx3-trace-glow {
   opacity: 1;
 }
 .nx3-deck [data-route].is-on .nx3-pad-core,
@@ -727,14 +736,14 @@ html[data-opening-hide-header="1"] .site-logo {
   backface-visibility: hidden;
 }
 .nx3-top {
-  background: linear-gradient(90deg, #34508a, #7f98c6 38%, #3d5a94);
+  background: linear-gradient(90deg, #22355e, #4b6290 38%, #283e6a);
   box-shadow: inset 0 0 0 0.5px color-mix(in oklab, var(--ink) 30%, transparent);
 }
 .nx3-left {
-  background: linear-gradient(180deg, #23498f, #0a2058);
+  background: linear-gradient(180deg, #1f3f7c, #081a4a);
 }
 .nx3-right {
-  background: linear-gradient(180deg, #123a8c, #041237);
+  background: linear-gradient(180deg, #0b2156, #020a26);
 }
 .nx3-front {
   display: flex;
@@ -743,12 +752,16 @@ html[data-opening-hide-header="1"] .site-logo {
   justify-content: space-between;
   padding: 8px 10px 9px;
   border-radius: 1px;
+  /* Smoked navy glass in a thin metal frame, with one still reflection (no backdrop blur: it would
+     flatten the 3D scene in Safari). */
   background:
-    linear-gradient(118deg, color-mix(in oklab, var(--ink) 9%, transparent) 0 22%, transparent 22.5% 100%),
-    linear-gradient(165deg, #133f9a 0%, #072064 45%, #03123d 100%);
+    linear-gradient(118deg, color-mix(in oklab, var(--ink) 7%, transparent) 0 20%, transparent 20.5% 100%),
+    radial-gradient(120% 90% at 20% 0%, rgba(40, 80, 170, 0.35), transparent 60%),
+    linear-gradient(170deg, #0c1f52 0%, #06143a 50%, #030c28 100%);
   box-shadow:
-    inset 0 1px 0 color-mix(in oklab, var(--ocean) 55%, transparent),
-    inset 0 0 0 1px color-mix(in oklab, var(--ocean) 18%, transparent);
+    inset 0 1px 0 color-mix(in oklab, var(--ocean) 45%, transparent),
+    inset 0 0 0 1px rgba(150, 180, 230, 0.22),
+    inset 0 0 0 2px rgba(0, 4, 20, 0.55);
   transition: box-shadow 320ms var(--ease);
 }
 .nx3-icon {
@@ -781,7 +794,7 @@ html[data-opening-hide-header="1"] .site-logo {
 }
 [data-node].is-on .nx3-top,
 [data-node].is-focus .nx3-top {
-  background: linear-gradient(90deg, #35705a, #8fcf98 40%, #3d7a62);
+  background: linear-gradient(90deg, #2a5a49, #6aa57a 40%, #2f604e);
 }
 
 /* Each module stands on a short stem above its pad; it lifts when active. */
@@ -857,6 +870,25 @@ html[data-opening-hide-header="1"] .site-logo {
 .nx3-plaque {
   left: 0;
   top: 0;
+}
+.nx3-pedestal {
+  left: 0;
+  top: 0;
+}
+.nx3-pedestal-box .nx3-front {
+  padding: 0;
+  background: linear-gradient(180deg, #1a3c86, #061640);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--ocean) 35%, transparent);
+}
+.nx3-plaque-shadow {
+  background: radial-gradient(closest-side, rgba(0, 3, 18, 0.7), transparent);
+}
+/* The plaque's top edge: brushed metal, the brightest plane in the scene. */
+.nx3-plaque-box .nx3-top {
+  background: linear-gradient(90deg, #6c86b8, #d4e2fb 45%, #7590c2);
+}
+.nx3-plaque-box .nx3-side {
+  background: linear-gradient(180deg, #3a5b9c, #0c2258);
 }
 .nx3-plaque-light {
   transform: translateZ(-2px);
