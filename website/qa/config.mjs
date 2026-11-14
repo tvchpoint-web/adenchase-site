@@ -32,6 +32,8 @@ export const THRESHOLDS = {
   tbtMs: { max: { desktop: 200, mobile: 600 }, level: "warn" },
   // Living Circuit: the route may never cross content; near-misses inside this margin are warnings.
   circuitNearMissPx: 6,
+  // Living Circuit reveal: the light's contribution near the signal vs far from it (0–255 luminance).
+  reveal: { minNear: 4, maxFar: 1.5 },
   // Reverse scrolling: the signal head must return to the same place (px).
   reverseTolerancePx: 4,
 };

@@ -11,22 +11,33 @@ The user's words in the conversation always win over this file. This file wins o
 ## 1. Workflow for every substantial update
 
 A substantial update is anything visible: a section, an animation, imagery, layout, typography,
-copy, or more than a small bug fix. Follow these steps in order.
+copy, or more than a small bug fix. The project skill **`premium-web-production`**
+(`.claude/skills/premium-web-production/`) is the full standard. Invoke it at the start of any
+substantial update. The approved references are in **`design/REFERENCES.md`**.
 
-1. **Check skills first.** Look at the available skills and invoke the relevant ones before you start:
-   - frontend implementation guidance: the `frontend-design` plugin skill, when installed;
-   - critique and accessibility review: the `Design` plugin's `design-critique` and `accessibility-review`, when installed;
-   - Next.js and React practice: the Vercel plugin's `nextjs`, `next-best-practices` and `react-best-practices`, when installed;
-   - `code-review` and `simplify` before every commit; `security-review` when forms, headers, APIs or dependencies change.
+Apply the roles that are relevant, **in this order**. Roles 1–3 work from the brief and current screenshots **before** code is written; roles 5–7 work from evidence **after**. Project subagents live in `.claude/agents/` (at the repository root).
 
-   Say in the final report which skills were used and why any obvious one was not.
-2. **Restate the brief.** In one short paragraph, write the goal, what must not change, and the acceptance criteria. Ask only when a decision is genuinely the user's.
-3. **Design critique before building.** Compare the current state with the brief and any references, using screenshots from `npm run qa:visual`. Name the specific visual problems: composition, hierarchy, type, imagery, motion. Do this before writing code.
-4. **Implement** to the standards in sections 3–7.
-5. **Look at the result.** Run `npm run qa`. Open `qa-report/index.html` and actually inspect the screenshots and motion frames at all three sizes, comparing them with the brief and the references. Passing checks alone is not done.
-6. **Review.** Run `npm run check` (lint, types, tests) and `/code-review`. Fix what they find, then run QA again.
-7. **Deploy a preview** (section 8). Never deploy to production.
-8. **Report.** Give the preview URL, what changed, what was verified and how, what could not be verified, which skills were used, and anything left open.
+| # | Role | Run it as | Required output |
+| --- | --- | --- | --- |
+| 0 | Skills check | List the available skills; invoke `premium-web-production`, plus `frontend-design`, `design-critique` and the Vercel `next-best-practices` skills **when installed** | Which skills apply |
+| 1 | Creative Director | `creative-director` agent | Ship / Revise / Rethink + direction |
+| 2 | UI/UX Designer | `uiux-designer` agent | Findings per viewport |
+| 3 | Motion Designer | `motion-designer` agent (any change to animation or scroll) | Findings + real-device checks needed |
+| 4 | Frontend Engineer | Main session, to sections 3–7 below | The change |
+| 5 | Visual QA Reviewer | `npm run qa`, then the `visual-qa-reviewer` agent on `qa-report/` | Deviation list vs brief and references |
+| 6 | Performance & Accessibility | `perf-a11y-reviewer` agent on the QA results | Prioritised findings |
+| 7 | Code Reviewer | `/code-review` (always), `/simplify`, `/security-review` (forms, headers, APIs, dependencies) | Fixes applied, then QA re-run |
+
+Then deploy a **preview** (section 8) and report:
+- the preview URL;
+- what changed;
+- what was verified, and how;
+- what could not be verified;
+- **which roles, agents and skills actually ran**, never claiming one that did not.
+
+If a project agent isn't available in a session (agents load when a session starts), run that role's
+checklist from `.claude/skills/premium-web-production/references/review-roles.md` through a
+general-purpose agent or yourself, and say so.
 
 ---
 
@@ -41,14 +52,15 @@ npm run qa:visual    # pages + motion only (screenshots, frames, circuit overlap
 npm run qa:a11y      # axe-core WCAG 2.2 A/AA + keyboard checks
 npm run qa:perf      # Lighthouse, mobile and desktop
 node qa/run.mjs --base=https://…   # run QA against another server (no local build)
+node qa/run.mjs --browser=webkit   # Safari engine, once WebKit is installed (currently blocked; see §9)
 ```
 
 The QA harness lives in `qa/`, with all thresholds in `qa/config.mjs`. Hard failures make the run exit with code 1; warnings are reported. **A failing QA run blocks deployment.** Never weaken a threshold, skip a check, or narrow its scope to get a pass. Fix the cause, or report the failure to the user.
 
 | Check | What it proves |
 | --- | --- |
-| Pages | Every route at 1440×900, 834×1194 and 390×844 renders with no runtime errors, failed requests, horizontal overflow or broken internal links; unknown routes return 404. Full-page screenshots for review. |
-| Motion | Opening-sequence frames; Living Circuit frames; **the signal route never crosses text, images, controls or card surfaces** (measured independently of the component); reverse scrolling retraces the same states; reduced-motion state. |
+| Pages | Every route at 1440×900, 834×1194 and 390×844 renders with no runtime errors, failed requests, horizontal overflow or broken internal links; unknown routes return 404. **Typography:** the brand font actually renders (no fallback), and possibly clipped text is flagged. Full-page screenshots for review. |
+| Motion | Opening-sequence frames; Living Circuit frames; **the signal route never crosses text, images, controls or card surfaces** (measured with a broader definition than the component uses); **reveal quality** (the light's contribution is concentrated at the signal and about zero elsewhere); reverse scrolling retraces the same states; reduced-motion state; **scroll videos** (desktop, mobile) for motion review. |
 | Accessibility | axe-core WCAG 2.2 A/AA on every route at desktop and mobile; serious or critical violations fail. The skip link and a visible focus style are checked. |
 | Performance | Lighthouse on key routes. CLS above 0.1 or an accessibility score below 90 fails. Performance and LCP are warnings, because the sandbox has no GPU and throttling is simulated. |
 | Brand guards (`npm test`) | The master logo is byte-identical; palette tokens exist; the full descriptor is written exactly. |
@@ -105,6 +117,7 @@ The logo's own block colours (`BLOCK_COLOURS` in `src/lib/blocks.ts`) are used o
 **Photography.**
 - Use real, high-resolution photographs graded into navy and sapphire with the `.photo` treatment.
 - No prominent human faces.
+- **No legible third-party brands** in any image: signage, logos, product marks. Treat anything reading "CHASE" or similar to the client's name as a blocker. The opening skyline (`skyline`) currently shows a JPMorgan "CHASE" rooftop sign and must be replaced or retouched before launch.
 - Keep the cargo/shipping photograph in Market Growth.
 - Every image must be listed in `public/photos/CREDITS.md` with its source and licence status. Unsplash images are marked as temporary references. Client-supplied images are marked "licence to be confirmed".
 - Use the photo map in `src/lib/photos.ts`; never hard-code paths in components.

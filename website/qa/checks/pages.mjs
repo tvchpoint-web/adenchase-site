@@ -38,6 +38,28 @@ export async function checkPages({ browser, base, out }) {
       });
       if (overflow) results.push(fail(`${label}: horizontal overflow`, `page is ${overflow.sw}px wide in a ${overflow.w}px viewport; e.g. ${overflow.wide.join(", ")}`));
 
+      // Typography: the brand font actually rendered (no silent fallback), and no clipped text.
+      const type = await page.evaluate(async () => {
+        await document.fonts.ready;
+        const families = new Set();
+        document.querySelectorAll("h1, h2, h3, p, a, button, li, label").forEach((el) => {
+          if (el.closest("[aria-hidden='true'], .sr-only") || !el.textContent.trim()) return;
+          families.add(getComputedStyle(el).fontFamily.split(",")[0].trim().replace(/['"]/g, ""));
+        });
+        const missing = [...families].filter((f) => !document.fonts.check(`16px "${f}"`) || ![...document.fonts].some((ff) => ff.family.replace(/['"]/g, "") === f && ff.status === "loaded"));
+        const clipped = [];
+        document.querySelectorAll("body *").forEach((el) => {
+          const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+          if (!own || el.closest("[aria-hidden='true'], .sr-only")) return;
+          const cs = getComputedStyle(el);
+          if (cs.overflowX === "visible" && cs.overflowY === "visible" && cs.textOverflow !== "ellipsis") return;
+          if (el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 4) clipped.push(`${el.tagName.toLowerCase()} "${el.textContent.trim().slice(0, 40)}"`);
+        });
+        return { families: [...families], missing, clipped: clipped.slice(0, 6) };
+      });
+      if (type.missing.length) results.push(fail(`${label}: text renders in a fallback font`, `not loaded: ${type.missing.join(", ")}`));
+      if (type.clipped.length) results.push(warn(`${label}: possibly clipped text`, type.clipped.join("\n")));
+
       const file = `screens/${vpName}/${slug(route)}.png`;
       ensureDir(`${out}/${file}`);
       await page.screenshot({ path: `${out}/${file}`, fullPage: true });

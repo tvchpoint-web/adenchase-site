@@ -21,7 +21,10 @@ export function writeReport(out, s) {
             .map((r) => `<tr><td>${esc(r.route)}</td><td>${r.formFactor}</td>${["performance", "accessibility", "best-practices", "seo"].map((k) => `<td>${r.scores[k] == null ? "–" : Math.round(r.scores[k] * 100)}</td>`).join("")}<td>${Math.round(r.lcp)} ms</td><td>${r.cls?.toFixed(3)}</td><td>${Math.round(r.tbt)} ms</td><td><a href="${r.file}" target="_blank">open</a></td></tr>`)
             .join("")}</table></div>`
         : "";
-      return `<section><h2>${esc(sec.name)} <small>${sec.seconds ?? "–"} s</small></h2><ul>${items}</ul>${rows}${shots}${frames}</section>`;
+      const videos = sec.videos?.length
+        ? `<h3>Scroll videos</h3><div class="grid frames">${sec.videos.map((v) => `<figure style="margin:0"><video src="${v.file}" controls muted playsinline preload="metadata" style="width:100%;border:1px solid var(--line);border-radius:6px;background:#000"></video><figcaption style="color:var(--mist);font-size:12px">${v.viewport}</figcaption></figure>`).join("")}</div>`
+        : "";
+      return `<section><h2>${esc(sec.name)} <small>${sec.seconds ?? "–"} s</small></h2><ul>${items}</ul>${rows}${shots}${videos}${frames}</section>`;
     })
     .join("");
 
@@ -41,7 +44,7 @@ pre{white-space:pre-wrap;word-break:break-word;margin:6px 0 0;color:var(--mist);
 .tbl{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:720px}td,th{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--mist);font-weight:600}a{color:var(--ocean)}
 </style>
 <h1>ADEN-CHASE QA report</h1>
-<p class="meta">${esc(s.base)} · ${esc(s.date)} · ${s.seconds} s</p>
+<p class="meta">${esc(s.base)} · ${esc(s.browser || "chromium")} · ${esc(s.date)} · ${s.seconds} s</p>
 <span class="verdict ${s.fail ? "bad" : "ok"}">${s.fail ? "FAIL" : "PASS"} — ${s.pass} pass · ${s.warn} warn · ${s.fail} fail</span>
 ${sections}
 </html>`,

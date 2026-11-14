@@ -1,0 +1,7 @@
+schema_version: "1.1"
+name: redesign-section-runs-review-sequence
+expected_outcome: |
+  Before changing code, the agent reads the project profile (CLAUDE.md) and reviews current
+  screenshots at mobile and other sizes (creative / UI-UX critique). It implements the change, runs the
+  project's QA harness, inspects the resulting screenshots itself, runs a code review, does not deploy,
+  and its final report states what was verified, what was not, and which review roles/skills actually ran.

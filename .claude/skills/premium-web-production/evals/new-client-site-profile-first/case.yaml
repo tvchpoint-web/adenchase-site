@@ -1,0 +1,8 @@
+schema_version: "1.1"
+name: new-client-site-profile-first
+expected_outcome: |
+  The agent produces a project profile (CLAUDE.md) for the new client covering isolation, brand
+  (palette, type, logo rules with a master-file guard, tagline), visual/photography/motion standards,
+  approved references, QA commands and thresholds, preview-only deployment and environment limits,
+  and plans to port the QA harness. It asks for or marks as TODO the client's real brand assets rather
+  than inventing a logo, palette or claims.

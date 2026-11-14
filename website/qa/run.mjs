@@ -6,10 +6,12 @@
  *   npm run qa:only            run every check against the existing build
  *   node qa/run.mjs --only=pages,motion,a11y,perf   pick checks
  *   node qa/run.mjs --base=https://…                test another server (no local server started)
+ *   node qa/run.mjs --browser=webkit                pages + motion + a11y in WebKit (Safari's engine), if installed
  *
  * Output: qa-report/index.html (open it), qa-report/summary.json. Exit code 1 on any failure.
  */
-import { chromium } from "playwright";
+import { chromium, webkit, firefox } from "playwright";
+import { existsSync } from "node:fs";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { OUT_DIR, SERVER } from "./config.mjs";
 import { startServer } from "./lib/util.mjs";
@@ -28,7 +30,14 @@ if (unknown.length) {
   process.exit(2);
 }
 
-const out = OUT_DIR;
+const ENGINES = { chromium, webkit, firefox };
+const engineName = args.browser || "chromium";
+const engine = ENGINES[engineName];
+if (!engine) {
+  console.error(`Unknown browser "${engineName}". Choose chromium, webkit or firefox.`);
+  process.exit(2);
+}
+const out = engineName === "chromium" ? OUT_DIR : `${OUT_DIR}-${engineName}`;
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
 
@@ -58,11 +67,14 @@ try {
     server = await startServer(SERVER.port, SERVER.startTimeoutMs);
     base = server.base;
   }
-  browser = await chromium.launch();
+  if (!existsSync(engine.executablePath())) {
+    throw new Error(`${engineName} is not installed in this environment. Installing it needs network access to Playwright's browser download hosts (an environment change that requires approval), then: npx playwright install ${engineName}`);
+  }
+  browser = await engine.launch();
   if (only.includes("pages")) await run("Pages & responsive", () => checkPages({ browser, base, out }));
   if (only.includes("motion")) await run("Motion & Living Circuit", () => checkMotion({ browser, base, out }));
   if (only.includes("a11y")) await run("Accessibility", () => checkA11y({ browser, base, out }));
-  if (only.includes("perf")) await run("Performance & Lighthouse", () => checkPerf({ chromium, base, out }));
+  if (only.includes("perf") && engineName === "chromium") await run("Performance & Lighthouse", () => checkPerf({ chromium, base, out }));
 } catch (e) {
   sections.push({ name: "QA setup", results: [{ status: "fail", title: "QA could not start", detail: String(e?.stack || e) }] });
 } finally {
@@ -73,6 +85,7 @@ try {
 const all = sections.flatMap((s) => s.results);
 const summary = {
   base,
+  browser: engineName,
   date: new Date().toISOString(),
   seconds: Math.round((Date.now() - started) / 1000),
   fail: all.filter((r) => r.status === "fail").length,

@@ -1,4 +1,6 @@
 import { THRESHOLDS, VIEWPORTS } from "../config.mjs";
+import sharp from "sharp";
+import { renameSync } from "node:fs";
 import { ensureDir, fail, pass, sleep, warn, watchErrors } from "../lib/util.mjs";
 
 const context = (browser, vp, extra = {}) => {
@@ -89,6 +91,73 @@ function routeHits(geo, nearPx) {
   return { hits: [...new Set(hits)], near: [...new Set(near)] };
 }
 
+/**
+ * Measures how much the signal's light changes the frame near the signal versus far from it, by
+ * comparing the frame with the light layers hidden. Returns null when the signal is off-screen.
+ */
+async function revealContrast(page, litPng) {
+  const headPt = await page.evaluate(() => {
+    const g = document.querySelector(".living-circuit [data-glow]");
+    if (!g || getComputedStyle(g).opacity === "0") return null;
+    const m = new DOMMatrix(getComputedStyle(g).transform);
+    return { x: m.m41 + 90, y: m.m42 + 90, w: innerWidth, h: innerHeight };
+  });
+  if (!headPt || headPt.x < 0 || headPt.y < 0 || headPt.x > headPt.w || headPt.y > headPt.h) return null;
+  const tag = await page.addStyleTag({ content: ".lc-lamp,.lc-spec,.lc-glow{visibility:hidden!important;transition:none!important}" });
+  await sleep(120);
+  const dark = await page.screenshot();
+  await tag.evaluate((n) => n.remove());
+  const [a, b] = await Promise.all([litPng, dark].map((buf) => sharp(buf).greyscale().raw().toBuffer({ resolveWithObject: true })));
+  const { width, height } = a.info;
+  const R = Math.min(140, width * 0.18);
+  let nearSum = 0;
+  let nearN = 0;
+  let farSum = 0;
+  let farN = 0;
+  for (let y = 0; y < height; y += 2) {
+    for (let x = 0; x < width; x += 2) {
+      const d = Math.hypot(x - headPt.x, y - headPt.y);
+      const diff = Math.abs(a.data[y * width + x] - b.data[y * width + x]);
+      if (d < R) {
+        nearSum += diff;
+        nearN++;
+      } else if (d > R * 3.5) {
+        farSum += diff;
+        farN++;
+      }
+    }
+  }
+  return { near: nearN ? nearSum / nearN : 0, far: farN ? farSum / farN : 0 };
+}
+
+/** Records a continuous scroll through the homepage and back up, for motion review. */
+async function scrollVideo(browser, base, out, vpName, vp) {
+  const dir = `${out}/motion/video-tmp-${vpName}`;
+  const { width, height, ...device } = vp;
+  const size = vpName === "desktop" ? { width: 960, height: 600 } : { width, height };
+  const ctx = await browser.newContext({ viewport: { width, height }, ...device, recordVideo: { dir, size } });
+  const page = await ctx.newPage();
+  await page.goto(base + "/", { waitUntil: "networkidle" });
+  await sleep(3000); // the intro
+  const total = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight);
+  const step = Math.round(height * 0.06);
+  for (let y = 0; y < total; y += step) {
+    await page.mouse.wheel(0, step);
+    await sleep(45);
+  }
+  await sleep(800);
+  for (let y = 0; y < total * 0.35; y += step) {
+    await page.mouse.wheel(0, -step);
+    await sleep(45);
+  }
+  await sleep(800);
+  const video = page.video();
+  await ctx.close();
+  const file = `motion/scroll-${vpName}.webm`;
+  renameSync(await video.path(), `${out}/${file}`);
+  return file;
+}
+
 async function openingFrames(page, url, out, vpName, frames) {
   // Intro plays on arrival; capture it mid-way and at rest, then step the pinned timeline.
   await page.goto(url, { waitUntil: "commit" });
@@ -144,15 +213,27 @@ export async function checkMotion({ browser, base, out }) {
       else results.push(pass(`${vpName}: signal route (${geo.pts.length} vertices) clears ${geo.rects.length} content boxes`));
       if (near.length) results.push(warn(`${vpName}: route passes within ${THRESHOLDS.circuitNearMissPx}px of content at ${near.length} point(s)`, near.slice(0, 6).join("\n")));
 
-      // Frames of the light travelling through the story.
+      // Frames of the light travelling through the story, each with a reveal-quality measurement:
+      // the light's contribution (frame with the light minus the same frame without it) must be
+      // concentrated around the signal and near zero far from it.
+      const reveals = [];
       for (let i = 0; i < 8; i++) {
         const y = geo.top + (geo.height * (i + 0.5)) / 8 - vp.height * 0.56;
         await page.evaluate((v) => window.scrollTo(0, v), Math.round(y));
         await sleep(1100);
         const f = `motion/${vpName}/circuit-${i + 1}.png`;
         ensureDir(`${out}/${f}`);
-        await page.screenshot({ path: `${out}/${f}` });
+        const lit = await page.screenshot({ path: `${out}/${f}` });
         frames.push({ viewport: vpName, label: `Circuit · ${i + 1}/8`, file: f });
+        const r = await revealContrast(page, lit);
+        if (r) reveals.push(r);
+      }
+      if (reveals.length) {
+        const near = reveals.reduce((a, r) => a + r.near, 0) / reveals.length;
+        const far = Math.max(...reveals.map((r) => r.far));
+        const detail = `mean light contribution near the signal ${near.toFixed(1)}/255, worst far from it ${far.toFixed(2)}/255 (${reveals.length} frames)`;
+        const ok = near >= THRESHOLDS.reveal.minNear && far <= THRESHOLDS.reveal.maxFar;
+        results.push(ok ? pass(`${vpName}: circuit reveal is localised to the signal`, detail) : warn(`${vpName}: circuit reveal not localised as specified`, detail));
       }
 
       // Reverse scrolling must retrace the same states.
@@ -203,5 +284,16 @@ export async function checkMotion({ browser, base, out }) {
   results.push(ok ? pass("Reduced motion: no moving light, full route drawn, mark shown at rest") : fail("Reduced motion state incorrect", JSON.stringify(rm)));
   await ctx.close();
 
-  return { name: "Motion & Living Circuit", results, frames };
+  // Continuous scroll videos (down, then partly back up) for motion review.
+  const videos = [];
+  for (const vpName of ["desktop", "mobile"]) {
+    try {
+      videos.push({ viewport: vpName, file: await scrollVideo(browser, base, out, vpName, VIEWPORTS[vpName]) });
+    } catch (e) {
+      results.push(warn(`${vpName}: scroll video not recorded`, String(e?.message || e)));
+    }
+  }
+  if (videos.length) results.push(pass(`Scroll videos recorded for motion review (${videos.map((v) => v.viewport).join(", ")})`));
+
+  return { name: "Motion & Living Circuit", results, frames, videos };
 }

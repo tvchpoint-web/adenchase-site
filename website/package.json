@@ -37,6 +37,7 @@
     "eslint-config-next": "^16.4.6",
     "lighthouse": "13.6.0",
     "playwright": "1.63.0",
+    "sharp": "0.35.5",
     "tailwindcss": "^4.3.5",
     "typescript": "^6.0.3",
     "vitest": "^5.1.0"

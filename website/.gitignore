@@ -12,3 +12,4 @@ npm-debug.log*
 
 # QA output (regenerate with npm run qa)
 qa-report/
+qa-report-*/
