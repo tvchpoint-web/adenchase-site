@@ -3,7 +3,7 @@
 Corporate website for ADEN-CHASE Strategies (`adenchase.com`): **Business Development • AI Engineering • Market Growth**. The site is photographic and editorial.
 
 - **Opening.** The homepage opens logo-first. The authentic mark assembles from layers cut from the official artwork: the underline lights into the green block, then the cyan and sapphire blocks follow. A pinned scroll timeline then carries the visitor through a skyline, four angled slices, and three portals cut on the logo's slant.
-- **The story.** It continues with Business Development, AI Engineering, Market Growth, capabilities and private engagement.
+- **The story.** It continues with the introduction, Business Development, AI Engineering, Market Growth, how we think, who we work with, our approach, and a closing invitation to start a conversation.
 - **The Living Circuit.** A Neon Jade signal is routed through the page's open space and never crosses content. Its light reveals a real macro photograph of a circuit board hidden beneath the navy.
 
 Working standards (brand, logo, motion, QA gate, isolation, deployment) live in **[CLAUDE.md](./CLAUDE.md)**.
@@ -36,8 +36,9 @@ The QA tools are dev-dependencies: Playwright 1.63, axe-core and Lighthouse. Pla
 
 ```
 src/
-  app/                        routes: / /approach /expertise /capabilities /engagement (+ 404)
-    engagement/actions.ts     inquiry server action (honest about delivery)
+  app/                        routes: / /about /business-development /ai-engineering /market-growth
+                              /government-institutions /capabilities /contact (+ 404; old routes redirect)
+    contact/actions.ts        inquiry server action (honest about delivery)
     globals.css               tokens (palette, type), photo grading, motion styles
   components/
     opening/OpeningSequence   logo-first pinned opening (layered authentic mark → slices → portals)

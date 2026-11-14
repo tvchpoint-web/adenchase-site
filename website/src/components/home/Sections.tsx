@@ -9,7 +9,7 @@ import { Outcomes } from "@/components/home/Outcomes";
 import { StrategyQuestions } from "@/components/home/StrategyQuestions";
 import { BLOCK_TEXT } from "@/lib/blocks";
 import { PHOTO } from "@/lib/photos";
-import { CAPABILITIES, DISCIPLINES, FRAMEWORK } from "@/lib/site";
+import { AUDIENCES, DISCIPLINES, SITE } from "@/lib/site";
 
 const wrap = "relative z-10 mx-auto w-full max-w-[96rem] px-5 sm:px-8 lg:px-12";
 
@@ -26,55 +26,104 @@ export function DisciplineLabel({ block, label, trail = true }: { block: 0 | 1 |
 }
 
 const STRATEGY_ITEMS: PathItem[] = [
-  { title: "Growth strategy and opportunity assessment", line: "Where growth can come from, and what it would take.", icon: "assessment" },
-  { title: "Competitive and market positioning", line: "Clarity on where to compete — and how.", icon: "compete" },
-  { title: "Strategic partnership development", line: "Alliances that open markets and capabilities.", icon: "partnership" },
-  { title: "Prioritised roadmaps that connect direction to execution", line: "Sequenced steps the team can act on.", icon: "roadmap" },
-  { title: "Decision support for leadership teams", line: "Evidence and options when decisions matter.", icon: "decision" },
+  { title: "Strategic business development", line: "Commercial expansion and stronger positioning.", icon: "assessment" },
+  { title: "Revenue opportunity development", line: "New products, services, channels and models.", icon: "revenue" },
+  { title: "Strategic partnerships", line: "Relationships that create mutual value.", icon: "partnership" },
+  { title: "Market intelligence", line: "Markets, competitors, customers and emerging openings.", icon: "compete" },
+  { title: "Commercial concept development", line: "Promising ideas turned into structured propositions.", icon: "roadmap" },
 ];
 
 const AI_ITEMS: PathItem[] = [
-  { title: "AI workflow engineering and intelligent assistants", line: "AI designed into specific workflows, people in the loop.", icon: "assistant" },
-  { title: "Business process automation", line: "Repetitive manual work, removed.", icon: "automation" },
-  { title: "Integration of disconnected systems and data", line: "Tools and data that work together.", icon: "integration" },
-  { title: "Digital visibility for AI-driven search and discovery", line: "Accurately represented in AI-generated answers.", icon: "visibility" },
-  { title: "Responsible adoption", line: "Evaluation, guardrails and team enablement.", icon: "guardrail" },
+  { title: "AI strategy & implementation", line: "Practical use cases, implemented appropriately.", icon: "decision" },
+  { title: "Intelligent workflow automation", line: "Fewer repetitive tasks, better coordination.", icon: "automation" },
+  { title: "AI assistants & customer interfaces", line: "Information and services, easier to reach.", icon: "assistant" },
+  { title: "Systems integration", line: "Tools and information sources that work together.", icon: "integration" },
+  { title: "AI discovery & visibility", line: "Accurately represented in AI-assisted experiences.", icon: "visibility" },
 ];
 
 const GROWTH_ITEMS: PathItem[] = [
-  { title: "Digital visibility and positioning", line: "Found, and chosen, where buyers look.", icon: "visibility" },
-  { title: "Customer experience strategy", line: "Redesigning the moments that shape trust.", icon: "customer" },
-  { title: "Revenue opportunity development", line: "New revenue from existing strengths.", icon: "revenue" },
-  { title: "Go-to-market sequencing and measurement", line: "The right order of moves, measured as they land.", icon: "sequence" },
-  { title: "International and new-market entry planning", line: "Considered entry: partners, sequencing, risk.", icon: "globe" },
+  { title: "Market positioning", line: "Clearer differentiation, stronger relevance.", icon: "position" },
+  { title: "Digital experience strategy", line: "Platforms and journeys that serve the business.", icon: "customer" },
+  { title: "AI search & discovery visibility", line: "Found and understood where people look.", icon: "visibility" },
+  { title: "Partnership-led growth", line: "Collaboration that expands reach.", icon: "partnership" },
+  { title: "Market expansion", line: "New segments, geographies and routes to market.", icon: "globe" },
 ];
 
-const CAPABILITY_ICON: Record<string, IconName> = {
-  "Business Growth Strategy": "assessment",
-  "Digital Transformation": "integration",
-  "AI Workflow Engineering": "assistant",
-  "Business Process Automation": "automation",
-  "Digital Visibility and AI Discovery": "visibility",
-  "Customer Experience Strategy": "customer",
-  "Strategic Partnerships": "partnership",
-  "International Market Entry": "globe",
-  "Revenue Opportunity Development": "revenue",
-};
+const AUDIENCE_ICON: IconName[] = ["revenue", "decision", "visibility", "globe", "integration"];
 
-/* --------------------------------------------------------- 01 · in practice */
+function SectionLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Reveal className="mt-8">
+      <Link href={href} className="link-quiet inline-flex items-center gap-2 text-[0.95rem] underline decoration-line underline-offset-4 hover:decoration-jade">
+        {children} <span aria-hidden>→</span>
+      </Link>
+    </Reveal>
+  );
+}
+
+/* ----------------------------------------------------------- Introduction */
+export function Introduction() {
+  return (
+    <section id="introduction" aria-labelledby="intro-title" className="relative scroll-mt-20 border-t border-line">
+      <div className={`${wrap} py-24 lg:py-32`}>
+        <div className="grid gap-10 lg:grid-cols-12">
+          <div className="lg:col-span-5">
+            <Reveal as="p" className="type-label flex items-center gap-3 text-haze" data-trail-anchor="">
+              <span aria-hidden className="h-px w-8 bg-jade" />
+              {SITE.belief}
+            </Reveal>
+            <Reveal as="h2" delay={80} className="type-title mt-5 text-ink">
+              <span id="intro-title">The Greatest Opportunities Aren&rsquo;t Always Obvious.</span>
+            </Reveal>
+          </div>
+          <div className="space-y-5 text-[1.0625rem] leading-relaxed text-mist lg:col-span-6 lg:col-start-7">
+            <Reveal as="p">
+              Every organization has potential that has yet to be fully realized. It may exist within an overlooked market, an inefficient process, an underdeveloped customer relationship, a disconnected system, or a partnership that has never been explored.
+            </Reveal>
+            <Reveal as="p" delay={70}>
+              Recognizing those possibilities requires more than conventional thinking. ADEN-CHASE combines business intelligence, strategic perspective, and intelligent engineering to identify where value can be created—and develop practical ways to capture it.
+            </Reveal>
+            <Reveal as="p" delay={140} className="border-l-2 border-jade pl-4 text-[1.15rem] font-medium leading-snug text-ink">
+              We don&rsquo;t believe growth begins with a predefined solution. It begins with seeing the opportunity.
+            </Reveal>
+          </div>
+        </div>
+
+        <div className="mt-24 grid gap-10 border-t border-white/[0.07] pt-16 lg:grid-cols-12">
+          <div className="lg:col-span-6">
+            <Reveal as="h2" className="type-headline text-ink">
+              <span id="disciplines-title">
+                Three Disciplines. <span className="text-jade">One Strategic Advantage.</span>
+              </span>
+            </Reveal>
+          </div>
+          <div className="lg:col-span-5 lg:col-start-8 lg:self-end">
+            <Reveal as="p" delay={80} className="type-lede text-mist">
+              Commercial opportunity, intelligent technology, and market growth are deeply connected. We bring these disciplines together to develop solutions that work beyond traditional service boundaries.
+            </Reveal>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* --------------------------------------------------------- 01 · Business Development */
 export function StrategyInPractice() {
   const d = DISCIPLINES[0];
   return (
     <section id="business-development" aria-labelledby="strategy-title" className="relative scroll-mt-20 border-t border-line">
       <div className={`${wrap} grid gap-14 py-24 lg:grid-cols-12 lg:py-32`}>
         <div className="lg:col-span-5">
-          <DisciplineLabel block={0} label="01 · Business Development — in practice" />
+          <DisciplineLabel block={0} label="01 · Business Development" />
           <Reveal as="h2" delay={80} className="type-title mt-6 text-ink">
-            <span id="strategy-title">{d.line}</span>
+            <span id="strategy-title">{d.headline}</span>
           </Reveal>
-          <Reveal as="p" delay={140} className="type-lede mt-6 text-mist">
-            Strategy is where every engagement begins — the foundation the engineering and growth work is built on.
-          </Reveal>
+          {d.copy.map((p, i) => (
+            <Reveal as="p" key={i} delay={140 + i * 60} className={`${i ? "mt-4 text-[1.02rem] leading-relaxed" : "type-lede mt-6"} text-mist`}>
+              {p}
+            </Reveal>
+          ))}
           <Reveal as="h3" delay={180} className="type-label mt-12 text-haze">
             A strategic decision framework
           </Reveal>
@@ -85,11 +134,12 @@ export function StrategyInPractice() {
         <div className="lg:col-span-6 lg:col-start-7">
           <AngledPhoto photo={PHOTO.strategyPractice} block={0} className="h-[46vw] max-h-[28rem] min-h-[15rem]" />
           <Reveal as="h3" className="type-label mt-12 text-haze">
-            What strategy work delivers
+            What business development delivers
           </Reveal>
           <div className="mt-5">
             <CapabilityPath items={STRATEGY_ITEMS} block={0} />
           </div>
+          <SectionLink href={d.href}>Explore Business Development</SectionLink>
         </div>
       </div>
     </section>
@@ -107,13 +157,17 @@ export function AiEngineering() {
             <DisciplineLabel block={1} label="02 · AI Engineering" />
             <Reveal as="h2" delay={80} className="type-headline mt-6 text-ink">
               <span id="ai-title">
-                Engineer intelligent systems that improve how businesses <span style={{ color: BLOCK_TEXT[1] }}>operate and grow.</span>
+                Engineer the <span style={{ color: BLOCK_TEXT[1] }}>Advantage.</span>
               </span>
             </Reveal>
           </div>
-          <Reveal as="p" delay={140} className="type-lede self-end text-mist lg:col-span-5 lg:col-start-8">
-            {d.description}
-          </Reveal>
+          <div className="space-y-4 self-end lg:col-span-5 lg:col-start-8">
+            {d.copy.map((p, i) => (
+              <Reveal as="p" key={i} delay={140 + i * 60} className={i ? "text-[1.02rem] leading-relaxed text-mist" : "type-lede text-mist"}>
+                {p}
+              </Reveal>
+            ))}
+          </div>
         </div>
 
         <div className="mt-14 grid gap-6 lg:mt-16 lg:grid-cols-12">
@@ -135,8 +189,9 @@ export function AiEngineering() {
         <div className="mt-16 grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-4">
             <Reveal as="h3" className="type-title text-ink">
-              Practical technology, measured by how the business runs.
+              The right technology adapts to the business.
             </Reveal>
+            <SectionLink href={d.href}>Explore AI Engineering</SectionLink>
           </div>
           <div className="lg:col-span-7 lg:col-start-6">
             <CapabilityPath items={AI_ITEMS} block={1} />
@@ -164,15 +219,18 @@ export function MarketGrowth() {
             <DisciplineLabel block={2} label="03 · Market Growth" />
             <Reveal as="h2" delay={80} className="type-headline mt-6 text-ink">
               <span id="growth-title">
-                Turn direction into <span style={{ color: BLOCK_TEXT[2] }}>commercial momentum.</span>
+                Expand <span style={{ color: BLOCK_TEXT[2] }}>What&rsquo;s Possible.</span>
               </span>
             </Reveal>
-            <Reveal as="p" delay={140} className="type-lede mt-6 text-mist">
-              {d.description}
-            </Reveal>
+            {d.copy.map((p, i) => (
+              <Reveal as="p" key={i} delay={140 + i * 60} className={`${i ? "mt-4 text-[1.02rem] leading-relaxed" : "type-lede mt-6"} text-mist`}>
+                {p}
+              </Reveal>
+            ))}
             <div className="mt-10">
               <CapabilityPath items={GROWTH_ITEMS} block={2} variant="ascent" />
             </div>
+            <SectionLink href={d.href}>Explore Market Growth</SectionLink>
           </div>
         </div>
 
@@ -182,10 +240,10 @@ export function MarketGrowth() {
               Where progress shows up
             </Reveal>
             <Reveal as="h3" delay={60} className="type-title mt-4 text-ink">
-              Six outcomes. One connected system.
+              Different disciplines. Connected thinking. Measurable progress.
             </Reveal>
             <Reveal as="p" delay={120} className="mt-5 text-[1.02rem] leading-relaxed text-mist">
-              The measures that matter are agreed before work begins — then reported against honestly, including what is not yet working.
+              The measures that matter are agreed before work begins—then reported against honestly, including what is not yet working.
             </Reveal>
           </div>
           <div className="lg:col-span-8">
@@ -197,101 +255,109 @@ export function MarketGrowth() {
   );
 }
 
-/* ------------------------------------------------ Capabilities & business value */
-export function CapabilitiesValue() {
+/* -------------------------------------------------------------- Differentiation */
+export function Differentiation() {
   return (
-    <section id="capabilities" aria-labelledby="cap-title" className="relative scroll-mt-20 border-t border-line">
+    <section id="differentiation" aria-labelledby="diff-title" className="relative scroll-mt-20 border-t border-line">
       <div className={`${wrap} py-24 lg:py-32`}>
-        <div className="grid gap-8 lg:grid-cols-12">
+        <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-6">
             <Reveal as="p" className="type-label flex items-center gap-3 text-haze" data-trail-anchor="">
               <span aria-hidden className="h-px w-8 bg-jade" />
-              Selected capabilities
+              How we think
             </Reveal>
-            <Reveal as="h2" delay={80} className="type-title mt-5 text-ink">
-              <span id="cap-title">Three disciplines. One connected system.</span>
-            </Reveal>
-          </div>
-          <Reveal as="p" delay={140} className="type-lede self-end text-mist lg:col-span-5 lg:col-start-8">
-            Every engagement is scoped around the opportunity in front of you — never assembled from a package.
-          </Reveal>
-        </div>
-
-        <div className="mt-14 grid gap-5 lg:grid-cols-3">
-          {DISCIPLINES.map((d) => (
-            <Reveal key={d.id} delay={d.region * 110} className="group relative flex flex-col overflow-hidden rounded-3xl border border-white/[0.07] bg-[linear-gradient(170deg,rgba(10,30,82,0.7),rgba(0,10,40,0.85))] p-7 transition-[border-color,transform] duration-300 ease-brand hover:-translate-y-1 hover:border-white/[0.14] sm:p-9">
-              <span aria-hidden className="pointer-events-none absolute -right-2 -top-6 select-none text-[7.5rem] font-semibold leading-none tracking-[-0.06em] text-white/[0.035]">
-                {d.index}
+            <Reveal as="h2" delay={80} className="type-headline mt-6 text-ink">
+              <span id="diff-title">
+                We Don&rsquo;t Start With a Solution. <span className="text-jade">We Start With the Opportunity.</span>
               </span>
-              <div className="relative flex items-center gap-3">
-                <BrandBlock block={d.region} className="h-5 w-auto" />
-                <span className="type-label" style={{ color: BLOCK_TEXT[d.region] }}>
-                  {d.title}
-                </span>
-              </div>
-              <p className="relative mt-4 text-[0.95rem] leading-relaxed text-mist">{d.line}</p>
-              <ul className="relative mt-7 space-y-5 border-t border-white/[0.07] pt-6">
-                {CAPABILITIES.filter((c) => c.discipline === d.id).map((c) => (
-                  <li key={c.title} className="flex gap-3.5">
-                    <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/10 bg-navy-deep" style={{ color: BLOCK_TEXT[d.region] }}>
-                      <Icon name={CAPABILITY_ICON[c.title] ?? "assessment"} className="h-4 w-4" />
-                    </span>
-                    <span>
-                      <span className="block text-[1.02rem] font-semibold text-ink">{c.title}</span>
-                      <span className="mt-1 block text-[0.88rem] leading-relaxed text-mist">{c.description}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
-          ))}
-        </div>
-
-        <div className="mt-20 grid gap-10 lg:grid-cols-12">
-          <div className="lg:col-span-4">
-            <Reveal as="p" className="type-label text-haze">
-              How value is created
-            </Reveal>
-            <Reveal as="p" delay={80} className="type-title mt-5 text-ink">
-              Identify. Engineer. <span className="text-jade">Accelerate.</span>
-            </Reveal>
-            <Reveal delay={140} className="mt-6">
-              <Link href="/approach" className="link-quiet text-[0.95rem] underline decoration-line underline-offset-4 hover:decoration-jade">
-                Read our approach
-              </Link>
             </Reveal>
           </div>
-          <ol className="grid gap-8 sm:grid-cols-3 lg:col-span-8">
-            {FRAMEWORK.map((s, i) => (
-              <Reveal as="li" key={s.word} delay={i * 100} className="border-t border-white/[0.08] pt-5">
-                <BrandBlock block={i as 0 | 1 | 2} className="h-3 w-auto" />
-                <p className="mt-4 text-[1.1rem] font-semibold text-ink">{s.title}</p>
-                <p className="mt-2 text-[0.93rem] leading-relaxed text-mist">{s.body}</p>
-              </Reveal>
-            ))}
-          </ol>
+          <div className="space-y-5 self-end text-[1.0625rem] leading-relaxed text-mist lg:col-span-5 lg:col-start-8">
+            <Reveal as="p">Traditional approaches often begin with a predefined service. We begin by understanding what an organization is capable of becoming.</Reveal>
+            <Reveal as="p" delay={70}>
+              That means looking beyond the immediate request, identifying connections others may overlook, and developing solutions around the opportunities with the greatest potential value.
+            </Reveal>
+          </div>
+        </div>
+        <Reveal as="ul" delay={100} className="mt-14 grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+          {["Sometimes the answer is strategic.", "Sometimes it’s technological.", "Sometimes it’s a new partnership or a better customer experience.", "Sometimes it’s a completely different commercial model."].map((t, i) => (
+            <li key={t} className="bg-navy-deep p-6 sm:p-7">
+              <BrandBlock block={(i % 3) as 0 | 1 | 2} className="h-3 w-auto" />
+              <p className="mt-5 text-[1.05rem] font-medium leading-snug text-ink">{t}</p>
+            </li>
+          ))}
+        </Reveal>
+        <div className="mt-12 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <Reveal as="p" className="max-w-xl text-[1.0625rem] leading-relaxed text-mist">
+            What matters is finding the right approach for the right opportunity.
+          </Reveal>
+          <Reveal as="p" delay={80} className="type-title max-w-2xl text-ink">
+            {SITE.closing}
+          </Reveal>
         </div>
       </div>
     </section>
   );
 }
 
-/* ---------------------------------------------------------- Private Engagement */
-export function PrivateEngagement() {
+/* -------------------------------------------------------------- Who we work with */
+export function WhoWeWorkWith() {
   return (
-    <section id="engagement" aria-labelledby="eng-title" className="relative scroll-mt-20 border-t border-line">
+    <section id="who-we-work-with" aria-labelledby="who-title" className="relative scroll-mt-20 border-t border-line">
+      <div className={`${wrap} py-24 lg:py-32`}>
+        <div className="grid gap-10 lg:grid-cols-12">
+          <div className="lg:col-span-6">
+            <Reveal as="p" className="type-label flex items-center gap-3 text-haze" data-trail-anchor="">
+              <span aria-hidden className="h-px w-8 bg-jade" />
+              Who we work with
+            </Reveal>
+            <Reveal as="h2" delay={80} className="type-title mt-5 text-ink">
+              <span id="who-title">Different Challenges. New Possibilities.</span>
+            </Reveal>
+          </div>
+          <Reveal as="p" delay={140} className="type-lede self-end text-mist lg:col-span-5 lg:col-start-8">
+            Opportunity exists across industries, markets, and institutional environments. Our capabilities adapt to the specific needs and ambitions of the organizations we work with.
+          </Reveal>
+        </div>
+        <ul className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+          {AUDIENCES.map((a, i) => (
+            <li key={a.title}>
+              <Reveal delay={i * 80} className="flex h-full flex-col rounded-3xl border border-white/[0.07] bg-[linear-gradient(170deg,rgba(10,30,82,0.7),rgba(0,10,40,0.85))] p-6">
+                <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-navy-deep text-jade">
+                  <Icon name={AUDIENCE_ICON[i]} className="h-5 w-5" />
+                </span>
+                <h3 className="mt-5 text-[1.08rem] font-semibold leading-snug text-ink">{a.title}</h3>
+                <p className="mt-2 text-[0.9rem] leading-relaxed text-mist">{a.line}</p>
+                {"href" in a && (
+                  <Link href={a.href} className="mt-auto inline-flex items-center gap-2 pt-5 text-[0.88rem] text-jade underline-offset-4 hover:underline">
+                    Explore <span aria-hidden>→</span>
+                  </Link>
+                )}
+              </Reveal>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ Our approach */
+export function Approach() {
+  return (
+    <section id="approach" aria-labelledby="approach-title" className="relative scroll-mt-20 border-t border-line">
       <div className={`${wrap} py-24 lg:py-32`}>
         <div className="grid items-end gap-12 lg:grid-cols-12">
           <div className="lg:col-span-6">
             <Reveal as="p" className="type-label flex items-center gap-3 text-haze" data-trail-anchor="">
               <span aria-hidden className="h-px w-8 bg-jade" />
-              Private Engagement
+              Our approach
             </Reveal>
             <Reveal as="h2" delay={80} className="type-title mt-5 text-ink">
-              <span id="eng-title">Considered from the first conversation.</span>
+              <span id="approach-title">From Opportunity to Outcome.</span>
             </Reveal>
             <Reveal as="p" delay={140} className="mt-5 max-w-xl text-[1.05rem] leading-relaxed text-mist">
-              We work with a small number of clients at a time so each engagement receives senior attention. There are no packages or public price lists — every engagement moves through the same considered path, from opportunity to growth.
+              Meaningful progress begins with understanding where value can be created. Our approach connects discovery, strategy, intelligent execution, and continuous improvement.
             </Reveal>
           </div>
           <div className="lg:col-span-5 lg:col-start-8">
@@ -300,6 +366,14 @@ export function PrivateEngagement() {
         </div>
         <div className="mt-16 lg:mt-20">
           <EngagementPath />
+        </div>
+        <div className="mt-14 flex flex-col gap-3 border-t border-white/[0.07] pt-8 lg:flex-row lg:items-baseline lg:justify-between">
+          <Reveal as="p" className="text-[1.15rem] font-medium leading-snug text-ink">
+            The objective is not activity for its own sake. It&rsquo;s meaningful progress with measurable value.
+          </Reveal>
+          <Reveal as="p" delay={80} className="text-[0.85rem] text-haze">
+            Each engagement is shaped around the opportunity; these stages describe our philosophy, not a fixed methodology.
+          </Reveal>
         </div>
       </div>
     </section>

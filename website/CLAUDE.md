@@ -86,7 +86,13 @@ The logo's own block colours (`BLOCK_COLOURS` in `src/lib/blocks.ts`) are used o
 
 **Descriptor.** Wherever the full descriptor is shown, it reads exactly **Business Development • AI Engineering • Market Growth**: that wording, that order, bullet separators. The unit tests enforce this.
 
-**Headline.** The headline is "The future doesn't build itself."
+**Corporate identity (copy brief, final).**
+- **Tagline:** "Identifying Opportunity. Engineering Growth." is the only corporate tagline; never substitute another. It is the homepage hero headline.
+- **Supporting statements** (never replacements): "We see opportunities others overlook—and engineer the solutions to realize them." and "Opportunity is not always obvious. Growth is not always conventional."
+- **Copy source:** all corporate copy lives in `src/lib/site.ts`.
+- **Positioning:** ADEN-CHASE is an international, opportunity-driven strategic consultancy, not a marketing agency, a web shop or an AI vendor.
+- **Government & Institutions** is an application of the three disciplines, never a fourth discipline. It must never claim clients, contracts, endorsements, funding, procurement outcomes, licences or certifications, and never disclose internal opportunity, research or procurement workflows.
+- **Contact:** private, selective positioning, with no pricing, packages or sales funnels.
 
 ---
 

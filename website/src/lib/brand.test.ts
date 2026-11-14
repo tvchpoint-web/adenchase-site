@@ -56,4 +56,18 @@ describe("brand guards", () => {
     const offenders = [...files, ...docs].filter((f) => /Business Strategy/i.test(readFileSync(f, "utf8")));
     expect(offenders).toEqual([]);
   });
+
+  it("uses only the approved corporate tagline; retired slogans are gone", async () => {
+    const { SITE } = await import("./site");
+    expect(SITE.statement).toBe("Identifying Opportunity. Engineering Growth.");
+    const docs = ["README.md", "CLAUDE.md"].map((f) => join(ROOT, f));
+    const retired = /future doesn.t build itself|connecting the dots|we don.t wait for opportunity/i;
+    const offenders = [...files, ...docs].filter((f) => retired.test(readFileSync(f, "utf8")));
+    expect(offenders).toEqual([]);
+  });
+
+  it("names exactly three disciplines, matching the descriptor", async () => {
+    const { DISCIPLINES, SITE } = await import("./site");
+    expect(DISCIPLINES.map((d) => d.title).join(" • ")).toBe(SITE.disciplines);
+  });
 });

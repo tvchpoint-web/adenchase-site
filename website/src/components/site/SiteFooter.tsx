@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { NAV, SITE } from "@/lib/site";
+import { CTA, NAV, SITE } from "@/lib/site";
 import { Descriptor } from "@/components/brand/Descriptor";
 
 export function SiteFooter() {
@@ -24,6 +24,11 @@ export function SiteFooter() {
                   Home
                 </Link>
               </li>
+              <li>
+                <Link href="/capabilities" className="link-quiet">
+                  Capabilities
+                </Link>
+              </li>
               {NAV.map((item) => (
                 <li key={item.href}>
                   <Link href={item.href} className="link-quiet">
@@ -45,14 +50,14 @@ export function SiteFooter() {
           </div>
           <div className="col-span-2 sm:col-span-1">
             <p className="type-label text-haze">Begin</p>
-            <Link href="/engagement" className="mt-5 inline-block text-[0.9375rem] text-jade underline-offset-4 hover:underline">
-              Request a Strategic Introduction
+            <Link href="/contact" className="mt-5 inline-block text-[0.9375rem] text-jade underline-offset-4 hover:underline">
+              {CTA.conversation}
             </Link>
           </div>
         </nav>
         <div className="flex flex-col gap-2 border-t border-line pt-8 text-xs text-haze sm:flex-row sm:justify-between lg:col-span-12">
           <p>© {new Date().getFullYear()} {SITE.name}. All rights reserved.</p>
-          <p>The Future Doesn&rsquo;t Build Itself.</p>
+          <p>{SITE.belief}</p>
         </div>
       </div>
     </footer>

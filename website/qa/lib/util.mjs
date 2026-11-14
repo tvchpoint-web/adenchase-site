@@ -68,6 +68,8 @@ export function watchErrors(page, base) {
     if (r.url().startsWith(base) && r.status() >= 400 && !r.url().includes("qa-route-that-does-not-exist")) errors.push(`HTTP ${r.status()}: ${r.url().slice(base.length)}`);
   });
   page.on("requestfailed", (r) => {
+    // Link prefetches (RSC payloads) cancelled because the test navigated away are not errors.
+    if (r.failure()?.errorText === "net::ERR_ABORTED" && /[?&]_rsc=/.test(r.url())) return;
     if (r.url().startsWith(base)) errors.push(`request failed: ${r.url().slice(base.length)} (${r.failure()?.errorText})`);
   });
   return errors;

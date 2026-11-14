@@ -6,6 +6,7 @@ import { PHOTO } from "@/lib/photos";
 import { StrategyProcess } from "@/components/home/StrategyProcess";
 import { BrandBlock } from "@/components/brand/AngledPhoto";
 import { Descriptor } from "@/components/brand/Descriptor";
+import { CTA, OPERATING_PHILOSOPHY, SITE } from "@/lib/site";
 
 /**
  * Opening prototype — storyboard v2.
@@ -64,11 +65,12 @@ const { x0: UL_X0, x1: UL_X1, y: UL_Y } = UNDERLINE;
 /** When each block activates in the intro: green as the underline arrives, then cyan, then sapphire. */
 const BLOCK_IN = [0.54, 0.64, 0.72];
 
+/** The operating philosophy: four connected steps (a real sequence, so the numbering is information). */
 const SLICES = [
-  { key: "strategy", photo: PHOTO.sliceStrategy, label: "Business Development", line: "See the opportunity before the market does." },
-  { key: "engineering", photo: PHOTO.sliceEngineering, label: "AI Engineering", line: "Systems that carry strategy into operation." },
-  { key: "intelligence", photo: PHOTO.sliceIntelligence, label: "Intelligence", line: "Better information at the moment it matters." },
-  { key: "growth", photo: PHOTO.sliceGrowth, label: "Market Growth", line: "Direction turned into commercial momentum." },
+  { key: "identify", photo: PHOTO.sliceStrategy, label: "Identify", line: OPERATING_PHILOSOPHY[0] },
+  { key: "connect", photo: PHOTO.sliceIntelligence, label: "Connect", line: OPERATING_PHILOSOPHY[1] },
+  { key: "engineer", photo: PHOTO.sliceEngineering, label: "Engineer", line: OPERATING_PHILOSOPHY[2] },
+  { key: "create", photo: PHOTO.sliceGrowth, label: "Create value", line: OPERATING_PHILOSOPHY[3] },
 ];
 /**
  * The wordmark's four layers, each a full-width horizontal band cut losslessly from the artwork
@@ -83,9 +85,9 @@ const WM_LAYERS = [
 ] as const;
 const LAYER_Y = Object.fromEntries(WM_LAYERS.map((l) => [l.k, l.y0])) as Record<string, number>;
 const PORTALS = [
-  { photo: PHOTO.portalStrategy, label: "Business Development", line: "Identify opportunity. Establish direction." },
-  { photo: PHOTO.portalEngineering, label: "AI Engineering", line: "Engineer intelligent systems that improve operations." },
-  { photo: PHOTO.portalGrowth, label: "Market Growth", line: "Turn direction into commercial momentum." },
+  { photo: PHOTO.portalStrategy, label: "Business Development", line: "Discover the opportunity." },
+  { photo: PHOTO.portalEngineering, label: "AI Engineering", line: "Engineer the advantage." },
+  { photo: PHOTO.portalGrowth, label: "Market Growth", line: "Expand what’s possible." },
 ];
 
 /* ------------------------------------------------------------ component */
@@ -421,27 +423,38 @@ export function OpeningSequence() {
       {/* Copy layers (sticky with the stage) */}
       <div className="pointer-events-none absolute inset-0">
         <div className="sticky top-0 h-svh">
-          <p data-k="f1tag" className="type-label absolute inset-x-0 top-[66%] text-center text-haze max-md:top-[56%] max-md:text-[10px]" style={{ opacity: 0 }}>
-            Identifying Opportunity · Engineering Growth
-          </p>
           <a data-k="cue" href="#business-development" className="type-label pointer-events-auto absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-haze" style={{ opacity: 0 }}>
             Scroll
             <span aria-hidden className="block h-8 w-px bg-line" />
           </a>
 
-          <div data-k="f2" className="absolute left-5 right-5 bottom-[11svh] sm:left-8 lg:bottom-auto lg:left-12 lg:right-auto lg:top-1/2 lg:w-[46%] lg:-translate-y-1/2" style={{ opacity: 0 }}>
+          <div data-k="f2" className="pointer-events-auto absolute left-5 right-5 bottom-[9svh] sm:left-8 lg:bottom-auto lg:left-12 lg:right-auto lg:top-1/2 lg:w-[46%] lg:-translate-y-1/2" style={{ opacity: 0 }}>
             <p className="type-label flex items-center gap-3 text-haze">
               <span aria-hidden className="h-px w-8 bg-jade" />
               <Descriptor />
             </p>
             <h1 className="type-display mt-6 text-ink">
-              The future
+              Identifying
               <br />
-              doesn’t build
+              Opportunity.
               <br />
-              <span className="text-jade">itself.</span>
+              <span className="text-jade">
+                Engineering
+                <br />
+                Growth.
+              </span>
             </h1>
-            <p className="type-lede mt-6 max-w-[30rem] text-mist">Opportunity rewards those who see it first — and build for it deliberately.</p>
+            <p className="mt-6 max-w-[33rem] text-[0.98rem] leading-relaxed text-mist lg:type-lede">
+              We uncover opportunities others overlook, connect strategy with intelligent technology, and engineer tailored solutions that create measurable value for businesses, brands, and institutions.
+            </p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <a href="/capabilities" className="btn btn-primary justify-center">
+                {CTA.capabilities} <span aria-hidden className="btn-arrow">→</span>
+              </a>
+              <a href="/contact" className="btn btn-ghost justify-center">
+                {CTA.conversation}
+              </a>
+            </div>
           </div>
 
           {SLICES.map((s, i) => (
@@ -454,20 +467,19 @@ export function OpeningSequence() {
             </div>
           ))}
           <p data-k="f3" className="type-lede absolute bottom-[5svh] left-5 right-5 text-mist sm:left-8 lg:left-12 lg:max-w-[46rem]" style={{ opacity: 0 }}>
-            We identify opportunity, engineer intelligent solutions, and create new pathways for business growth.
+            {SITE.belief}
           </p>
 
           <div data-k="f4" className="absolute inset-x-5 top-[46svh] text-center lg:top-[55svh]" style={{ opacity: 0 }}>
-            <p className="type-headline text-ink">
-              The future doesn’t build <span className="text-jade">itself.</span>
+            <p className="type-title mx-auto max-w-[52rem] text-ink">
+              We see opportunities others overlook—<span className="text-jade">and engineer the solutions to realize them.</span>
             </p>
-            <p className="type-lede mx-auto mt-5 max-w-[36rem] text-mist">We identify opportunity, engineer intelligent solutions, and create new pathways for business growth.</p>
           </div>
 
           <div data-k="f5" className="absolute left-5 top-24 sm:left-8 lg:left-12 lg:top-[18svh] lg:w-[30%]" style={{ opacity: 0 }}>
             <p className="type-label flex items-center gap-3 text-haze">
               <span aria-hidden className="h-px w-8 bg-jade" />
-              Three disciplines · One connected system
+              Three disciplines · One strategic advantage
             </p>
             <p className="mt-5 hidden text-[4rem] font-semibold leading-[0.95] tracking-[-0.035em] text-ink lg:block">
               Choose where
@@ -492,15 +504,15 @@ export function OpeningSequence() {
               01 · Business Development
             </p>
             <p className="mt-4 text-[2rem] font-semibold leading-[0.98] tracking-[-0.03em] text-ink lg:mt-5 lg:text-[4.1rem]">
-              See the opportunity <span style={{ color: BLOCK_COLOURS[0] }}>before the market does.</span>
+              See the opportunity. <span style={{ color: BLOCK_COLOURS[0] }}>Build the advantage.</span>
             </p>
             <p className="mt-4 text-[0.95rem] leading-relaxed text-mist lg:type-lede lg:mt-5">
-              We examine the business as it actually operates — market, customers, economics and constraints — to find the opportunities worth pursuing and the direction that makes them achievable.
+              Growth is not always about doing more. Sometimes it&rsquo;s about recognizing what others have missed—and connecting capabilities, markets, and relationships to create value.
             </p>
             <StrategyProcess />
             <div className="mt-6 flex flex-col gap-3 sm:flex-row lg:mt-7">
-              <a href="/engagement" className="btn btn-primary justify-center">
-                Request a Strategic Introduction <span aria-hidden className="btn-arrow">→</span>
+              <a href="/business-development" className="btn btn-primary justify-center">
+                Explore Business Development <span aria-hidden className="btn-arrow">→</span>
               </a>
               <a href="#ai-engineering" className="btn btn-ghost justify-center max-lg:hidden">
                 Next: AI Engineering

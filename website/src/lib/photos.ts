@@ -25,11 +25,11 @@ export const PHOTO = {
   engagement: "handshake",
   finalCta: "earth",
   // Inner pages
-  approachHero: "strategy",
-  expertiseHero: "boardroom",
-  expertiseStrategy: "decision",
-  expertiseEngineering: "systems",
-  expertiseGrowth: "growth",
-  capabilitiesHero: "boardroom",
-  engagementHero: "counsel",
+  aboutHero: "strategy",
+  capabilitiesHero: "intelligence",
+  businessDevelopmentHero: "decision",
+  aiEngineeringHero: "systems",
+  marketGrowthHero: "growth",
+  governmentHero: "boardroom",
+  contactHero: "counsel",
 } as const;

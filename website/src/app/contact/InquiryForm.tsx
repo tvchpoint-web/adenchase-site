@@ -12,6 +12,12 @@ const fieldClass =
 
 export function InquiryForm() {
   const [state, action, pending] = useActionState(submitInquiry, initial);
+  // Arriving from a discipline page (?interest=…) preselects that interest, if it is a valid option.
+  useEffect(() => {
+    const wanted = new URLSearchParams(window.location.search).get("interest");
+    const select = document.getElementById("interest") as HTMLSelectElement | null;
+    if (wanted && select && !select.value && (INTERESTS as readonly string[]).includes(wanted)) select.value = wanted;
+  }, []);
   const statusRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -109,7 +115,7 @@ export function InquiryForm() {
       <div className="flex flex-col gap-5 pt-2 sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-sm text-sm leading-relaxed text-haze">Your details are used only to respond to this inquiry.</p>
         <button type="submit" disabled={pending} className="btn btn-primary justify-center disabled:cursor-wait disabled:opacity-70">
-          {pending ? "Sending…" : "Request a Strategic Introduction"}
+          {pending ? "Sending…" : "Start a Conversation"}
           {!pending && (
             <span aria-hidden className="btn-arrow">
               →

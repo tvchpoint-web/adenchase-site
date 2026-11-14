@@ -18,16 +18,17 @@ const interTight = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: `${SITE.name} — ${SITE.statement}`,
-    template: `%s — ${SITE.name}`,
+    default: `${SITE.name} | ${SITE.statement}`,
+    template: `%s | ${SITE.name}`,
   },
   description: SITE.description,
   openGraph: {
     type: "website",
     siteName: SITE.name,
-    title: `${SITE.name} — The Future Doesn't Build Itself.`,
+    title: `${SITE.name} | ${SITE.statement}`,
     description: SITE.description,
   },
+  twitter: { card: "summary_large_image", title: `${SITE.name} | ${SITE.statement}`, description: SITE.description },
   robots: { index: true, follow: true },
 };
 

@@ -4,18 +4,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { NAV, SITE } from "@/lib/site";
+import { CTA, NAV, SITE } from "@/lib/site";
 
 /** The navigation mark: the transparent artwork cropped (losslessly, unscaled) above the descriptor band. */
 const LOGO = { width: 1320, height: 320 };
 
 /** Homepage sections that belong to each navigation item (for the active-section indicator). */
 const SECTION_NAV: Record<string, string> = {
-  "business-development": "/expertise",
-  "ai-engineering": "/expertise",
-  "market-growth": "/expertise",
-  capabilities: "/capabilities",
-  engagement: "/engagement",
+  "business-development": "/business-development",
+  "ai-engineering": "/ai-engineering",
+  "market-growth": "/market-growth",
+  approach: "/about",
 };
 
 export function SiteHeader() {
@@ -131,7 +130,7 @@ export function SiteHeader() {
             />
           </Link>
 
-          <nav aria-label="Primary" className="hidden items-center gap-4 lg:flex">
+          <nav aria-label="Primary" className="hidden items-center gap-3 xl:flex">
             <ul
               ref={navRef}
               className="nav-capsule relative flex items-center rounded-full border border-white/[0.08] bg-navy-deep/40 p-1 backdrop-blur-md"
@@ -149,7 +148,7 @@ export function SiteHeader() {
                       onMouseEnter={() => setHover(i)}
                       onFocus={() => setHover(i)}
                       onBlur={() => setHover(null)}
-                      className={`relative z-10 block rounded-full px-[1.05rem] py-2 text-[0.84rem] font-[450] tracking-[0.015em] transition-colors duration-200 ${active || hover === i ? "text-ink" : "text-mist"}`}
+                      className={`relative z-10 block whitespace-nowrap rounded-full px-[0.9rem] py-2 text-[0.82rem] font-[450] tracking-[0.015em] transition-colors duration-200 ${active || hover === i ? "text-ink" : "text-mist"}`}
                     >
                       {item.label}
                       {active && <span aria-hidden className="absolute bottom-[3px] left-1/2 h-[3px] w-[3px] -translate-x-1/2 rounded-full bg-jade shadow-[0_0_8px_1px_rgba(131,253,128,0.7)]" />}
@@ -171,7 +170,7 @@ export function SiteHeader() {
           <button
             ref={toggleRef}
             type="button"
-            className="relative z-10 -mr-2 inline-flex h-11 w-11 items-center justify-center rounded-full lg:hidden"
+            className="relative z-10 -mr-2 inline-flex h-11 w-11 items-center justify-center rounded-full xl:hidden"
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label={open ? "Close menu" : "Open menu"}
@@ -185,7 +184,7 @@ export function SiteHeader() {
         </div>
       </header>
 
-      <div id="mobile-menu" hidden={!open} className="fixed inset-x-0 bottom-0 top-[4.25rem] z-[45] overflow-y-auto bg-navy-deep lg:hidden">
+      <div id="mobile-menu" hidden={!open} className="fixed inset-x-0 bottom-0 top-[4.25rem] lg:top-[4.5rem] z-[45] overflow-y-auto bg-navy-deep xl:hidden">
         <nav aria-label="Mobile" className="flex min-h-full flex-col justify-between px-5 pb-10 pt-8 sm:px-8">
           <ul className="space-y-1">
             {NAV.map((item, i) => (
@@ -194,17 +193,16 @@ export function SiteHeader() {
                   ref={i === 0 ? firstLinkRef : undefined}
                   href={item.href}
                   aria-current={pathname === item.href ? "page" : undefined}
-                  className="flex items-baseline gap-4 border-b border-line py-5 text-[1.75rem] font-medium tracking-[-0.02em] text-ink"
+                  className="flex items-baseline gap-4 border-b border-line py-4 text-[1.5rem] font-medium tracking-[-0.02em] text-ink sm:text-[1.75rem]"
                 >
-                  <span className="type-label text-haze">0{i + 1}</span>
                   {item.label}
                 </Link>
               </li>
             ))}
           </ul>
           <div className="mt-10 space-y-6">
-            <Link href="/engagement" className="btn btn-primary w-full justify-center">
-              Request a Strategic Introduction
+            <Link href="/contact" className="btn btn-primary w-full justify-center">
+              {CTA.conversation}
             </Link>
             <a href={SITE.portalUrl} className="flex items-center justify-center gap-2 rounded-full border border-ocean/30 py-3 text-sm text-ink" rel="noopener">
               <LockIcon />

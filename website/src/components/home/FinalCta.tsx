@@ -3,7 +3,7 @@ import { Reveal } from "@/components/editorial/SplitLines";
 import { InView } from "@/components/motion/InView";
 import { BLOCKS, LOGO_H, LOGO_W } from "@/lib/blocks";
 import { PHOTO } from "@/lib/photos";
-import { CTA_INTRO, SITE } from "@/lib/site";
+import { CTA, SITE } from "@/lib/site";
 
 /** Each block's crop box within the artwork, as percentages of the logo — so the crops land exactly in place. */
 const crops = BLOCKS.map((q) => {
@@ -33,17 +33,22 @@ export function FinalCta() {
           </Reveal>
           <Reveal as="h2" delay={80} className="type-display mt-6 text-ink">
             <span id="final-title">
-              Your next opportunity <span className="text-jade">starts here.</span>
+              Let&rsquo;s Explore <span className="text-jade">What&rsquo;s Possible.</span>
             </span>
           </Reveal>
           <Reveal as="p" delay={160} className="type-lede mt-7 max-w-[32rem] text-mist">
-            A private, considered approach to business development, AI engineering and market growth.
+            Whether you&rsquo;re facing a business challenge, exploring a new market, considering intelligent technology, or evaluating an opportunity that deserves a different perspective, the right conversation can be a valuable starting point.
           </Reveal>
           <Reveal delay={240} className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
-            <Link href="/engagement" className="btn btn-primary justify-center shadow-[0_0_40px_-12px_rgba(131,253,128,0.6)]">
-              {CTA_INTRO}
+            <Link href="/contact" className="btn btn-primary justify-center shadow-[0_0_40px_-12px_rgba(131,253,128,0.6)]">
+              {CTA.conversation}
               <span aria-hidden className="btn-arrow">→</span>
             </Link>
+            <Link href="/contact#inquiry" className="btn btn-ghost justify-center">
+              {CTA.consultation}
+            </Link>
+          </Reveal>
+          <Reveal delay={300} className="mt-6">
             <a href={SITE.portalUrl} className="link-quiet text-sm underline-offset-4 hover:underline" rel="noopener">
               Existing client? Sign in to the portal
             </a>

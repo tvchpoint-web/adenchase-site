@@ -16,11 +16,13 @@ export const OVERLAP_EXTRA_VIEWPORTS = {
 };
 
 /** Every public route, plus one unknown path that must answer 404. */
-export const ROUTES = ["/", "/approach", "/expertise", "/capabilities", "/engagement"];
+export const ROUTES = ["/", "/about", "/business-development", "/ai-engineering", "/market-growth", "/government-institutions", "/capabilities", "/contact"];
+/** Retired routes that must redirect to their replacements. */
+export const REDIRECTS = { "/approach": "/about", "/expertise": "/capabilities", "/engagement": "/contact" };
 export const NOT_FOUND_ROUTE = "/qa-route-that-does-not-exist";
 
 /** Routes Lighthouse audits (each in mobile and desktop form factors). */
-export const PERF_ROUTES = ["/", "/approach"];
+export const PERF_ROUTES = ["/", "/government-institutions"];
 
 export const THRESHOLDS = {
   // Accessibility (axe-core, WCAG 2.2 A/AA). Violations at these impacts fail the run.

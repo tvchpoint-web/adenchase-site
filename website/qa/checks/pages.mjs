@@ -1,4 +1,4 @@
-import { NOT_FOUND_ROUTE, ROUTES, VIEWPORTS } from "../config.mjs";
+import { NOT_FOUND_ROUTE, REDIRECTS, ROUTES, VIEWPORTS } from "../config.mjs";
 import { ensureDir, fail, pass, settlePage, slug, warn, watchErrors } from "../lib/util.mjs";
 
 /**
@@ -127,6 +127,13 @@ export async function checkPages({ browser, base, out }) {
     if (r.status() !== 200) broken.push(`${href} → ${r.status()}`);
   }
   results.push(broken.length ? fail(`${broken.length} broken internal link(s)`, broken.join("\n")) : pass(`${links.size} internal links resolve`));
+
+  // Retired routes redirect to their replacements.
+  for (const [from, to] of Object.entries(REDIRECTS)) {
+    const r = await ctx.request.get(base + from, { maxRedirects: 0 });
+    const loc = r.headers()["location"] || "";
+    results.push([301, 302, 307, 308].includes(r.status()) && loc.endsWith(to) ? pass(`${from} redirects to ${to}`) : fail(`${from} does not redirect to ${to}`, `HTTP ${r.status()} → ${loc}`));
+  }
 
   // Unknown routes must 404 (not 200 or 500).
   const nf = await ctx.request.get(base + NOT_FOUND_ROUTE);

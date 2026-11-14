@@ -4,11 +4,10 @@ import { useEffect, useRef } from "react";
 import { Icon, type IconName } from "@/components/brand/Icons";
 import { ENGAGEMENT_STEPS } from "@/lib/site";
 
-const ICONS: IconName[] = ["introduction", "discovery", "direction", "engineering", "expansion"];
-const PURPOSE = ["Is there a fit?", "What is really there?", "What should we do?", "Build what it needs", "Measure and extend"];
+const ICONS: IconName[] = ["discovery", "opportunity", "direction", "engineering", "efficiency"];
 
 /**
- * The five engagement stages as one pathway. The line fills, and each stage activates, as the
+ * From Opportunity to Outcome: the five stages of our approach as one pathway. The line fills, and each stage activates, as the
  * visitor scrolls through it (reversible). Horizontal on desktop, vertical on phones.
  */
 export function EngagementPath() {
@@ -52,7 +51,7 @@ export function EngagementPath() {
           </span>
           <div className="lg:mt-6">
             <p className="type-label text-[10px] text-haze">
-              Stage 0{i + 1} · <span className="stage-purpose transition-colors duration-500">{PURPOSE[i]}</span>
+              <span className="stage-purpose transition-colors duration-500">0{i + 1}</span>
             </p>
             <p className="mt-2 text-[1.08rem] font-semibold text-ink">{s.title}</p>
             <p className="mt-1.5 text-[0.9rem] leading-relaxed text-mist">{s.body}</p>
