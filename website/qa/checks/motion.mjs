@@ -141,6 +141,7 @@ async function revealContrast(page, litPng) {
  */
 function sliceTextOutside() {
   const bad = [];
+  let checked = 0;
   for (let i = 0; i < 4; i++) {
     const copy = document.querySelector(`[data-k="sliceCopy${i}"]`);
     const slice = document.querySelector(`[data-k="slice${i}"]`);
@@ -148,6 +149,7 @@ function sliceTextOutside() {
     const m = new DOMMatrix(getComputedStyle(slice).transform);
     const pts = (slice.style.clipPath.match(/-?[\d.]+px -?[\d.]+px/g) || []).map((t) => t.split(" ").map((v) => parseFloat(v)));
     if (pts.length !== 4) continue;
+    checked++;
     const poly = pts.map(([x, y]) => [x + m.m41, y + m.m42]);
     const inside = (x, y) => {
       // Convex polygon (TL, TR, BR, BL, clockwise in screen space): inside if on the right of every edge.
@@ -173,7 +175,26 @@ function sliceTextOutside() {
       }
     }
   }
-  return bad;
+  return { bad, checked };
+}
+
+/**
+ * Settles the opening at a few points where all four slice captions are fully shown (the timeline is
+ * smoothed, so each point waits for it to come to rest) and checks containment. Fails if no caption
+ * could be checked at all, so the check cannot pass vacuously.
+ */
+async function sliceContainment(pg, span) {
+  const out = [];
+  let checked = 0;
+  for (const pct of [46, 48]) {
+    await pg.evaluate((y) => window.scrollTo(0, y), Math.round(span.top + (span.h * pct) / 100));
+    await sleep(1500);
+    const r = await pg.evaluate(sliceTextOutside);
+    checked += r.checked;
+    out.push(...r.bad.map((b) => `${pct}%: ${b}`));
+  }
+  if (!checked) out.push("no slice caption was fully shown, so containment could not be checked");
+  return out;
 }
 
 /** Records a continuous scroll through the homepage and back up, for motion review. */
@@ -395,10 +416,26 @@ export async function checkMotion({ browser, base, out }) {
         return null;
       });
       if (hit) clashes.push(`${i}%: ${hit}`);
-      if (i === 46) outside.push(...(await pg.evaluate(sliceTextOutside)));
     }
+    outside.push(...(await sliceContainment(pg, span)));
     results.push(outside.length ? fail(`${vpName}: slice captions extend beyond their diagonal panels`, outside.slice(0, 6).join("\n")) : pass(`${vpName}: every slice caption sits inside its visible diagonal panel`));
     results.push(clashes.length ? fail(`${vpName}: opening copy overlaps at ${clashes.length} timeline step(s)`, clashes.slice(0, 8).join("\n")) : pass(`${vpName}: opening copy never overlaps (101 timeline steps)`));
+    await c.close();
+  }
+
+  // Edge shapes the standard viewports miss: tall 5:4 and 4:3 screens and a short landscape laptop.
+  for (const [w, h] of [[1280, 1024], [1366, 1024], [1152, 648], [1024, 600]]) {
+    const c = await browser.newContext({ viewport: { width: w, height: h } });
+    const pg = await c.newPage();
+    await pg.goto(base + "/", { waitUntil: "networkidle" });
+    const span = await pg.evaluate(() => {
+      const t = document.querySelector('[data-k="wmText"]')?.closest(".relative");
+      return t ? { top: t.getBoundingClientRect().top + scrollY, h: t.offsetHeight - innerHeight } : null;
+    });
+    if (span) {
+      const outside = await sliceContainment(pg, span);
+      results.push(outside.length ? fail(`${w}×${h}: slice captions extend beyond their diagonal panels`, outside.slice(0, 6).join("\n")) : pass(`${w}×${h}: every slice caption sits inside its visible diagonal panel`));
+    }
     await c.close();
   }
 

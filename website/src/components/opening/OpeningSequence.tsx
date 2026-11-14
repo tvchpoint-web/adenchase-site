@@ -107,7 +107,7 @@ export function OpeningSequence() {
     let mobile = false;
 
     // Slice-caption metrics, measured once per layout (reset on resize and font load).
-    let copyH: { w: number; dh: number; lH: number; gap: number; line: number }[] = [];
+    let copyH: { w: number; dh: number; lH: number; gap: number; lines: number; line: number }[] = [];
     const setMobile = () => {
       // The stacked (portrait) choreography is used below the CSS 'lg' breakpoint, so the shapes'
       // geometry and the copy's CSS layout always agree (tablets previously got desktop shapes).
@@ -123,7 +123,9 @@ export function OpeningSequence() {
       const H = window.innerHeight;
       const tr = track.current;
       if (!tr) return;
-      const stackSlices = mobile || W < 1280;
+      // Side by side needs both width and a wide-enough panel for its caption (tall screens such as
+      // 1280×1024 make each panel too narrow), otherwise the slices stack.
+      const stackSlices = mobile || W < 1280 || sideSliceWidth(W, H) < 170;
       const rect = tr.getBoundingClientRect();
       const target = clamp01(-rect.top / Math.max(1, rect.height - H));
       shown = reduced ? target : lerp(shown, target, 0.12);
@@ -325,8 +327,7 @@ export function OpeningSequence() {
           // description; total height T, bottom at b) is placed at x0 + K·(b + T) + pad, so its top-left
           // corner is inside, and is w − K·T − 2·pad wide, so its bottom-right corner is inside too.
           // Label and description share one left edge. Side by side, all four labels share one line
-          // (the block height is the tallest caption's); stacked, each panel fits its own. The width
-          // uses a fixed line budget, so measuring the real height cannot feed back into it.
+          // (the block height is the tallest caption's); stacked, each panel fits its own.
           const h = base[3][1] - base[0][1];
           const w = base[2][0] - base[3][0];
           const label = copy.firstElementChild as HTMLElement | null;
@@ -334,16 +335,21 @@ export function OpeningSequence() {
           if (label && desc) {
             const pad = stackSlices ? 14 : 12;
             const b = stackSlices ? 12 : h * 0.06;
-            const lines = stackSlices ? 2 : 3;
-            if (!copyH[i]) copyH[i] = { w: 0, dh: 0, lH: 0, gap: 0, line: parseFloat(getComputedStyle(desc).lineHeight) || 22 };
+            const minLines = stackSlices ? 2 : 3;
+            if (!copyH[i]) copyH[i] = { w: 0, dh: 0, lH: 0, gap: 0, lines: 0, line: parseFloat(getComputedStyle(desc).lineHeight) || 22 };
             const m = copyH[i];
-            const width = Math.round(Math.max(60, w - K * (lines * m.line + m.gap + m.lH) - 2 * pad));
-            if (width !== m.w) {
+            // Solve once per layout: if the description wraps past its line budget, widen the budget
+            // (which narrows the block) and measure again, so the fit holds for any copy length.
+            for (let pass = 0; pass < 4; pass++) {
+              const lines = Math.max(minLines, m.lines);
+              const width = Math.round(Math.max(60, w - K * (lines * m.line + m.gap + m.lH) - 2 * pad));
+              if (width === m.w) break;
               copy.style.width = `${width}px`;
               m.w = width;
               m.dh = desc.offsetHeight;
               m.lH = label.offsetHeight;
               m.gap = desc.offsetTop - (label.offsetTop + label.offsetHeight);
+              m.lines = Math.round(m.dh / m.line);
             }
             const dh = stackSlices ? m.dh : Math.max(...copyH.map((c) => c?.dh ?? 0));
             const T = dh + m.gap + m.lH;
@@ -543,6 +549,12 @@ export function OpeningSequence() {
 
 /* ------------------------------------------------- per-frame shape layouts */
 
+/** The width of each slice when the four sit side by side. */
+function sideSliceWidth(W: number, H: number) {
+  const h = H - 110 - 150;
+  return (W - 96 - K * h - 3 * 18) / 4;
+}
+
 function sliceQuad(i: number, W: number, H: number, mobile: boolean): Quad {
   if (mobile) {
     const top = 84;
@@ -555,7 +567,7 @@ function sliceQuad(i: number, W: number, H: number, mobile: boolean): Quad {
   const top = 110;
   const h = H - top - 150;
   const gap = 18;
-  const w = (W - 96 - K * h - 3 * gap) / 4;
+  const w = sideSliceWidth(W, H);
   return para(48 + i * (w + gap), top + h, w, h);
 }
 

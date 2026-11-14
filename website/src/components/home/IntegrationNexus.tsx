@@ -65,7 +65,7 @@ interface Geometry {
 }
 
 const WIDE: Geometry = { w: 320, h: 200, cx: 160, cy: 100, chip: 17, nodeX: 38, rows: [34, 100, 166], channel: 48 };
-const NARROW: Geometry = { w: 240, h: 214, cx: 120, cy: 107, chip: 15, nodeX: 30, rows: [40, 107, 174], channel: 38 };
+const NARROW: Geometry = { w: 240, h: 244, cx: 120, cy: 122, chip: 15, nodeX: 30, rows: [40, 122, 204], channel: 38 };
 
 const pinY = (g: Geometry, row: number) => g.cy + (row - 1) * (g.chip * 0.55);
 
@@ -171,13 +171,13 @@ function Figure({ g, variant }: { g: Geometry; variant: "wide" | "narrow" }) {
         <div
           key={s.id}
           data-node={s.id}
-          className="nx-node absolute flex -translate-x-1/2 -translate-y-[18px] flex-col items-center"
+          className="nx-node absolute flex -translate-x-1/2 -translate-y-[16px] flex-col items-center @[14rem]:-translate-y-[18px]"
           style={{ left: `${((s.side < 0 ? g.nodeX : g.w - g.nodeX) / g.w) * 100}%`, top: `${(g.rows[s.row] / g.h) * 100}%` }}
         >
-          <span className="nx-node-dot grid h-9 w-9 place-items-center rounded-full border">
-            <Icon name={s.icon} className="h-4 w-4" />
+          <span className="nx-node-dot grid h-8 w-8 place-items-center rounded-full border @[14rem]:h-9 @[14rem]:w-9">
+            <Icon name={s.icon} className="h-3.5 w-3.5 @[14rem]:h-4 @[14rem]:w-4" />
           </span>
-          <span className="nx-node-label mt-1.5 whitespace-nowrap text-[0.72rem] tracking-[0.01em]">{s.label}</span>
+          <span className="nx-node-label mt-1 whitespace-nowrap text-[0.68rem] tracking-[0.01em] @[14rem]:mt-1.5 @[14rem]:text-[0.72rem]">{s.label}</span>
         </div>
       ))}
     </div>
@@ -194,14 +194,23 @@ export function IntegrationNexus() {
     const q = (sel: string) => Array.from(el.querySelectorAll<SVGElement | HTMLElement>(sel));
     /** Only the figure that is actually displayed (container queries hide the other) is animated. */
     const shown = () => Array.from(el.querySelectorAll<HTMLElement>(":scope > div")).find((d) => d.offsetParent !== null) ?? el;
+    // Routes lit by the choreography; while a visitor hovers, changes are deferred to this list.
+    let focused = false;
+    let lit: Element[] = [];
     const setOn = (id: string, on: boolean) => {
-      q(`[data-route="${id}"]`).forEach((n) => n.classList.toggle("is-on", on));
-      q(`[data-node="${id}"]`).forEach((n) => n.classList.toggle("is-on", on));
+      const els = q(`[data-route="${id}"], [data-node="${id}"]`);
+      if (focused) {
+        lit = on ? [...new Set([...lit, ...els])] : lit.filter((n) => !els.includes(n as SVGElement | HTMLElement));
+        return;
+      }
+      els.forEach((n) => n.classList.toggle("is-on", on));
     };
     let swap = 0;
+    let said = caption.current?.textContent ?? "";
     const say = (t: string) => {
       const c = caption.current;
-      if (!c || c.textContent === t) return;
+      if (!c || said === t) return;
+      said = t;
       // A short cross-fade, so the narration never jumps (or reflows) mid-read.
       c.classList.add("is-swapping");
       window.clearTimeout(swap);
@@ -230,7 +239,6 @@ export function IntegrationNexus() {
       }
     };
     // While a visitor is exploring a system by hover, the autonomous flows wait.
-    let focused = false;
     let unfocus: (() => void) | null = null;
     const untilUnfocused = () => (focused ? new Promise<void>((r) => (unfocus = r)) : Promise.resolve());
     const io = new IntersectionObserver(
@@ -323,10 +331,16 @@ export function IntegrationNexus() {
 
     // Desktop: hover a system to see its pathway and its workflow partners.
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    // A flow in progress is frozen while a system is explored, then resumes exactly where it was.
     const enter = (e: Event) => {
       const id = (e.currentTarget as HTMLElement).dataset.node as Id;
+      if (!focused) {
+        lit = q(".is-on");
+        lit.forEach((n) => n.classList.remove("is-on"));
+        running.forEach((a) => a.pause());
+      }
       focused = true;
-      q(".is-on").forEach((n) => n.classList.remove("is-on"));
+      q(".is-focus").forEach((n) => n.classList.remove("is-focus"));
       el.dataset.focus = id;
       [id, ...PARTNERS[id]].forEach((p) => q(`[data-route="${p}"]`).forEach((n) => n.classList.add("is-focus")));
       q(`[data-node="${id}"]`).forEach((n) => n.classList.add("is-focus"));
@@ -334,6 +348,9 @@ export function IntegrationNexus() {
     const leave = () => {
       el.dataset.focus = "";
       q(".is-focus").forEach((n) => n.classList.remove("is-focus"));
+      lit.forEach((n) => n.classList.add("is-on"));
+      lit = [];
+      running.forEach((a) => a.play());
       focused = false;
       unfocus?.();
       unfocus = null;

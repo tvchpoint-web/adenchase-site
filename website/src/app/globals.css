@@ -609,12 +609,12 @@ html[data-opening-hide-header="1"] .site-logo {
 }
 .nexus .nx-base {
   fill: none;
-  stroke: rgba(180, 196, 224, 0.16);
+  stroke: color-mix(in oklab, var(--mist) 16%, transparent);
   stroke-width: 1;
 }
 .nexus .nx-hi {
   fill: none;
-  stroke: rgba(0, 211, 251, 0.55);
+  stroke: color-mix(in oklab, var(--ocean) 55%, transparent);
   stroke-width: 1;
   opacity: 0;
   transition: opacity 220ms var(--ease);
@@ -631,24 +631,24 @@ html[data-opening-hide-header="1"] .site-logo {
   stroke-dashoffset: 8;
 }
 .nexus .nx-pulse {
-  stroke: #83fd80;
+  stroke: var(--jade);
   stroke-width: 1.6;
 }
 .nexus .nx-pulse-halo {
-  stroke: rgba(131, 253, 128, 0.22);
+  stroke: color-mix(in oklab, var(--jade) 22%, transparent);
   stroke-width: 5;
 }
 .nexus .nx-via {
-  fill: rgba(180, 196, 224, 0.35);
+  fill: color-mix(in oklab, var(--mist) 35%, transparent);
   transition: fill 380ms var(--ease);
 }
 .nexus [data-route].is-on .nx-via,
 .nexus [data-route].is-focus .nx-via {
-  fill: #83fd80;
+  fill: var(--jade);
 }
 .nexus .nx-ring {
   fill: none;
-  stroke: rgba(0, 211, 251, 0.13);
+  stroke: color-mix(in oklab, var(--ocean) 13%, transparent);
   stroke-width: 0.7;
 }
 .nexus .nx-ring-inner {
@@ -658,36 +658,36 @@ html[data-opening-hide-header="1"] .site-logo {
 }
 .nexus .nx-ring-pulse {
   fill: none;
-  stroke: rgba(131, 253, 128, 0.7);
+  stroke: color-mix(in oklab, var(--jade) 70%, transparent);
   stroke-width: 0.8;
   opacity: 0;
   transition: opacity 400ms var(--ease);
 }
 .nexus .nx-tick {
   fill: none;
-  stroke: rgba(0, 211, 251, 0.12);
+  stroke: color-mix(in oklab, var(--ocean) 12%, transparent);
   stroke-width: 0.6;
 }
 .nexus .nx-tick-long {
-  stroke: rgba(0, 211, 251, 0.22);
+  stroke: color-mix(in oklab, var(--ocean) 22%, transparent);
 }
 .nexus .nx-package {
-  stroke: rgba(0, 211, 251, 0.26);
+  stroke: color-mix(in oklab, var(--ocean) 26%, transparent);
   stroke-width: 0.8;
 }
 .nexus .nx-pin {
-  fill: rgba(180, 196, 224, 0.45);
+  fill: color-mix(in oklab, var(--mist) 45%, transparent);
 }
 .nexus .nx-die {
-  stroke: rgba(131, 253, 128, 0.18);
+  stroke: color-mix(in oklab, var(--jade) 18%, transparent);
   stroke-width: 0.6;
 }
 .nexus .nx-etch {
-  stroke: rgba(180, 196, 224, 0.16);
+  stroke: color-mix(in oklab, var(--mist) 16%, transparent);
   stroke-width: 0.5;
 }
 .nexus .nx-die-glow {
-  fill: #83fd80;
+  fill: var(--jade);
   opacity: 0;
   transition: opacity 400ms var(--ease);
 }
@@ -698,23 +698,23 @@ html[data-opening-hide-header="1"] .site-logo {
   opacity: 0.4;
 }
 .nexus .nx-node-dot {
-  background: #04153f;
-  border-color: rgba(180, 196, 224, 0.22);
-  color: rgba(180, 196, 224, 0.8);
+  background: color-mix(in oklab, var(--navy) 88%, var(--sapphire));
+  border-color: color-mix(in oklab, var(--mist) 22%, transparent);
+  color: color-mix(in oklab, var(--mist) 80%, transparent);
   transition:
     border-color 380ms var(--ease),
     color 380ms var(--ease),
     box-shadow 380ms var(--ease);
 }
 .nexus .nx-node-label {
-  color: #b4c4e0;
+  color: var(--mist);
   transition: color 380ms var(--ease);
 }
 .nexus .nx-node.is-on .nx-node-dot,
 .nexus .nx-node.is-focus .nx-node-dot {
-  border-color: rgba(131, 253, 128, 0.6);
-  color: #83fd80;
-  box-shadow: 0 0 16px -6px rgba(131, 253, 128, 0.55);
+  border-color: color-mix(in oklab, var(--jade) 60%, transparent);
+  color: var(--jade);
+  box-shadow: 0 0 16px -6px color-mix(in oklab, var(--jade) 55%, transparent);
 }
 .nexus .nx-node.is-on .nx-node-label,
 .nexus .nx-node.is-focus .nx-node-label {
@@ -722,7 +722,7 @@ html[data-opening-hide-header="1"] .site-logo {
 }
 /* Hovering one system quietly recedes the rest. */
 .nexus[data-focus]:not([data-focus=""]) [data-route]:not(.is-focus) .nx-base {
-  stroke: rgba(180, 196, 224, 0.08);
+  stroke: color-mix(in oklab, var(--mist) 8%, transparent);
 }
 .nexus .nx-caption {
   transition: opacity 200ms var(--ease);
