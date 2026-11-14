@@ -62,10 +62,10 @@ const show = (el: HTMLElement | null, o: number, dy = 0) => {
 /* --------------------------------------------------------------- copy */
 
 const { x0: UL_X0, x1: UL_X1, y: UL_Y } = UNDERLINE;
-/** When each block activates in the intro. The green block lands exactly as the underline's light
- *  reaches it (the underline completes at 0.56), so the two are joined from that moment on; then
- *  cyan, then sapphire. */
-const BLOCK_IN = [0.44, 0.64, 0.72];
+/** When each block activates in the intro. The green block is joined to the underline, so it never
+ *  moves: it materialises in place as the underline's light reaches it (the light arrives at 0.56).
+ *  Cyan, then sapphire, slide in along their own diagonal. */
+const BLOCK_IN = [0.52, 0.64, 0.72];
 /** Length of the intro, in ms of rendered frames (not wall-clock time; see `frame`). */
 const INTRO_MS = 2600;
 
@@ -262,7 +262,7 @@ export function OpeningSequence() {
           // Frame 1: slide in along their own diagonal, one after another; leave with the sweep.
           const step = easeOut(seg(intro, BLOCK_IN[i], BLOCK_IN[i] + 0.12));
           const rest = logoQuad(f1p, b);
-          const off = (1 - step) * 26;
+          const off = i === 0 ? 0 : (1 - step) * 26;
           q = rest.map(([x, y]) => [x - off * K * 0.5, y + off * 0.5]) as Quad;
           alpha = step * (1 - seg(p, 0.08, 0.15));
         } else if (p < 0.64) {
