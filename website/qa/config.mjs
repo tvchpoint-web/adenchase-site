@@ -39,4 +39,10 @@ export const THRESHOLDS = {
 };
 
 export const SERVER = { port: 3123, startTimeoutMs: 60_000 };
+
+/**
+ * The one approved preview address: the branch alias, which always serves the latest preview of
+ * this branch. It is the only Vercel host the environment's network allows.
+ */
+export const PREVIEW_URL = "https://adenchase-site-git-claude-living-17eae1-tvchpoint-webs-projects.vercel.app";
 export const OUT_DIR = "qa-report";

@@ -141,13 +141,14 @@ async function scrollVideo(browser, base, out, vpName, vp) {
   await sleep(3000); // the intro
   const total = await page.evaluate(() => document.documentElement.scrollHeight - innerHeight);
   const step = Math.round(height * 0.06);
+  // scrollBy rather than mouse.wheel: mobile WebKit has no wheel events.
   for (let y = 0; y < total; y += step) {
-    await page.mouse.wheel(0, step);
+    await page.evaluate((d) => window.scrollBy(0, d), step);
     await sleep(45);
   }
   await sleep(800);
   for (let y = 0; y < total * 0.35; y += step) {
-    await page.mouse.wheel(0, -step);
+    await page.evaluate((d) => window.scrollBy(0, d), -step);
     await sleep(45);
   }
   await sleep(800);
@@ -280,7 +281,8 @@ export async function checkMotion({ browser, base, out }) {
   ensureDir(`${out}/${f}`);
   await page.screenshot({ path: `${out}/${f}` });
   frames.push({ viewport: "desktop", label: "Reduced motion · arrival", file: f });
-  const ok = rm.stage === "none" && rm.lit === "0" && rm.logo > 0.95;
+  // Engines serialise the offset differently ("0" in Chromium, "0px" in WebKit).
+  const ok = rm.stage === "none" && parseFloat(rm.lit) === 0 && rm.logo > 0.95;
   results.push(ok ? pass("Reduced motion: no moving light, full route drawn, mark shown at rest") : fail("Reduced motion state incorrect", JSON.stringify(rm)));
   await ctx.close();
 

@@ -52,7 +52,9 @@ npm run qa:visual    # pages + motion only (screenshots, frames, circuit overlap
 npm run qa:a11y      # axe-core WCAG 2.2 A/AA + keyboard checks
 npm run qa:perf      # Lighthouse, mobile and desktop
 node qa/run.mjs --base=https://…   # run QA against another server (no local build)
-node qa/run.mjs --browser=webkit   # Safari engine, once WebKit is installed (currently blocked; see §9)
+npm run qa:webkit   # pages + motion + a11y in WebKit (Safari's engine) against the local build
+npm run qa:preview  # full QA against the deployed preview (approved branch alias, see §8)
+npm run qa:preview:webkit   # the deployed preview in WebKit
 ```
 
 The QA harness lives in `qa/`, with all thresholds in `qa/config.mjs`. Hard failures make the run exit with code 1; warnings are reported. **A failing QA run blocks deployment.** Never weaken a threshold, skip a check, or narrow its scope to get a pass. Fix the cause, or report the failure to the user.
@@ -185,11 +187,12 @@ The logo's own block colours (`BLOCK_COLOURS` in `src/lib/blocks.ts`) are used o
 
 ---
 
-## 9. Environment limits (cloud sessions)
+## 9. Environment (cloud sessions)
 
-The cloud environment imposes three limits:
-- **Deployed previews are not reachable** from the sandbox, because `*.vercel.app` is not allowed and previews are SSO-protected. Verification happens on the local production build with `npm run qa`. Say so in reports.
-- **Only Chromium is installed.** WebKit (Safari) and Firefox are not, so Safari behaviour (masks, blend modes, fixed layers) is unverified unless reviewed on a real device or in the desktop app.
-- **Rendering has no GPU.** Frame-time numbers are not representative. Judge smoothness on real devices.
+- **Setup script.** The environment's setup script runs `npm ci` and installs Playwright WebKit with its system libraries, so `npm run qa:webkit` works in fresh sessions.
+- **Network.** Exactly two extra hosts are allowed for QA: `cdn.playwright.dev` (browser downloads) and the approved preview alias `adenchase-site-git-claude-living-17eae1-tvchpoint-webs-projects.vercel.app`. Every other `*.vercel.app` host stays blocked.
+- **Deployed preview.** Previews are protected by Vercel Authentication. QA can reach the alias only once the user has stored a Vercel "Protection Bypass for Automation" secret as a **network secret for that one host** (header `x-vercel-protection-bypass`). The proxy injects it; the secret never appears in code, URLs, logs or chat. Without it, `npm run qa:preview` stops with a clear message, and verification falls back to the local production build. Say so in reports.
+- **Safari engine, not iOS Safari.** WebKit on Linux approximates Safari; it is not iOS Safari. Masks, blend modes and fixed layers still need a real iPhone or iPad check before launch.
+- **No GPU.** Frame-time numbers are not representative. Judge smoothness from technique and on real devices.
 
-Any change to network access, plugins or credentials needs the user's approval first.
+Any further change to network access, plugins or credentials needs the user's approval first.

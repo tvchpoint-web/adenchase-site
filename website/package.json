@@ -15,7 +15,10 @@
     "qa:visual": "node qa/run.mjs --only=pages,motion",
     "qa:a11y": "node qa/run.mjs --only=a11y",
     "qa:perf": "node qa/run.mjs --only=perf",
-    "check": "npm run lint && npm run typecheck && npm test"
+    "check": "npm run lint && npm run typecheck && npm test",
+    "qa:preview": "NODE_USE_ENV_PROXY=1 node qa/run.mjs --base=preview",
+    "qa:preview:webkit": "NODE_USE_ENV_PROXY=1 node qa/run.mjs --base=preview --browser=webkit",
+    "qa:webkit": "node qa/run.mjs --browser=webkit"
   },
   "engines": {
     "node": ">=20.9"

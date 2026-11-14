@@ -7,13 +7,15 @@
  *   node qa/run.mjs --only=pages,motion,a11y,perf   pick checks
  *   node qa/run.mjs --base=https://…                test another server (no local server started)
  *   node qa/run.mjs --browser=webkit                pages + motion + a11y in WebKit (Safari's engine), if installed
+ *   npm run qa:preview                              the deployed preview (approved branch alias), Chromium
+ *   npm run qa:preview:webkit                       the deployed preview in WebKit
  *
  * Output: qa-report/index.html (open it), qa-report/summary.json. Exit code 1 on any failure.
  */
 import { chromium, webkit, firefox } from "playwright";
 import { existsSync } from "node:fs";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { OUT_DIR, SERVER } from "./config.mjs";
+import { OUT_DIR, PREVIEW_URL, SERVER } from "./config.mjs";
 import { startServer } from "./lib/util.mjs";
 import { writeReport } from "./lib/report.mjs";
 import { checkPages } from "./checks/pages.mjs";
@@ -37,6 +39,25 @@ if (!engine) {
   console.error(`Unknown browser "${engineName}". Choose chromium, webkit or firefox.`);
   process.exit(2);
 }
+/**
+ * A deployed preview must answer directly. Vercel's deployment protection redirects unauthorised
+ * requests to its sign-in page; the fix is a protection-bypass secret stored as a network secret for
+ * the preview host only (never in code, logs or URLs).
+ */
+async function preflight(url) {
+  let res;
+  try {
+    res = await fetch(url, { redirect: "manual" });
+  } catch (e) {
+    throw new Error(`Cannot reach ${url} (${e.message}). Run through npm (qa:preview sets NODE_USE_ENV_PROXY=1) and check the environment allows this exact host.`);
+  }
+  const loc = res.headers.get("location") || "";
+  if (res.status === 401 || res.status === 403 || (res.status >= 300 && res.status < 400 && /vercel\.com\/(sso|login)/.test(loc))) {
+    throw new Error(`${new URL(url).host} is protected by Vercel Authentication (HTTP ${res.status}). Add a "Protection Bypass for Automation" secret as a network secret for this host only, header x-vercel-protection-bypass (see website/CLAUDE.md §8). Never put the secret in code, URLs or logs.`);
+  }
+  if (!res.ok) throw new Error(`${url} answered HTTP ${res.status}.`);
+}
+
 const out = engineName === "chromium" ? OUT_DIR : `${OUT_DIR}-${engineName}`;
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
@@ -60,13 +81,14 @@ const run = async (name, fn) => {
   }
 };
 
-let base = args.base;
+let base = args.base === "preview" ? PREVIEW_URL : args.base;
 try {
   if (!base) {
     console.log(`Starting production server on :${SERVER.port} …`);
     server = await startServer(SERVER.port, SERVER.startTimeoutMs);
     base = server.base;
   }
+  if (base && !base.startsWith("http://127.0.0.1") && !base.startsWith("http://localhost")) await preflight(base);
   if (!existsSync(engine.executablePath())) {
     throw new Error(`${engineName} is not installed in this environment. Installing it needs network access to Playwright's browser download hosts (an environment change that requires approval), then: npx playwright install ${engineName}`);
   }
