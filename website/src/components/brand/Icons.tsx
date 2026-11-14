@@ -24,6 +24,8 @@ const paths = {
   customer: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8c0-3.3 3.1-6 7-6s7 2.7 7 6",
   globe: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z",
   efficiency: "M5 18a8 8 0 1 1 14 0M12 14l4-5M12 14h.01",
+  calendar: "M5 6h14v14H5V6Zm0 4h14M9 4v4m6-4v4M9 14h2m2 0h2",
+  inventory: "M4 8l8-4 8 4v8l-8 4-8-4V8Zm0 0 8 4 8-4M12 12v8",
   expansion: "M9 4H4v5m11-5h5v5M9 20H4v-5m11 5h5v-5M4 4l6 6m10-6-6 6M4 20l6-6m10 6-6-6",
   // Engagement
   introduction: "M4 6h16v10H8l-4 3V6Zm4 4h8m-8 3h5",

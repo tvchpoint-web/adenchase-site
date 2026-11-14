@@ -523,23 +523,6 @@ html[data-opening-hide-header="1"] .site-logo {
   background: radial-gradient(circle at 50% 50%, rgba(240, 255, 238, 0.95) 0%, rgba(131, 253, 128, 0.55) 14%, rgba(0, 211, 251, 0.14) 38%, transparent 66%);
 }
 
-/* Integration-layer demo: each flow traces itself in. */
-.flow-trace {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: flow-trace 900ms var(--ease) forwards;
-}
-@keyframes flow-trace {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .flow-trace {
-    animation: none;
-    stroke-dashoffset: 0;
-  }
-}
 
 /* The opening's first layer (ADEN-CHASE) is placed and faded in by CSS so it paints before the
    page's JavaScript runs: same geometry as OpeningSequence frame 1 (width, centre, 45% / 42% of the
@@ -614,4 +597,136 @@ html[data-opening-hide-header="1"] .site-logo {
 .chat-scroll {
   -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 2.25rem);
   mask-image: linear-gradient(180deg, transparent 0, #000 2.25rem);
+}
+
+/* ------------------------------------------------------------ Integration Nexus */
+/* Quiet structure; light only where information moves. Strokes stay hairline at any scale. */
+.nexus path,
+.nexus line,
+.nexus circle,
+.nexus rect {
+  vector-effect: non-scaling-stroke;
+}
+.nexus .nx-base {
+  fill: none;
+  stroke: rgba(180, 196, 224, 0.16);
+  stroke-width: 1;
+}
+.nexus .nx-hi {
+  fill: none;
+  stroke: rgba(0, 211, 251, 0.55);
+  stroke-width: 1;
+  opacity: 0;
+  transition: opacity 220ms var(--ease);
+}
+.nexus [data-route].is-on .nx-hi,
+.nexus [data-route].is-focus .nx-hi {
+  opacity: 1;
+}
+.nexus .nx-pulse,
+.nexus .nx-pulse-halo {
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: 8 200;
+  stroke-dashoffset: 8;
+}
+.nexus .nx-pulse {
+  stroke: #83fd80;
+  stroke-width: 1.6;
+}
+.nexus .nx-pulse-halo {
+  stroke: rgba(131, 253, 128, 0.22);
+  stroke-width: 5;
+}
+.nexus .nx-via {
+  fill: rgba(180, 196, 224, 0.35);
+  transition: fill 380ms var(--ease);
+}
+.nexus [data-route].is-on .nx-via,
+.nexus [data-route].is-focus .nx-via {
+  fill: #83fd80;
+}
+.nexus .nx-ring {
+  fill: none;
+  stroke: rgba(0, 211, 251, 0.13);
+  stroke-width: 0.7;
+}
+.nexus .nx-ring-inner {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.07);
+  stroke-width: 0.8;
+}
+.nexus .nx-ring-pulse {
+  fill: none;
+  stroke: rgba(131, 253, 128, 0.7);
+  stroke-width: 0.8;
+  opacity: 0;
+  transition: opacity 400ms var(--ease);
+}
+.nexus .nx-tick {
+  fill: none;
+  stroke: rgba(0, 211, 251, 0.12);
+  stroke-width: 0.6;
+}
+.nexus .nx-tick-long {
+  stroke: rgba(0, 211, 251, 0.22);
+}
+.nexus .nx-package {
+  stroke: rgba(0, 211, 251, 0.26);
+  stroke-width: 0.8;
+}
+.nexus .nx-pin {
+  fill: rgba(180, 196, 224, 0.45);
+}
+.nexus .nx-die {
+  stroke: rgba(131, 253, 128, 0.18);
+  stroke-width: 0.6;
+}
+.nexus .nx-etch {
+  stroke: rgba(180, 196, 224, 0.16);
+  stroke-width: 0.5;
+}
+.nexus .nx-die-glow {
+  fill: #83fd80;
+  opacity: 0;
+  transition: opacity 400ms var(--ease);
+}
+.nexus[data-core="on"] .nx-die-glow {
+  opacity: 0.28;
+}
+.nexus[data-core="on"] .nx-ring-pulse {
+  opacity: 0.4;
+}
+.nexus .nx-node-dot {
+  background: #04153f;
+  border-color: rgba(180, 196, 224, 0.22);
+  color: rgba(180, 196, 224, 0.8);
+  transition:
+    border-color 380ms var(--ease),
+    color 380ms var(--ease),
+    box-shadow 380ms var(--ease);
+}
+.nexus .nx-node-label {
+  color: #b4c4e0;
+  transition: color 380ms var(--ease);
+}
+.nexus .nx-node.is-on .nx-node-dot,
+.nexus .nx-node.is-focus .nx-node-dot {
+  border-color: rgba(131, 253, 128, 0.6);
+  color: #83fd80;
+  box-shadow: 0 0 16px -6px rgba(131, 253, 128, 0.55);
+}
+.nexus .nx-node.is-on .nx-node-label,
+.nexus .nx-node.is-focus .nx-node-label {
+  color: #fff;
+}
+/* Hovering one system quietly recedes the rest. */
+.nexus[data-focus]:not([data-focus=""]) [data-route]:not(.is-focus) .nx-base {
+  stroke: rgba(180, 196, 224, 0.08);
+}
+.nexus .nx-caption {
+  transition: opacity 200ms var(--ease);
+}
+.nexus .nx-caption.is-swapping {
+  opacity: 0;
 }

@@ -18,7 +18,7 @@ export default function Home() {
           hero headline appears only as the opening sequence is scrolled). */}
       <div className="sr-only">
         <h1>{SITE.statement}</h1>
-        <p>We uncover opportunities others overlook, connect strategy with intelligent technology, and engineer tailored solutions that create measurable value for businesses, brands, and institutions.</p>
+        <p>{SITE.support}</p>
         <p>{SITE.disciplines}</p>
       </div>
       <OpeningSequence />

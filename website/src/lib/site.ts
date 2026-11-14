@@ -9,6 +9,9 @@ export const SITE = {
   /** The approved corporate tagline. */
   statement: "Identifying Opportunity. Engineering Growth.",
   disciplines: "Business Development • AI Engineering • Market Growth",
+  /** The homepage's supporting statement, under the tagline. */
+  support:
+    "We discover opportunities others don’t see, connect strategy with intelligent technology, and engineer tailored solutions that create measurable value for businesses, brands, and institutions.",
   /** Primary philosophy statement (supporting, never a replacement for the tagline). */
   philosophy: "We see opportunities others overlook—and engineer the solutions to realize them.",
   /** Supporting brand statement. */

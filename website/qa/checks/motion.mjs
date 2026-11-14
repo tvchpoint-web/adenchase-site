@@ -135,6 +135,47 @@ async function revealContrast(page, litPng) {
   return { near: nearN ? nearSum / nearN : 0, far: farN ? farSum / farN : 0 };
 }
 
+/**
+ * In-page: for each fully shown slice caption, every text line's corners must lie inside the
+ * slice's visible parallelogram (its clip-path polygon, offset by its translate), with 2px slack.
+ */
+function sliceTextOutside() {
+  const bad = [];
+  for (let i = 0; i < 4; i++) {
+    const copy = document.querySelector(`[data-k="sliceCopy${i}"]`);
+    const slice = document.querySelector(`[data-k="slice${i}"]`);
+    if (!copy || !slice || Number(getComputedStyle(copy).opacity) < 0.95) continue;
+    const m = new DOMMatrix(getComputedStyle(slice).transform);
+    const pts = (slice.style.clipPath.match(/-?[\d.]+px -?[\d.]+px/g) || []).map((t) => t.split(" ").map((v) => parseFloat(v)));
+    if (pts.length !== 4) continue;
+    const poly = pts.map(([x, y]) => [x + m.m41, y + m.m42]);
+    const inside = (x, y) => {
+      // Convex polygon (TL, TR, BR, BL, clockwise in screen space): inside if on the right of every edge.
+      for (let k = 0; k < 4; k++) {
+        const [ax, ay] = poly[k];
+        const [bx, by] = poly[(k + 1) % 4];
+        if ((bx - ax) * (y - ay) - (by - ay) * (x - ax) < -2 * Math.hypot(bx - ax, by - ay)) return false;
+      }
+      return true;
+    };
+    const walker = document.createTreeWalker(copy, NodeFilter.SHOW_TEXT);
+    const range = document.createRange();
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+      if (!n.textContent.trim()) continue;
+      range.selectNodeContents(n);
+      for (const r of range.getClientRects()) {
+        for (const [x, y] of [[r.left, r.top], [r.right, r.top], [r.right, r.bottom], [r.left, r.bottom]]) {
+          if (!inside(x, y)) {
+            bad.push(`slice ${i + 1} "${n.textContent.trim().slice(0, 24)}" corner ${Math.round(x)},${Math.round(y)}`);
+            break;
+          }
+        }
+      }
+    }
+  }
+  return bad;
+}
+
 /** Records a continuous scroll through the homepage and back up, for motion review. */
 async function scrollVideo(browser, base, out, vpName, vp) {
   const dir = `${out}/motion/video-tmp-${vpName}`;
@@ -322,6 +363,7 @@ export async function checkMotion({ browser, base, out }) {
     });
     if (!span) continue;
     const clashes = [];
+    const outside = [];
     for (let i = 0; i <= 100; i += 1) {
       await pg.evaluate((y) => window.scrollTo(0, y), Math.round(span.top + (span.h * i) / 100));
       await sleep(60);
@@ -353,7 +395,9 @@ export async function checkMotion({ browser, base, out }) {
         return null;
       });
       if (hit) clashes.push(`${i}%: ${hit}`);
+      if (i === 46) outside.push(...(await pg.evaluate(sliceTextOutside)));
     }
+    results.push(outside.length ? fail(`${vpName}: slice captions extend beyond their diagonal panels`, outside.slice(0, 6).join("\n")) : pass(`${vpName}: every slice caption sits inside its visible diagonal panel`));
     results.push(clashes.length ? fail(`${vpName}: opening copy overlaps at ${clashes.length} timeline step(s)`, clashes.slice(0, 8).join("\n")) : pass(`${vpName}: opening copy never overlaps (101 timeline steps)`));
     await c.close();
   }

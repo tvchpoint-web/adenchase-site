@@ -106,8 +106,8 @@ export function OpeningSequence() {
     let cssIntroDone = false;
     let mobile = false;
 
-    // Slice-copy heights, measured once per layout (not every frame) — reset on resize and font load.
-    let copyH: number[] = [];
+    // Slice-caption metrics, measured once per layout (reset on resize and font load).
+    let copyH: { w: number; dh: number; lH: number; gap: number; line: number }[] = [];
     const setMobile = () => {
       // The stacked (portrait) choreography is used below the CSS 'lg' breakpoint, so the shapes'
       // geometry and the copy's CSS layout always agree (tablets previously got desktop shapes).
@@ -123,6 +123,7 @@ export function OpeningSequence() {
       const H = window.innerHeight;
       const tr = track.current;
       if (!tr) return;
+      const stackSlices = mobile || W < 1280;
       const rect = tr.getBoundingClientRect();
       const target = clamp01(-rect.top / Math.max(1, rect.height - H));
       shown = reduced ? target : lerp(shown, target, 0.12);
@@ -222,7 +223,7 @@ export function OpeningSequence() {
         } else if (p < 0.64) {
           // Frame 4: the slices resolve into the blocks at the logo's position.
           const rest = logoQuad(f4, b);
-          const from = sliceQuad(Math.min(i, 3), W, H, mobile);
+          const from = sliceQuad(Math.min(i, 3), W, H, stackSlices);
           q = lerpQuad(from, rest, collapse);
           alpha = seg(p, 0.5, 0.56);
         } else {
@@ -303,11 +304,12 @@ export function OpeningSequence() {
       show(els.f2, f2copy, (1 - f2copy) * 16);
 
       /* ---- frame 3: four slices on the logo's angle */
+      // Four slices side by side need width; below 1280px they stack (as on tablets and phones).
       SLICES.forEach((_, i) => {
         const el = els[`slice${i}`];
         if (!el) return;
         const stagger = ease(seg(p, 0.3 + i * 0.025, 0.4 + i * 0.025));
-        const base = sliceQuad(i, W, H, mobile);
+        const base = sliceQuad(i, W, H, stackSlices);
         const target = lerpQuad(base, logoQuad(f4, BLOCKS[Math.min(i, 2)]), collapse);
         const lifted = target.map(([x, y]) => [x, y + (1 - stagger) * H * 0.18]) as Quad;
         placeQuad(el, lifted);
@@ -318,22 +320,35 @@ export function OpeningSequence() {
         if (img && !reduced) img.style.transform = `translate3d(0, ${((seg(p, 0.3, 0.55) - 0.5) * -24).toFixed(1)}px, 0) scale(1.06)`;
         const copy = els[`sliceCopy${i}`];
         if (copy) {
+          // The caption is fitted to the VISIBLE parallelogram, not its bounding box. At a height y above
+          // the slice's base, the shape spans [x0 + K·y, x0 + w + K·y]. The caption block (label, gap,
+          // description; total height T, bottom at b) is placed at x0 + K·(b + T) + pad, so its top-left
+          // corner is inside, and is w − K·T − 2·pad wide, so its bottom-right corner is inside too.
+          // Label and description share one left edge. Side by side, all four labels share one line
+          // (the block height is the tallest caption's); stacked, each panel fits its own. The width
+          // uses a fixed line budget, so measuring the real height cannot feed back into it.
           const h = base[3][1] - base[0][1];
-          if (mobile) {
-            copy.style.left = `${base[3][0] + K * h * 0.62 + 6}px`;
-            copy.style.top = `${base[0][1] + 14}px`;
-            copy.style.width = `${W * 0.55}px`;
-          } else {
-            // Same fitting rule as the portal labels: the block sits a fixed distance above each slice's
-            // base, its left edge taken on the slant at the block's top, and one shared width — so all
-            // four align and wrap identically. The width does not depend on the height, so measuring
-            // the real height here cannot feed back.
-            const lh = (copyH[i] ||= Math.max(110, copy.offsetHeight));
-            const bottom = h * 0.06;
-            const step = sliceQuad(1, W, H, mobile)[3][0] - sliceQuad(0, W, H, mobile)[3][0];
-            copy.style.left = `${base[3][0] + K * (bottom + lh) + 18}px`;
-            copy.style.top = `${base[3][1] - bottom - lh}px`;
-            copy.style.width = `${Math.max(150, step - 26)}px`;
+          const w = base[2][0] - base[3][0];
+          const label = copy.firstElementChild as HTMLElement | null;
+          const desc = copy.lastElementChild as HTMLElement | null;
+          if (label && desc) {
+            const pad = stackSlices ? 14 : 12;
+            const b = stackSlices ? 12 : h * 0.06;
+            const lines = stackSlices ? 2 : 3;
+            if (!copyH[i]) copyH[i] = { w: 0, dh: 0, lH: 0, gap: 0, line: parseFloat(getComputedStyle(desc).lineHeight) || 22 };
+            const m = copyH[i];
+            const width = Math.round(Math.max(60, w - K * (lines * m.line + m.gap + m.lH) - 2 * pad));
+            if (width !== m.w) {
+              copy.style.width = `${width}px`;
+              m.w = width;
+              m.dh = desc.offsetHeight;
+              m.lH = label.offsetHeight;
+              m.gap = desc.offsetTop - (label.offsetTop + label.offsetHeight);
+            }
+            const dh = stackSlices ? m.dh : Math.max(...copyH.map((c) => c?.dh ?? 0));
+            const T = dh + m.gap + m.lH;
+            copy.style.left = `${base[3][0] + K * (b + T) + pad}px`;
+            copy.style.top = `${base[3][1] - b - T}px`;
           }
         }
         const copyIn = ease(seg(p, 0.34 + i * 0.02, 0.4 + i * 0.02));
@@ -446,7 +461,7 @@ export function OpeningSequence() {
               </span>
             </p>
             <p className="mt-6 max-w-[33rem] text-[0.98rem] leading-relaxed text-mist lg:type-lede">
-              We uncover opportunities others overlook, connect strategy with intelligent technology, and engineer tailored solutions that create measurable value for businesses, brands, and institutions.
+              {SITE.support}
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <a href="/capabilities" className="btn btn-primary justify-center">
@@ -462,9 +477,9 @@ export function OpeningSequence() {
             <div key={s.key} data-k={`sliceCopy${i}`} className="slice-copy absolute" data-i={i} style={{ opacity: 0 }}>
               <p className="type-label text-jade max-md:text-[10px]">
                 <span className="block opacity-70">0{i + 1}</span>
-                <span className="block">{s.label}</span>
+                <span className="block whitespace-nowrap">{s.label}</span>
               </p>
-              <p className="mt-2 text-[1.05rem] font-medium leading-snug text-ink lg:mt-3 lg:text-[1.3rem] lg:tracking-[-0.01em]">{s.line}</p>
+              <p className="mt-2 text-[1rem] font-medium leading-snug text-ink md:text-[1.2rem] xl:mt-3 xl:text-[1.06rem] xl:tracking-[-0.01em]">{s.line}</p>
             </div>
           ))}
           <p data-k="f3" className="type-lede absolute bottom-[5svh] left-5 right-5 text-mist sm:left-8 lg:left-12 lg:max-w-[46rem]" style={{ opacity: 0 }}>

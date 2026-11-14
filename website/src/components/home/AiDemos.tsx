@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/brand/Icons";
 import { InView } from "@/components/motion/InView";
+import { IntegrationNexus } from "@/components/home/IntegrationNexus";
 
 const CYAN = "#00F6FE";
 
@@ -46,88 +47,6 @@ function Panel({ title, caption, children }: { title: string; caption: string; c
         <p className="mt-1 text-[0.86rem] leading-relaxed text-mist">{caption}</p>
       </figcaption>
     </figure>
-  );
-}
-
-/* --------------------------------------------- 1 · existing systems, one integration layer */
-// The business's own systems stay where they are; a quiet integration layer runs between them and
-// carries work from one to the next. No central "AI" box, no spokes.
-const TILE_W = 78;
-const TILE_H = 28;
-const BUS_Y = 95;
-// (Each packet's motion is started explicitly when it mounts: SMIL `begin` offsets count from the
-// document's start, so a fixed offset on a later-inserted element would already have elapsed.)
-const SYSTEMS = [
-  { id: "crm", label: "CRM", x: 14, y: 22 },
-  { id: "finance", label: "Finance", x: 111, y: 22 },
-  { id: "booking", label: "Scheduling", x: 208, y: 22 },
-  { id: "ops", label: "Operations", x: 14, y: 140 },
-  { id: "support", label: "Support desk", x: 111, y: 140 },
-  { id: "stock", label: "Inventory", x: 208, y: 140 },
-];
-const FLOWS = [
-  { from: "crm", to: "finance", text: "New order in the CRM → invoice drafted in Finance" },
-  { from: "booking", to: "support", text: "Booking confirmed → customer notified from the support desk" },
-  { from: "support", to: "stock", text: "Replacement part requested → stock reserved in Inventory" },
-];
-const sys = (id: string) => SYSTEMS.find((s) => s.id === id)!;
-/** Down (or up) to the layer, along it, and out to the destination — elbows cut on the brand slant. */
-function flowPath(from: string, to: string) {
-  const a = sys(from);
-  const b = sys(to);
-  const ax = a.x + TILE_W / 2;
-  const bx = b.x + TILE_W / 2;
-  const ay = a.y < BUS_Y ? a.y + TILE_H : a.y;
-  const by = b.y < BUS_Y ? b.y + TILE_H : b.y;
-  const dirA = ay < BUS_Y ? 1 : -1;
-  const dirB = by < BUS_Y ? -1 : 1;
-  const dx = Math.sign(bx - ax);
-  const c = 6;
-  return `M${ax} ${ay} L${ax} ${BUS_Y - dirA * c} L${ax + dx * c * 0.68} ${BUS_Y} L${bx - dx * c * 0.68} ${BUS_Y} L${bx} ${BUS_Y + dirB * c} L${bx} ${by}`;
-}
-
-function ConnectedSystems() {
-  const { ref, step, reduced } = useTicker(FLOWS.length, 3000);
-  const flow = FLOWS[reduced ? 0 : step];
-  const d = flowPath(flow.from, flow.to);
-  return (
-    <div ref={ref}>
-      <p className="mb-1 flex items-center gap-2 text-[0.6rem] uppercase tracking-[0.18em] text-haze" aria-hidden>
-        <span className="h-px w-5 bg-[#00F6FE]/60" />
-        Your systems · one integration layer
-      </p>
-      <svg viewBox="0 0 300 190" className="w-full" aria-hidden>
-        {/* The integration layer: a thin band between the systems, like a bus on a board. */}
-        <rect x="8" y={BUS_Y - 9} width="284" height="18" rx="3" fill="rgba(0,246,254,0.035)" stroke="rgba(0,246,254,0.16)" />
-        <line x1="14" x2="286" y1={BUS_Y - 3} y2={BUS_Y - 3} stroke="rgba(0,246,254,0.22)" strokeDasharray="2 4" />
-        <line x1="14" x2="286" y1={BUS_Y + 3} y2={BUS_Y + 3} stroke="rgba(0,246,254,0.22)" strokeDasharray="2 4" />
-        {SYSTEMS.map((s) => {
-          const x = s.x + TILE_W / 2;
-          const top = s.y < BUS_Y;
-          return <line key={s.id} x1={x} x2={x} y1={top ? s.y + TILE_H : s.y} y2={top ? BUS_Y - 9 : BUS_Y + 9} stroke="rgba(180,196,224,0.22)" />;
-        })}
-        <path key={d} d={d} fill="none" stroke={CYAN} strokeWidth="1.3" strokeOpacity="0.8" className="flow-trace" pathLength={1} />
-        {!reduced && (
-          <circle key={`p-${step}`} r="2.8" fill="#83FD80">
-            <animateMotion ref={(m) => (m as SVGAnimationElement | null)?.beginElement()} dur="1.6s" begin="indefinite" fill="freeze" path={d} />
-          </circle>
-        )}
-        {SYSTEMS.map((s) => {
-          const on = s.id === flow.from || s.id === flow.to;
-          return (
-            <g key={s.id}>
-              <rect x={s.x} y={s.y} width={TILE_W} height={TILE_H} rx="7" fill="#061b4a" stroke={on ? CYAN : "rgba(180,196,224,0.3)"} strokeOpacity={on ? 0.75 : 1} style={{ transition: "stroke 500ms" }} />
-              <text x={s.x + TILE_W / 2} y={s.y + 17.5} textAnchor="middle" fontSize="9" fill={on ? "#ffffff" : "#c9d5ee"} fontFamily="inherit">
-                {s.label}
-              </text>
-            </g>
-          );
-        })}
-      </svg>
-      <p className="mt-2 min-h-[2.6em] text-center text-[0.78rem] leading-snug text-mist" aria-hidden>
-        {flow.text}
-      </p>
-    </div>
   );
 }
 
@@ -277,8 +196,8 @@ export function AiDemos() {
   return (
     <InView className="demos grid gap-4 md:grid-cols-3">
       <div className="demo-in" style={{ "--i": 0 } as React.CSSProperties}>
-        <Panel title="Connected systems" caption="Integrates with your existing business systems and workflows — work moves between them instead of being re-keyed.">
-          <ConnectedSystems />
+        <Panel title="Connected systems" caption="Intelligently connects your existing business systems and workflows—allowing information to move seamlessly between them without unnecessary duplication.">
+          <IntegrationNexus />
         </Panel>
       </div>
       <div className="demo-in" style={{ "--i": 1 } as React.CSSProperties}>
