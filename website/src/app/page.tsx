@@ -2,6 +2,7 @@ import { OpeningSequence } from "@/components/opening/OpeningSequence";
 import { AiEngineering, CapabilitiesValue, MarketGrowth, PrivateEngagement, StrategyInPractice } from "@/components/home/Sections";
 import { FinalCta } from "@/components/home/FinalCta";
 import { LivingCircuit } from "@/components/motion/LivingCircuit";
+import { preload } from "react-dom";
 import { DISCIPLINES } from "@/lib/site";
 
 /**
@@ -9,6 +10,8 @@ import { DISCIPLINES } from "@/lib/site";
  * every section and resolves into the mark at the final call to action.
  */
 export default function Home() {
+  // The opening's first visible layer (and the page's largest paint): fetch it before anything else.
+  preload("/photos/logo-text.webp", { as: "image", fetchPriority: "high" });
   return (
     <main id="main" className="relative">
       <OpeningSequence />

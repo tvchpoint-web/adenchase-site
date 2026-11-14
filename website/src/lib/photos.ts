@@ -26,10 +26,10 @@ export const PHOTO = {
   finalCta: "earth",
   // Inner pages
   approachHero: "strategy",
-  expertiseHero: "analytics",
+  expertiseHero: "boardroom",
   expertiseStrategy: "decision",
   expertiseEngineering: "systems",
   expertiseGrowth: "growth",
-  capabilitiesHero: "analytics",
+  capabilitiesHero: "boardroom",
   engagementHero: "counsel",
 } as const;

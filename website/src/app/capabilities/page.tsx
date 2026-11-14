@@ -8,7 +8,7 @@ import { CAPABILITIES, DISCIPLINES } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Selected Capabilities",
-  description: "Selected capabilities across business strategy, AI engineering and market growth.",
+  description: "Selected capabilities across business development, AI engineering and market growth.",
 };
 
 const discipline = Object.fromEntries(DISCIPLINES.map((d) => [d.id, d]));

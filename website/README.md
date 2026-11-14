@@ -3,7 +3,7 @@
 Corporate website for ADEN-CHASE Strategies (`adenchase.com`): **Business Development • AI Engineering • Market Growth**. The site is photographic and editorial.
 
 - **Opening.** The homepage opens logo-first. The authentic mark assembles from layers cut from the official artwork: the underline lights into the green block, then the cyan and sapphire blocks follow. A pinned scroll timeline then carries the visitor through a skyline, four angled slices, and three portals cut on the logo's slant.
-- **The story.** It continues with Business Strategy, AI Engineering, Market Growth, capabilities and private engagement.
+- **The story.** It continues with Business Development, AI Engineering, Market Growth, capabilities and private engagement.
 - **The Living Circuit.** A Neon Jade signal is routed through the page's open space and never crosses content. Its light reveals a real macro photograph of a circuit board hidden beneath the navy.
 
 Working standards (brand, logo, motion, QA gate, isolation, deployment) live in **[CLAUDE.md](./CLAUDE.md)**.

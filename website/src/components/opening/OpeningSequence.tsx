@@ -5,6 +5,7 @@ import { BLOCKS, BLOCK_COLOURS, BLOCK_TEXT, K, LOGO_H, LOGO_W, UNDERLINE, para, 
 import { PHOTO } from "@/lib/photos";
 import { StrategyProcess } from "@/components/home/StrategyProcess";
 import { BrandBlock } from "@/components/brand/AngledPhoto";
+import { Descriptor } from "@/components/brand/Descriptor";
 
 /**
  * Opening prototype — storyboard v2.
@@ -64,19 +65,25 @@ const { x0: UL_X0, x1: UL_X1, y: UL_Y } = UNDERLINE;
 const BLOCK_IN = [0.54, 0.64, 0.72];
 
 const SLICES = [
-  { key: "strategy", photo: PHOTO.sliceStrategy, label: "Strategy", line: "See the opportunity before the market does." },
+  { key: "strategy", photo: PHOTO.sliceStrategy, label: "Business Development", line: "See the opportunity before the market does." },
   { key: "engineering", photo: PHOTO.sliceEngineering, label: "AI Engineering", line: "Systems that carry strategy into operation." },
   { key: "intelligence", photo: PHOTO.sliceIntelligence, label: "Intelligence", line: "Better information at the moment it matters." },
   { key: "growth", photo: PHOTO.sliceGrowth, label: "Market Growth", line: "Direction turned into commercial momentum." },
 ];
+/**
+ * The wordmark's four layers, each a full-width horizontal band cut losslessly from the artwork
+ * (rows y0–y1 of the 1397×473 logo); stacked, they reproduce it exactly. Bands rather than full
+ * canvases keep each file small and let the first layer to appear be the largest paint.
+ */
 const WM_LAYERS = [
-  ["wmText", "text"],
-  ["wmUnderline", "underline"],
-  ["wmStrategies", "strategies"],
-  ["wmDescriptor", "descriptor"],
+  { k: "wmText", file: "text", y0: 0, y1: 216 },
+  { k: "wmUnderline", file: "underline", y0: 216, y1: 262 },
+  { k: "wmStrategies", file: "strategies", y0: 262, y1: 362 },
+  { k: "wmDescriptor", file: "descriptor", y0: 362, y1: 473 },
 ] as const;
+const LAYER_Y = Object.fromEntries(WM_LAYERS.map((l) => [l.k, l.y0])) as Record<string, number>;
 const PORTALS = [
-  { photo: PHOTO.portalStrategy, label: "Business Strategy", line: "Identify opportunity. Establish direction." },
+  { photo: PHOTO.portalStrategy, label: "Business Development", line: "Identify opportunity. Establish direction." },
   { photo: PHOTO.portalEngineering, label: "AI Engineering", line: "Engineer intelligent systems that improve operations." },
   { photo: PHOTO.portalGrowth, label: "Market Growth", line: "Turn direction into commercial momentum." },
 ];
@@ -94,12 +101,15 @@ export function OpeningSequence() {
     let raf = 0;
     let shown = 0; // smoothed progress
     let t0 = -1;
+    let cssIntroDone = false;
     let mobile = false;
 
     // Slice-copy heights, measured once per layout (not every frame) — reset on resize and font load.
     let copyH: number[] = [];
     const setMobile = () => {
-      mobile = window.innerWidth < 768;
+      // The stacked (portrait) choreography is used below the CSS 'lg' breakpoint, so the shapes'
+      // geometry and the copy's CSS layout always agree (tablets previously got desktop shapes).
+      mobile = window.innerWidth < 1024;
       copyH = [];
     };
     document.fonts?.ready.then(() => (copyH = []));
@@ -120,8 +130,8 @@ export function OpeningSequence() {
       const intro = reduced ? 1 : clamp01((now - t0) / 2600);
 
       /* ---- logo placement: frame 1 (centre, large) and frame 4 (upper, smaller) */
-      const f1w = mobile ? Math.min(W - 36, 420) : Math.min(1000, W * 0.56);
-      const f4w = mobile ? Math.min(W - 64, 360) : Math.min(820, W * 0.46);
+      const f1w = mobile ? Math.min(W - 36, 560) : Math.min(1000, W * 0.56);
+      const f4w = mobile ? Math.min(W - 64, 460) : Math.min(820, W * 0.46);
       const f1: LogoBox = { width: f1w, left: (W - f1w) / 2, top: H * (mobile ? 0.42 : 0.45) - (f1w * LOGO_H) / LOGO_W / 2 };
       const f4: LogoBox = { width: f4w, left: (W - f4w) / 2, top: H * (mobile ? 0.3 : 0.32) - (f4w * LOGO_H) / LOGO_W / 2 };
       const push = 1 + 0.02 * easeOut(intro); // slow 2% push-in on the opening
@@ -129,8 +139,9 @@ export function OpeningSequence() {
 
       /* ---- timeline (scroll progress p) */
       const sweep = ease(seg(p, 0.06, 0.18)); // F1 → F2: green band wipe
-      const f2copy = easeOut(seg(p, 0.12, 0.22)) * (1 - ease(seg(p, 0.3, 0.36)));
-      const slicesIn = ease(seg(p, 0.3, 0.42)); // F2 → F3
+      // Copy hand-off F2 → F3: the outgoing copy has fully cleared (0.32) before any incoming copy
+      // begins (0.34), so the two never overlap; the images keep their own, continuous timing.
+      const f2copy = easeOut(seg(p, 0.12, 0.22)) * (1 - ease(seg(p, 0.27, 0.32)));
       const collapse = ease(seg(p, 0.5, 0.6)); // F3 → F4: slices resolve into the blocks
       const toPortals = ease(seg(p, 0.64, 0.76)); // F4 → F5
       const open = ease(seg(p, 0.8, 0.92)); // F5 → F6
@@ -142,7 +153,9 @@ export function OpeningSequence() {
       const wmBox = inF1 ? f1p : f4;
       const leave = 1 - seg(p, 0.08, 0.15);
       const f4vis = seg(p, 0.54, 0.6) * (1 - seg(p, 0.64, 0.7));
-      const textIn = easeOut(seg(intro, 0.1, 0.38));
+      // ADEN-CHASE itself enters by CSS (globals.css .opening-wm-text), so it paints before this
+      // script has loaded; here it is simply present, and the rest of the intro follows from it.
+      const textIn = 1;
       const underline = ease(seg(intro, 0.3, 0.56));
       const stratIn = easeOut(seg(intro, 0.74, 0.94));
       const descIn = easeOut(seg(intro, 0.8, 1));
@@ -152,12 +165,19 @@ export function OpeningSequence() {
         ["wmStrategies", stratIn, (1 - stratIn) * 6],
         ["wmDescriptor", descIn, (1 - descIn) * 6],
       ];
+      // If the visitor scrolls while the CSS entrance is still running, end it so the scroll-driven
+      // fade-out applies immediately (a CSS animation would otherwise override it).
+      if (!cssIntroDone && (p > 0.005 || intro >= 1)) {
+        if (els.wmText) els.wmText.style.animation = "none";
+        cssIntroDone = true;
+      }
       layers.forEach(([k, a, dy]) => {
         const el = els[k];
         if (!el) return;
         const o = inF1 ? a * leave : f4vis;
         el.style.width = `${wmBox.width}px`;
-        el.style.transform = `translate3d(${wmBox.left}px, ${wmBox.top + (inF1 ? dy : 0)}px, 0)`;
+        const bandTop = (LAYER_Y[k] * wmBox.width) / LOGO_W;
+        el.style.transform = `translate3d(${wmBox.left}px, ${wmBox.top + bandTop + (inF1 ? dy : 0)}px, 0)`;
         el.style.opacity = o.toFixed(3);
         el.style.visibility = o < 0.005 ? "hidden" : "visible";
       });
@@ -314,9 +334,10 @@ export function OpeningSequence() {
             copy.style.width = `${Math.max(150, step - 26)}px`;
           }
         }
-        show(copy, stagger * (1 - seg(p, 0.48, 0.53)), (1 - stagger) * 18);
+        const copyIn = ease(seg(p, 0.34 + i * 0.02, 0.4 + i * 0.02));
+        show(copy, copyIn * (1 - seg(p, 0.48, 0.53)), (1 - copyIn) * 18);
       });
-      show(els.f3, slicesIn * (1 - seg(p, 0.48, 0.53)));
+      show(els.f3, ease(seg(p, 0.34, 0.42)) * (1 - seg(p, 0.48, 0.53)));
 
       /* ---- frame 4, 5, 6 copy */
       const f4c = easeOut(seg(p, 0.55, 0.61)) * (1 - seg(p, 0.65, 0.69));
@@ -353,7 +374,7 @@ export function OpeningSequence() {
 
         {/* Frame 2: skyline */}
         <div data-k="sky" className="absolute inset-0 overflow-hidden" style={{ visibility: "hidden" }}>
-          <div data-k="skyImg" data-photo={PHOTO.skyline} className="photo absolute inset-0 bg-cover bg-center" />
+          <div data-k="skyImg" data-photo={PHOTO.skyline} className="photo absolute inset-0 bg-cover bg-[position:35%_70%] max-md:bg-[position:50%_60%]" />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,10,48,0.9)_0%,rgba(0,10,48,0.55)_40%,transparent_66%)] max-md:bg-[linear-gradient(180deg,rgba(0,10,48,0.2)_0%,rgba(0,10,48,0.4)_40%,rgba(0,10,48,0.94)_72%)]" />
         </div>
         <div data-k="band" className="absolute left-0 top-0 bg-[#6EFA2E] will-change-transform" style={{ visibility: "hidden" }} />
@@ -367,9 +388,20 @@ export function OpeningSequence() {
         ))}
 
         {/* The mark: the official wordmark layer plus the three blocks as separate layers */}
-        {WM_LAYERS.map(([k, file]) => (
+        {WM_LAYERS.map(({ k, file, y0, y1 }) => (
           // eslint-disable-next-line @next/next/no-img-element -- positioned every frame; must stay a plain layer
-          <img key={k} data-k={k} src={`/photos/logo-${file}.webp`} alt="" className="absolute left-0 top-0 h-auto will-change-transform select-none" style={{ opacity: 0 }} draggable={false} />
+          <img
+            key={k}
+            data-k={k}
+            src={`/photos/logo-${file}.webp`}
+            width={LOGO_W}
+            height={y1 - y0}
+            fetchPriority={file === "text" ? "high" : undefined}
+            alt=""
+            className={`absolute left-0 top-0 h-auto will-change-transform select-none ${file === "text" ? "opening-wm-text" : ""}`}
+            style={file === "text" ? undefined : { opacity: 0 }}
+            draggable={false}
+          />
         ))}
         <div data-k="spark" className="opening-spark absolute left-0 top-0 h-20 w-20" style={{ opacity: 0 }} />
         {BLOCKS.map((_, i) => (
@@ -392,7 +424,7 @@ export function OpeningSequence() {
           <p data-k="f1tag" className="type-label absolute inset-x-0 top-[66%] text-center text-haze max-md:top-[56%] max-md:text-[10px]" style={{ opacity: 0 }}>
             Identifying Opportunity · Engineering Growth
           </p>
-          <a data-k="cue" href="#business-strategy" className="type-label pointer-events-auto absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-haze" style={{ opacity: 0 }}>
+          <a data-k="cue" href="#business-development" className="type-label pointer-events-auto absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-haze" style={{ opacity: 0 }}>
             Scroll
             <span aria-hidden className="block h-8 w-px bg-line" />
           </a>
@@ -400,7 +432,7 @@ export function OpeningSequence() {
           <div data-k="f2" className="absolute left-5 right-5 bottom-[11svh] sm:left-8 lg:bottom-auto lg:left-12 lg:right-auto lg:top-1/2 lg:w-[46%] lg:-translate-y-1/2" style={{ opacity: 0 }}>
             <p className="type-label flex items-center gap-3 text-haze">
               <span aria-hidden className="h-px w-8 bg-jade" />
-              Business Strategy · AI Engineering · Market Growth
+              <Descriptor />
             </p>
             <h1 className="type-display mt-6 text-ink">
               The future
@@ -414,8 +446,9 @@ export function OpeningSequence() {
 
           {SLICES.map((s, i) => (
             <div key={s.key} data-k={`sliceCopy${i}`} className="slice-copy absolute" data-i={i} style={{ opacity: 0 }}>
-              <p className="type-label whitespace-nowrap text-jade max-md:text-[10px]">
-                0{i + 1} · {s.label}
+              <p className="type-label text-jade max-md:text-[10px]">
+                <span className="block opacity-70">0{i + 1}</span>
+                <span className="block">{s.label}</span>
               </p>
               <p className="mt-2 text-[1.05rem] font-medium leading-snug text-ink lg:mt-3 lg:text-[1.3rem] lg:tracking-[-0.01em]">{s.line}</p>
             </div>
@@ -456,7 +489,7 @@ export function OpeningSequence() {
           <div data-k="f6" className="pointer-events-auto absolute bottom-[5svh] left-5 right-5 sm:left-8 lg:bottom-auto lg:left-12 lg:right-auto lg:top-1/2 lg:w-[38%] lg:-translate-y-1/2" style={{ opacity: 0 }}>
             <p className="type-label flex items-center gap-3" style={{ color: BLOCK_COLOURS[0] }}>
               <span aria-hidden className="h-px w-8" style={{ background: BLOCK_COLOURS[0] }} />
-              01 · Business Strategy
+              01 · Business Development
             </p>
             <p className="mt-4 text-[2rem] font-semibold leading-[0.98] tracking-[-0.03em] text-ink lg:mt-5 lg:text-[4.1rem]">
               See the opportunity <span style={{ color: BLOCK_COLOURS[0] }}>before the market does.</span>
@@ -502,8 +535,10 @@ function portalQuad(i: number, W: number, H: number, mobile: boolean): Quad {
   if (mobile) {
     const top = 150;
     const h = (H - top - 60 - 24) / 3;
-    const w = W * 0.56;
-    return para(16 + i * 12, top + i * (h + 12) + h, w, h);
+    const w = Math.min(W * 0.56, 480);
+    // Centre the stepped stack (each portal steps 12px right) within the viewport.
+    const x0 = (W - (w + K * h + 24)) / 2;
+    return para(x0 + i * 12, top + i * (h + 12) + h, w, h);
   }
   const h = H * 0.6;
   const w = Math.min(340, W * 0.185);

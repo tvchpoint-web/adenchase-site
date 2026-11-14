@@ -10,7 +10,7 @@ import { PHOTO } from "@/lib/photos";
 
 export const metadata: Metadata = {
   title: "Expertise",
-  description: "Business Strategy, AI Engineering and Market Growth — three interconnected disciplines and how they are applied in practice.",
+  description: "Business Development, AI Engineering and Market Growth — three interconnected disciplines and how they are applied in practice.",
 };
 
 const PHOTOS = [
@@ -28,7 +28,7 @@ export default function ExpertisePage() {
         accent={2}
         photo={PHOTO.expertiseHero}
         block={1}
-        lede="Business strategy sets direction. AI engineering builds the systems that deliver it. Market growth turns both into commercial momentum. Each is stronger because of the others."
+        lede="Business development sets direction. AI engineering builds the systems that deliver it. Market growth turns both into commercial momentum. Each is stronger because of the others."
       />
 
       {DISCIPLINES.map((d, i) => {

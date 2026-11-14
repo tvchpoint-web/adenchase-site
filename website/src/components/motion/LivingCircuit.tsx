@@ -66,8 +66,8 @@ const UNDERLINE = { x: UL.x0 / LOGO_W, y: UL.y / LOGO_H };
  * pads, solder — that only appear close to a real light source.
  */
 const LAMPS = [
-  { back: 0, a: 0.78, r: 1 },
-  { back: 170, a: 0.44, r: 0.84 },
+  { back: 0, a: 0.9, r: 1 },
+  { back: 170, a: 0.5, r: 0.84 },
   { back: 360, a: 0.22, r: 0.72 },
   { back: 600, a: 0.09, r: 0.6 },
 ];
@@ -84,9 +84,13 @@ interface Geo {
   t: Track | null;
   nodes: { x: number; y: number; l: number }[];
   mobile: boolean;
+  /** Open space (distance to the nearest content) sampled every CLEAR_STEP px along the track. */
+  clear: Float32Array;
 }
 
-const EMPTY: Geo = { w: 0, h: 0, d: "", t: null, nodes: [], mobile: false };
+const EMPTY: Geo = { w: 0, h: 0, d: "", t: null, nodes: [], mobile: false, clear: new Float32Array(0) };
+/** Sampling interval (px of track length) for the open-space profile. */
+const CLEAR_STEP = 8;
 
 function rel(r: DOMRect, box: DOMRect): Rect {
   return { x: r.left - box.left, y: r.top - box.top, w: r.width, h: r.height };
@@ -135,6 +139,8 @@ export function LivingCircuit() {
       const inflate = mobile ? 7 : tablet ? 9 : 22;
       const end = root.querySelector<HTMLElement>("[data-trail-end]");
       const obstacles = contentRects(root, (n) => el.contains(n) || !!end?.contains(n), box);
+      // Real content only (before the artificial viewport-edge strips are added for routing).
+      const content = obstacles.slice();
       // Keep the signal off the very edge of the viewport.
       // (Rects are inflated by the grid, so these are offset to block exactly `edge` px.)
       const edge = mobile ? 3 : 8;
@@ -229,7 +235,20 @@ export function LivingCircuit() {
         const q = pointAt(t, l);
         return { x: q.x, y: q.y, l };
       });
-      setGeo({ w: W, h: H, d, t, nodes, mobile });
+      // Distance to the nearest content along the whole route, computed once per layout so the
+      // light can size itself with a lookup per frame.
+      const clear = new Float32Array(Math.ceil(t.total / CLEAR_STEP) + 1);
+      for (let i = 0; i < clear.length; i++) {
+        const q = pointAt(t, i * CLEAR_STEP);
+        let d2 = Infinity;
+        for (const c of content) {
+          const dx = Math.max(c.x - q.x, 0, q.x - (c.x + c.w));
+          const dy = Math.max(c.y - q.y, 0, q.y - (c.y + c.h));
+          d2 = Math.min(d2, dx * dx + dy * dy);
+        }
+        clear[i] = Math.sqrt(d2);
+      }
+      setGeo({ w: W, h: H, d, t, nodes, mobile, clear });
     };
     const schedule = () => {
       window.clearTimeout(timer);
@@ -278,8 +297,20 @@ export function LivingCircuit() {
     const TAIL = geo.mobile ? 260 : 520;
     lit.style.strokeDasharray = `${total} ${total}`;
     tail.style.strokeDasharray = `${TAIL} ${total + TAIL}`;
-    lamps.forEach((lamp, i) => (lamp.style.width = lamp.style.height = `${(2 * R * LAMPS[i].r).toFixed(0)}px`));
-    specLamp.style.width = specLamp.style.height = `${2 * RS}px`;
+    // Open space at a point on the route (precomputed profile; see measure).
+    const clearance = (l: number) => geo.clear[Math.min(geo.clear.length - 1, Math.max(0, Math.round(l / CLEAR_STEP)))] ?? Infinity;
+    // A light pool is sized to the open space it sits in (its visible falloff ends well inside its
+    // radius), so it shrinks where the signal runs close to copy or photography and opens up in
+    // clear space. Sizes are quantised to 8px and written only when they change.
+    const sizes = new Map<HTMLElement, number>();
+    const sizeLamp = (node: HTMLElement, rMax: number, l: number) => {
+      const r = Math.max(Math.round(rMax * 0.5), Math.min(rMax, Math.round((clearance(l) * 1.8) / 8) * 8));
+      if (sizes.get(node) !== r) {
+        node.style.width = node.style.height = `${2 * r}px`;
+        sizes.set(node, r);
+      }
+      return r;
+    };
     let cur = -1;
     let target = 0;
     let raf = 0;
@@ -340,10 +371,10 @@ export function LivingCircuit() {
         const spec = LAMPS[i];
         const ll = l - spec.back;
         const q = pointAt(t, Math.max(0, ll));
-        place(lamp, box.left + q.x, box.top + q.y, R * spec.r);
+        place(lamp, box.left + q.x, box.top + q.y, sizeLamp(lamp, R * spec.r, Math.max(0, ll)));
         lamp.style.opacity = on && ll > 0 ? `${spec.a}` : "0";
       });
-      place(specLamp, hx, hy, RS);
+      place(specLamp, hx, hy, sizeLamp(specLamp, RS, l));
       specLamp.style.opacity = on ? "0.85" : "0";
       nodeEls.forEach((n, i) => (n.style.opacity = geo.nodes[i].l <= l + 4 ? "1" : "0"));
       anchors.forEach((a, i) => {

@@ -7,13 +7,15 @@ import { ensureDir, fail, pass, settlePage, slug, warn, watchErrors } from "../l
  * 404 route.
  */
 export async function checkPages({ browser, base, out }) {
+  const webkit = browser.browserType().name() === "webkit";
   const results = [];
   const shots = [];
   const links = new Set();
 
   for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
     const { width, height, ...device } = vp;
-    const ctx = await browser.newContext({ viewport: { width, height }, ...device });
+    const newCtx = () => browser.newContext({ viewport: { width, height }, ...device });
+    let ctx = await newCtx();
     for (const route of ROUTES) {
       const page = await ctx.newPage();
       const errors = watchErrors(page, base);
@@ -60,17 +62,30 @@ export async function checkPages({ browser, base, out }) {
       if (type.missing.length) results.push(fail(`${label}: text renders in a fallback font`, `not loaded: ${type.missing.join(", ")}`));
       if (type.clipped.length) results.push(warn(`${label}: possibly clipped text`, type.clipped.join("\n")));
 
-      const file = `screens/${vpName}/${slug(route)}.png`;
-      ensureDir(`${out}/${file}`);
-      await page.screenshot({ path: `${out}/${file}`, fullPage: true });
-      shots.push({ viewport: vpName, route, file });
-
       if (vpName === "desktop") {
         const hrefs = await page.evaluate(() => [...document.querySelectorAll("a[href]")].map((a) => a.getAttribute("href")));
         hrefs.filter((h) => h && h.startsWith("/") && !h.startsWith("//")).forEach((h) => links.add(h.split("#")[0] || "/"));
       }
       if (errors.length) results.push(fail(`${label}: ${errors.length} runtime error(s)`, errors.slice(0, 5).join("\n")));
-      await page.close();
+
+      // Full-page screenshot, taken last. Headless WebKit on Linux can crash on very tall bitmaps,
+      // so its captures are capped at 8000px; a renderer crash is reported and the run continues.
+      const file = `screens/${vpName}/${slug(route)}.png`;
+      ensureDir(`${out}/${file}`);
+      try {
+        if (webkit) {
+          const h = await page.evaluate(() => document.documentElement.scrollHeight);
+          await page.screenshot({ path: `${out}/${file}`, fullPage: true, clip: { x: 0, y: 0, width, height: Math.min(h, 8000) } });
+        } else {
+          await page.screenshot({ path: `${out}/${file}`, fullPage: true });
+        }
+        shots.push({ viewport: vpName, route, file });
+        await page.close();
+      } catch (e) {
+        results.push(warn(`${label}: screenshot failed (browser renderer crashed)`, String(e?.message || e).split("\n")[0]));
+        await ctx.close().catch(() => {});
+        ctx = await newCtx();
+      }
     }
     await ctx.close();
   }

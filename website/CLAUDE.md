@@ -119,7 +119,7 @@ The logo's own block colours (`BLOCK_COLOURS` in `src/lib/blocks.ts`) are used o
 **Photography.**
 - Use real, high-resolution photographs graded into navy and sapphire with the `.photo` treatment.
 - No prominent human faces.
-- **No legible third-party brands** in any image: signage, logos, product marks. Treat anything reading "CHASE" or similar to the client's name as a blocker. The opening skyline (`skyline`) currently shows a JPMorgan "CHASE" rooftop sign and must be replaced or retouched before launch.
+- **No legible third-party brands** in any image: signage, logos, product marks. Treat anything reading "CHASE" or similar to the client's name as a blocker. Zoom into every new photo at full resolution, including handwriting and on-screen text. (14 Nov 2026: the opening skyline had a JPMorgan "CHASE" sign and was replaced; the engineering and analytics photos were replaced and a drive logo was retouched out. See `public/photos/CREDITS.md`.)
 - Keep the cargo/shipping photograph in Market Growth.
 - Every image must be listed in `public/photos/CREDITS.md` with its source and licence status. Unsplash images are marked as temporary references. Client-supplied images are marked "licence to be confirmed".
 - Use the photo map in `src/lib/photos.ts`; never hard-code paths in components.
@@ -161,7 +161,7 @@ The logo's own block colours (`BLOCK_COLOURS` in `src/lib/blocks.ts`) are used o
   - no layout shift from late-loading imagery;
   - heavy decorative assets load after first paint;
   - prefer WebP sizes matched to their use.
-- **Known open item:** the homepage LCP element is the STRATEGIES logo layer, which appears about 2 s into the intro. Improving it, for example with cropped layers or preloading, is planned work.
+- **Opening LCP:** the first logo layer (ADEN-CHASE) is placed and faded in by CSS (`.opening-wm-text`) so it paints before JavaScript. Keep it that way: making that layer depend on the script again pushed the mobile lab LCP from about 3.9 s to about 10 s.
 
 ---
 

@@ -1,7 +1,7 @@
 /**
  * The three angled blocks of the official ADEN-CHASE mark — measured from the artwork
  * (public/brand/aden-chase-logo.png, 1397×473) and reused as the site's transition system.
- * Order follows the disciplines: Business Strategy, AI Engineering, Market Growth.
+ * Order follows the disciplines: Business Development, AI Engineering, Market Growth.
  */
 export type Pt = [number, number];
 export type Quad = [Pt, Pt, Pt, Pt]; // TL, TR, BR, BL

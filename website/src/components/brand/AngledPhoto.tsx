@@ -18,7 +18,7 @@ export function AngledPhoto({
   rim = 3,
 }: {
   photo: string;
-  /** 0 Business Strategy (green), 1 AI Engineering (cyan), 2 Market Growth (blue). */
+  /** 0 Business Development (green), 1 AI Engineering (cyan), 2 Market Growth (blue). */
   block?: 0 | 1 | 2;
   className?: string;
   position?: string;

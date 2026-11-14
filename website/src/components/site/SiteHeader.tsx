@@ -6,12 +6,12 @@ import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { NAV, SITE } from "@/lib/site";
 
-/** public/brand/aden-chase-logo-transparent.png — the official artwork with its navy field made transparent (colour-to-alpha, pixel-exact). */
-const LOGO = { width: 1397, height: 473 };
+/** The navigation mark: the transparent artwork cropped (losslessly, unscaled) above the descriptor band. */
+const LOGO = { width: 1320, height: 320 };
 
 /** Homepage sections that belong to each navigation item (for the active-section indicator). */
 const SECTION_NAV: Record<string, string> = {
-  "business-strategy": "/expertise",
+  "business-development": "/expertise",
   "ai-engineering": "/expertise",
   "market-growth": "/expertise",
   capabilities: "/capabilities",
@@ -120,8 +120,8 @@ export function SiteHeader() {
         <div className={`relative mx-auto flex max-w-[96rem] items-center justify-between gap-6 px-5 transition-[height] duration-500 ease-brand sm:px-8 lg:px-12 ${solid ? "h-[4.25rem] lg:h-[4.5rem]" : "h-[4.5rem] lg:h-[5.5rem]"}`}>
           <Link href="/" aria-label={`${SITE.name} — home`} className="site-logo relative z-10 shrink-0 rounded-sm">
             <Image
-              src="/brand/aden-chase-logo-transparent.png"
-              alt="ADEN-CHASE Strategies — Business Development • AI Engineering • Market Growth"
+              src="/brand/aden-chase-logo-nav.png"
+              alt="ADEN-CHASE Strategies"
               width={LOGO.width}
               height={LOGO.height}
               priority

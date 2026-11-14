@@ -3,7 +3,7 @@
  * of a single system. Purely decorative (aria-hidden); the copy next to each carries the meaning.
  */
 const paths = {
-  // Business Strategy
+  // Business Development
   opportunity: "M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm9.5 16.5-4.5-4.5M7.5 13l2.5-2.5 2 2 3-3.5",
   position: "M4 20h16M6 20V10M12 20V6M18 20v-7M12 3l2 3h-4l2-3Z",
   direction: "M4 18c4 0 5-12 10-12h6m0 0-3-3m3 3-3 3M4 18h3",

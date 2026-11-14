@@ -540,3 +540,35 @@ html[data-opening-hide-header="1"] .site-logo {
     stroke-dashoffset: 0;
   }
 }
+
+/* The opening's first layer (ADEN-CHASE) is placed and faded in by CSS so it paints before the
+   page's JavaScript runs: same geometry as OpeningSequence frame 1 (width, centre, 45% / 42% of the
+   small-viewport height, svh, which is what window.innerHeight reports on load), fading in over about a second from the first frame. The script then takes over its
+   position without a jump. 0.16929 = (473 / 1397) / 2. */
+.opening-wm-text {
+  --wm-w: min(1000px, 56vw);
+  width: var(--wm-w);
+  transform: translate3d(calc(50vw - var(--wm-w) / 2), calc(45vh - var(--wm-w) * 0.16929), 0);
+  transform: translate3d(calc(50vw - var(--wm-w) / 2), calc(45svh - var(--wm-w) * 0.16929), 0);
+  animation: opening-wm-in 990ms cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
+}
+@media (max-width: 1023px) {
+  .opening-wm-text {
+    --wm-w: min(100vw - 36px, 560px);
+    transform: translate3d(calc(50vw - var(--wm-w) / 2), calc(42vh - var(--wm-w) * 0.16929), 0);
+    transform: translate3d(calc(50vw - var(--wm-w) / 2), calc(42svh - var(--wm-w) * 0.16929), 0);
+  }
+}
+/* Starts faintly present (not at 0) so the mark is painted, and counted as the largest paint, on
+   the first frame; it then resolves over about a second. */
+@keyframes opening-wm-in {
+  from {
+    opacity: 0.12;
+    translate: 0 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .opening-wm-text {
+    animation: none;
+  }
+}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { NAV, SITE } from "@/lib/site";
+import { Descriptor } from "@/components/brand/Descriptor";
 
 export function SiteFooter() {
   return (
@@ -12,7 +13,7 @@ export function SiteFooter() {
             <br />
             <span className="text-jade">Engineering Growth.</span>
           </p>
-          <p className="mt-5 text-sm text-haze">{SITE.disciplines.replaceAll("•", "·")}</p>
+          <p className="mt-5 text-sm text-haze"><Descriptor /></p>
         </div>
         <nav aria-label="Footer" className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-6">
           <div>

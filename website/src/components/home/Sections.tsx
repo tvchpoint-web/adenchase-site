@@ -65,10 +65,10 @@ const CAPABILITY_ICON: Record<string, IconName> = {
 export function StrategyInPractice() {
   const d = DISCIPLINES[0];
   return (
-    <section id="business-strategy" aria-labelledby="strategy-title" className="relative scroll-mt-20 border-t border-line">
+    <section id="business-development" aria-labelledby="strategy-title" className="relative scroll-mt-20 border-t border-line">
       <div className={`${wrap} grid gap-14 py-24 lg:grid-cols-12 lg:py-32`}>
         <div className="lg:col-span-5">
-          <DisciplineLabel block={0} label="01 · Business Strategy — in practice" />
+          <DisciplineLabel block={0} label="01 · Business Development — in practice" />
           <Reveal as="h2" delay={80} className="type-title mt-6 text-ink">
             <span id="strategy-title">{d.line}</span>
           </Reveal>

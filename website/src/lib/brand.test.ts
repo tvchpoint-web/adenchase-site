@@ -28,23 +28,32 @@ describe("brand guards", () => {
     }
   });
 
+  const files: string[] = [];
+  const walk = (dir: string) => {
+    for (const f of readdirSync(dir)) {
+      const p = join(dir, f);
+      if (statSync(p).isDirectory()) walk(p);
+      else if (/\.(tsx?|css)$/.test(f) && !f.endsWith(".test.ts")) files.push(p);
+    }
+  };
+  walk(join(ROOT, "src"));
+
   it("writes the full descriptor exactly wherever it appears", () => {
-    const files: string[] = [];
-    const walk = (dir: string) => {
-      for (const f of readdirSync(dir)) {
-        const p = join(dir, f);
-        if (statSync(p).isDirectory()) walk(p);
-        else if (/\.(tsx?|css)$/.test(f) && !f.endsWith(".test.ts")) files.push(p);
-      }
-    };
-    walk(join(ROOT, "src"));
     const exact = "Business Development • AI Engineering • Market Growth";
+    // Descriptor-style lists (the three names joined by separators) must be the exact descriptor;
+    // ordinary sentences that mention the disciplines are prose, not the descriptor.
+    const listed = /Business \w+\s*[•·|/–]\s*AI Engineering\s*[•·|/–]\s*Market Growth/;
     for (const f of files) {
-      const text = readFileSync(f, "utf8");
-      // Any line naming all three in sequence must use the exact wording and bullet separators.
-      for (const line of text.split("\n")) {
-        if (/Business Development.{0,6}AI Engineering.{0,6}Market Growth/.test(line)) expect(line, f).toContain(exact);
+      for (const line of readFileSync(f, "utf8").split("\n")) {
+        const m = line.match(listed);
+        if (m) expect(m[0], f).toBe(exact);
       }
     }
+  });
+
+  it("uses the approved discipline name, never the retired 'Business Strategy'", () => {
+    const docs = ["README.md", "CLAUDE.md", "public/photos/CREDITS.md", "design/REFERENCES.md"].map((f) => join(ROOT, f));
+    const offenders = [...files, ...docs].filter((f) => /Business Strategy/i.test(readFileSync(f, "utf8")));
+    expect(offenders).toEqual([]);
   });
 });

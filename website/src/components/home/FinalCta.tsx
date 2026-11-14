@@ -37,7 +37,7 @@ export function FinalCta() {
             </span>
           </Reveal>
           <Reveal as="p" delay={160} className="type-lede mt-7 max-w-[32rem] text-mist">
-            A private, considered approach to business strategy, intelligent engineering, and market growth.
+            A private, considered approach to business development, AI engineering and market growth.
           </Reveal>
           <Reveal delay={240} className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
             <Link href="/engagement" className="btn btn-primary justify-center shadow-[0_0_40px_-12px_rgba(131,253,128,0.6)]">
@@ -53,12 +53,13 @@ export function FinalCta() {
         <InView className="final-mark order-1 lg:order-2 lg:col-span-5 lg:col-start-8" margin="0px 0px -20% 0px">
           <div data-trail-end className="relative mx-auto w-full max-w-[34rem]" style={{ aspectRatio: `${LOGO_W} / ${LOGO_H}` }}>
             {/* eslint-disable-next-line @next/next/no-img-element -- the official artwork, layered */}
-            <img src="/photos/logo-wordmark.webp" alt="" aria-hidden className="final-wordmark absolute inset-0 h-full w-full select-none" draggable={false} />
+            <img src="/photos/logo-wordmark.webp" loading="lazy" decoding="async" alt="" aria-hidden className="final-wordmark absolute inset-0 h-full w-full select-none" draggable={false} />
             {crops.map((c, i) => (
               // eslint-disable-next-line @next/next/no-img-element -- block cut from the official artwork
               <img
                 key={i}
                 src={`/photos/logo-block-${i}.png`}
+                loading="lazy"
                 alt=""
                 aria-hidden
                 className="final-block absolute select-none"

@@ -7,14 +7,14 @@ and Sapphire in CSS (`.photo`).
 
 | File | Unsplash photo ID | Used for |
 | --- | --- | --- |
-| skyline | 1477959858617-67f85cf4f1df | Opening (frame 2) |
-| strategy | 1519389950473-47ba0277781c | Opening slices; Business Strategy; Approach |
-| engineering | 1555066931-4365d14bab8c | Opening slices; AI Engineering (code on a laptop — no faces) |
+| skyline | 1496568816309-51d7c20e3b21 | Opening (frame 2). Dusk aerial; checked at full resolution: no legible signage or logos (replaced a skyline showing a JPMorgan "CHASE" sign) |
+| strategy | 1519389950473-47ba0277781c | Opening slices; Business Development; Approach (manufacturer mark on an external drive retouched out) |
+| engineering | 1515879218367-8466d910aaa4 | Opening slices; AI Engineering (close-up of generic code; no hardware, product marks or names — replaced a laptop photo showing a MacBook bezel, menu-bar logo and a personal name) |
 | intelligence | 1558494949-ef010cbdcc31 | Opening slices + portal; AI Engineering detail |
 | growth | 1494412574643-ff11b0a5c1c3 | Opening slices; Market Growth |
 | decision | 1528819622765-d6bcf132f793 | Strategy portal; Expertise (strategic thinking: chess study, no people) |
 | earth | 1451187580459-43490279c0fa | Growth portal; final call to action |
-| analytics | 1460925895917-afdab827c52f | Market Growth detail; Capabilities |
+| boardroom | 1497366811353-6870744d04b2 | Expertise and Capabilities heroes (empty boardroom; checked at full resolution: no text, logos or people — replaced a chart photo whose handwritten axis labels were unsuitable, which itself replaced a template dashboard showing a personal name) |
 | systems | 1544197150-b99a580bb7a8 | AI Engineering detail; Expertise (network patch panel) |
 
 `logo-wordmark.webp`, `logo-text/underline/strategies/descriptor.webp` and `logo-block-0/1/2.png`

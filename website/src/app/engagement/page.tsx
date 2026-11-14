@@ -19,7 +19,7 @@ export default function EngagementPage() {
         accent={2}
         photo={PHOTO.engagementHero}
         block={0}
-        lede="A private, considered approach to business strategy, intelligent engineering, and market growth. Tell us a little about the opportunity, and we will be in touch."
+        lede="A private, considered approach to business development, AI engineering and market growth. Tell us a little about the opportunity, and we will be in touch."
       />
       <section aria-labelledby="inquiry-title" className="relative bg-navy/40">
         <div className="mx-auto grid max-w-[96rem] gap-14 px-5 py-20 sm:px-8 lg:grid-cols-12 lg:px-12 lg:py-28">

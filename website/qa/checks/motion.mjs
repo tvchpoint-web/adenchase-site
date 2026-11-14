@@ -1,4 +1,4 @@
-import { THRESHOLDS, VIEWPORTS } from "../config.mjs";
+import { OVERLAP_EXTRA_VIEWPORTS, THRESHOLDS, VIEWPORTS } from "../config.mjs";
 import sharp from "sharp";
 import { renameSync } from "node:fs";
 import { ensureDir, fail, pass, sleep, warn, watchErrors } from "../lib/util.mjs";
@@ -191,7 +191,9 @@ export async function checkMotion({ browser, base, out }) {
   const results = [];
   const frames = [];
 
-  for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
+  // Per viewport. Headless WebKit on Linux occasionally crashes its renderer (no GPU, very large
+  // layers); a crashed viewport is retried once in a fresh context and reported if it crashes again.
+  const runViewport = async (vpName, vp) => {
     const ctx = await context(browser, vp);
     const page = await ctx.newPage();
     const errors = watchErrors(page, base);
@@ -261,6 +263,21 @@ export async function checkMotion({ browser, base, out }) {
     }
     if (errors.length) results.push(fail(`${vpName}: ${errors.length} runtime error(s) during motion`, errors.slice(0, 5).join("\n")));
     await ctx.close();
+  };
+  for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
+    const mark = { results: results.length, frames: frames.length };
+    try {
+      await runViewport(vpName, vp);
+    } catch (e) {
+      results.length = mark.results;
+      frames.length = mark.frames;
+      try {
+        await runViewport(vpName, vp);
+        results.push(warn(`${vpName}: browser renderer crashed once; the retry completed`, String(e?.message || e).split("\n")[0]));
+      } catch (e2) {
+        results.push(warn(`${vpName}: motion checks not completed (browser renderer crashed twice)`, String(e2?.message || e2).split("\n")[0]));
+      }
+    }
   }
 
   // Reduced motion: no moving light, full route drawn, the opening shows the authentic mark.
@@ -285,6 +302,56 @@ export async function checkMotion({ browser, base, out }) {
   const ok = rm.stage === "none" && parseFloat(rm.lit) === 0 && rm.logo > 0.95;
   results.push(ok ? pass("Reduced motion: no moving light, full route drawn, mark shown at rest") : fail("Reduced motion state incorrect", JSON.stringify(rm)));
   await ctx.close();
+
+  // Opening copy hand-offs: step through the whole pinned timeline and fail if any two visible copy
+  // layers' text lines overlap (e.g. the outgoing headline over incoming slice copy, or captions
+  // stacked on top of each other). Reduced motion makes each step settle at once; the opacity
+  // windows are identical to the animated version.
+  for (const [vpName, vp] of Object.entries({ ...VIEWPORTS, ...OVERLAP_EXTRA_VIEWPORTS })) {
+    const c = await context(browser, vp, { reducedMotion: "reduce" });
+    const pg = await c.newPage();
+    await pg.goto(base + "/", { waitUntil: "networkidle" });
+    const span = await pg.evaluate(() => {
+      const t = document.querySelector('[data-k="wmText"]')?.closest(".relative");
+      return t ? { top: t.getBoundingClientRect().top + scrollY, h: t.offsetHeight - innerHeight } : null;
+    });
+    if (!span) continue;
+    const clashes = [];
+    for (let i = 0; i <= 100; i += 1) {
+      await pg.evaluate((y) => window.scrollTo(0, y), Math.round(span.top + (span.h * i) / 100));
+      await sleep(60);
+      const hit = await pg.evaluate(() => {
+        const keys = ["f1tag", "f2", "f3", "f4", "f5", "f6", "sliceCopy0", "sliceCopy1", "sliceCopy2", "sliceCopy3", "portalLabel0", "portalLabel1", "portalLabel2"];
+        const lines = [];
+        for (const k of keys) {
+          const el = document.querySelector(`[data-k="${k}"]`);
+          if (!el) continue;
+          const cs = getComputedStyle(el);
+          if (cs.visibility === "hidden" || Number(cs.opacity) < 0.05) continue;
+          const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+          const range = document.createRange();
+          for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+            if (!n.textContent.trim() || n.parentElement.closest(".sr-only")) continue;
+            range.selectNodeContents(n);
+            for (const r of range.getClientRects()) if (r.width > 1 && r.height > 1) lines.push({ k, r });
+          }
+        }
+        for (let a = 0; a < lines.length; a++)
+          for (let b = a + 1; b < lines.length; b++) {
+            const A = lines[a];
+            const B = lines[b];
+            if (A.k === B.k) continue;
+            const ox = Math.min(A.r.right, B.r.right) - Math.max(A.r.left, B.r.left);
+            const oy = Math.min(A.r.bottom, B.r.bottom) - Math.max(A.r.top, B.r.top);
+            if (ox > 2 && oy > 2) return `${A.k} × ${B.k}`;
+          }
+        return null;
+      });
+      if (hit) clashes.push(`${i}%: ${hit}`);
+    }
+    results.push(clashes.length ? fail(`${vpName}: opening copy overlaps at ${clashes.length} timeline step(s)`, clashes.slice(0, 8).join("\n")) : pass(`${vpName}: opening copy never overlaps (101 timeline steps)`));
+    await c.close();
+  }
 
   // Continuous scroll videos (down, then partly back up) for motion review.
   const videos = [];

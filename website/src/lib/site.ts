@@ -1,9 +1,9 @@
 export const SITE = {
   name: "ADEN-CHASE Strategies",
   statement: "Identifying Opportunity. Engineering Growth.",
-  disciplines: "Business Strategy • AI Engineering • Market Growth",
+  disciplines: "Business Development • AI Engineering • Market Growth",
   description:
-    "ADEN-CHASE Strategies identifies opportunity, engineers intelligent solutions, and creates new pathways for business growth — across business strategy, AI engineering and market growth.",
+    "ADEN-CHASE Strategies identifies opportunity, engineers intelligent solutions, and creates new pathways for business growth — across business development, AI engineering and market growth.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://adenchase.com",
   /** The Client Portal is a separate application; this is only a link to it. */
   portalUrl: process.env.NEXT_PUBLIC_PORTAL_URL ?? "https://aden-chase-portal.vercel.app/login",
@@ -36,10 +36,10 @@ export const DISCIPLINES: Discipline[] = [
     id: "strategy",
     region: 0,
     index: "01",
-    title: "Business Strategy",
+    title: "Business Development",
     line: "Identify opportunity. Establish direction. Create competitive advantage.",
     description:
-      "Strategy is where every engagement begins. We examine the business as it actually operates — its market, customers, economics and constraints — to find the opportunities worth pursuing and the direction that makes them achievable.",
+      "Business development is where every engagement begins. We examine the business as it actually operates — its market, customers, economics and constraints — to find the opportunities worth pursuing and the direction that makes them achievable.",
     applications: [
       "Growth strategy and opportunity assessment",
       "Competitive and market positioning",
@@ -188,4 +188,4 @@ export const OUTCOMES = [
 ] as const;
 
 
-export const INTERESTS = ["Business Strategy", "AI Engineering", "Market Growth", "Not sure yet — exploring"] as const;
+export const INTERESTS = ["Business Development", "AI Engineering", "Market Growth", "Not sure yet — exploring"] as const;

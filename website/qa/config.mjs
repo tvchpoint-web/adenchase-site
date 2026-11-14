@@ -9,6 +9,12 @@ export const VIEWPORTS = {
   mobile: { width: 390, height: 844, deviceScaleFactor: 1, isMobile: true, hasTouch: true },
 };
 
+/** Extra laptop sizes for the opening copy-overlap check, where the slices are narrowest. */
+export const OVERLAP_EXTRA_VIEWPORTS = {
+  laptop: { width: 1280, height: 800, deviceScaleFactor: 1 },
+  "small-laptop": { width: 1024, height: 768, deviceScaleFactor: 1 },
+};
+
 /** Every public route, plus one unknown path that must answer 404. */
 export const ROUTES = ["/", "/approach", "/expertise", "/capabilities", "/engagement"];
 export const NOT_FOUND_ROUTE = "/qa-route-that-does-not-exist";
