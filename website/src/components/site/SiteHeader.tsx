@@ -14,7 +14,6 @@ const SECTION_NAV: Record<string, string> = {
   "business-development": "/business-development",
   "ai-engineering": "/ai-engineering",
   "market-growth": "/market-growth",
-  approach: "/about",
 };
 
 export function SiteHeader() {

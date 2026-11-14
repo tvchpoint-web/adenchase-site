@@ -21,6 +21,9 @@ export async function checkA11y({ browser, base }) {
       const page = await ctx.newPage();
       await page.goto(base + route, { waitUntil: "networkidle" });
       await settlePage(page);
+      // Let scroll-smoothed layers (the opening's copy) finish easing back to their resting state,
+      // so contrast is measured on settled content, not mid-fade.
+      await page.waitForTimeout(2000);
       await page.addScriptTag({ path: AXE });
       const res = await page.evaluate((tags) => window.axe.run(document, { runOnly: { type: "tag", values: tags }, resultTypes: ["violations"] }), TAGS);
       for (const v of res.violations) {

@@ -15,11 +15,11 @@ export default function ContactPage() {
     <main id="main">
       <PageHero
         label="Contact & private engagement"
-        lines={["Let's Explore", "What's Possible."]}
+        lines={["Let’s Explore", "What’s Possible."]}
         accent={1}
         photo={PHOTO.contactHero}
         block={0}
-        lede="Whether you're facing a business challenge, exploring a new market, considering intelligent technology, or evaluating an opportunity that deserves a different perspective, the right conversation can be a valuable starting point."
+        lede="Whether you’re facing a business challenge, exploring a new market, considering intelligent technology, or evaluating an opportunity that deserves a different perspective, the right conversation can be a valuable starting point."
       >
         <a href="#inquiry" className="btn btn-primary">
           {CTA.conversation}

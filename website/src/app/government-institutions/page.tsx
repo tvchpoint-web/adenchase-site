@@ -76,7 +76,7 @@ export default function GovernmentInstitutionsPage() {
         paragraphs={[
           "Meaningful institutional progress does not always follow a single implementation or funding model.",
           "Depending on the challenge, ADEN-CHASE can help explore delivery approaches involving strategic partners, private-sector participation, technology collaborators, and complementary funding opportunities.",
-          "These possibilities must be assessed against the institution's objectives, applicable procurement and governance requirements, stakeholder responsibilities, and long-term sustainability.",
+          "These possibilities must be assessed against the institution’s objectives, applicable procurement and governance requirements, stakeholder responsibilities, and long-term sustainability.",
         ]}
         statement="The goal is to develop approaches that are practical, responsible, and aligned with public value."
       />
@@ -99,7 +99,7 @@ export default function GovernmentInstitutionsPage() {
         title="From Institutional Need to Practical Opportunity."
         paragraphs={[
           "We welcome conversations with institutions and authorized stakeholders exploring service modernization, intelligent systems, operational improvement, and tailored solutions to persistent challenges.",
-          "Each engagement is considered in relation to the institution's objectives, applicable requirements, and the potential for meaningful public value. All public-sector work respects applicable procurement, ethics, data-protection, and governance requirements.",
+          "Each engagement is considered in relation to the institution’s objectives, applicable requirements, and the potential for meaningful public value. All public-sector work respects applicable procurement, ethics, data-protection, and governance requirements.",
         ]}
       />
 

@@ -19,8 +19,8 @@ export default function CapabilitiesPage() {
     <main id="main">
       <PageHero
         label="Our capabilities"
-        lines={["Three Disciplines.", "One Strategic", "Advantage."]}
-        accent={2}
+        lines={["Explore Our", "Capabilities."]}
+        accent={1}
         photo={PHOTO.capabilitiesHero}
         block={1}
         lede="Commercial opportunity, intelligent technology, and market growth are deeply connected. We bring these disciplines together to develop solutions that work beyond traditional service boundaries."

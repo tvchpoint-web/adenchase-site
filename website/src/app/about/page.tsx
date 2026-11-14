@@ -16,7 +16,7 @@ export default function AboutPage() {
     <main id="main">
       <PageHero
         label="About ADEN-CHASE"
-        lines={["A Different", "Perspective on", "What's Possible."]}
+        lines={["A Different", "Perspective on", "What’s Possible."]}
         accent={2}
         photo={PHOTO.aboutHero}
         block={0}
@@ -66,7 +66,7 @@ export default function AboutPage() {
           </Reveal>
           <ul className="mt-12 grid gap-px overflow-hidden rounded-3xl border border-line bg-line md:grid-cols-2 xl:grid-cols-5">
             {PRINCIPLES.map((p, i) => (
-              <li key={p} className="bg-navy-deep">
+              <li key={p} className={`bg-navy-deep ${i === PRINCIPLES.length - 1 ? "md:col-span-2 xl:col-span-1" : ""}`}>
                 <Reveal delay={(i % 5) * 70} className="h-full p-6 sm:p-7">
                   <span aria-hidden className="block h-1.5 w-3 -skew-x-[34deg] bg-jade" />
                   <p className="mt-5 text-[1.05rem] font-medium leading-snug text-ink">{p}</p>

@@ -70,7 +70,7 @@ export function Introduction() {
           <div className="lg:col-span-5">
             <Reveal as="p" className="type-label flex items-center gap-3 text-haze" data-trail-anchor="">
               <span aria-hidden className="h-px w-8 bg-jade" />
-              {SITE.belief}
+              Our perspective
             </Reveal>
             <Reveal as="h2" delay={80} className="type-title mt-5 text-ink">
               <span id="intro-title">The Greatest Opportunities Aren&rsquo;t Always Obvious.</span>
@@ -93,7 +93,7 @@ export function Introduction() {
           <div className="lg:col-span-6">
             <Reveal as="h2" className="type-headline text-ink">
               <span id="disciplines-title">
-                Three Disciplines. <span className="text-jade">One Strategic Advantage.</span>
+                Three Disciplines. <span className="block text-jade">One Strategic Advantage.</span>
               </span>
             </Reveal>
           </div>
@@ -268,7 +268,7 @@ export function Differentiation() {
             </Reveal>
             <Reveal as="h2" delay={80} className="type-headline mt-6 text-ink">
               <span id="diff-title">
-                We Don&rsquo;t Start With a Solution. <span className="text-jade">We Start With the Opportunity.</span>
+                We Don&rsquo;t Start With a Solution. <span className="block text-jade">We Start With the Opportunity.</span>
               </span>
             </Reveal>
           </div>
@@ -321,7 +321,7 @@ export function WhoWeWorkWith() {
         </div>
         <ul className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
           {AUDIENCES.map((a, i) => (
-            <li key={a.title}>
+            <li key={a.title} className={i === AUDIENCES.length - 1 ? "sm:col-span-2 lg:col-span-1" : ""}>
               <Reveal delay={i * 80} className="flex h-full flex-col rounded-3xl border border-white/[0.07] bg-[linear-gradient(170deg,rgba(10,30,82,0.7),rgba(0,10,40,0.85))] p-6">
                 <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-navy-deep text-jade">
                   <Icon name={AUDIENCE_ICON[i]} className="h-5 w-5" />
@@ -330,7 +330,8 @@ export function WhoWeWorkWith() {
                 <p className="mt-2 text-[0.9rem] leading-relaxed text-mist">{a.line}</p>
                 {"href" in a && (
                   <Link href={a.href} className="mt-auto inline-flex items-center gap-2 pt-5 text-[0.88rem] text-jade underline-offset-4 hover:underline">
-                    Explore <span aria-hidden>→</span>
+                    Explore <span className="sr-only">{a.title}</span>
+                    <span aria-hidden>→</span>
                   </Link>
                 )}
               </Reveal>

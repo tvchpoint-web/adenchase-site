@@ -37,7 +37,7 @@ export function FinalCta() {
             </span>
           </Reveal>
           <Reveal as="p" delay={160} className="type-lede mt-7 max-w-[32rem] text-mist">
-            Whether you&rsquo;re facing a business challenge, exploring a new market, considering intelligent technology, or evaluating an opportunity that deserves a different perspective, the right conversation can be a valuable starting point.
+            Tell us what you&rsquo;re working toward. We&rsquo;ll explore whether ADEN-CHASE is the right strategic partner to help move it forward.
           </Reveal>
           <Reveal delay={240} className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
             <Link href="/contact" className="btn btn-primary justify-center shadow-[0_0_40px_-12px_rgba(131,253,128,0.6)]">

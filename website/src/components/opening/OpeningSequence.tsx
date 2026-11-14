@@ -423,17 +423,18 @@ export function OpeningSequence() {
       {/* Copy layers (sticky with the stage) */}
       <div className="pointer-events-none absolute inset-0">
         <div className="sticky top-0 h-svh">
-          <a data-k="cue" href="#business-development" className="type-label pointer-events-auto absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-haze" style={{ opacity: 0 }}>
+          <a data-k="cue" href="#business-development" className="type-label pointer-events-auto absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-haze" style={{ opacity: 0, visibility: "hidden" }}>
             Scroll
             <span aria-hidden className="block h-8 w-px bg-line" />
           </a>
 
-          <div data-k="f2" className="pointer-events-auto absolute left-5 right-5 bottom-[9svh] sm:left-8 lg:bottom-auto lg:left-12 lg:right-auto lg:top-1/2 lg:w-[46%] lg:-translate-y-1/2" style={{ opacity: 0 }}>
+          <div data-k="f2" className="pointer-events-auto absolute left-5 right-5 bottom-[9svh] sm:left-8 lg:bottom-auto lg:left-12 lg:right-auto lg:top-1/2 lg:w-[46%] lg:-translate-y-1/2" style={{ opacity: 0, visibility: "hidden" }}>
             <p className="type-label flex items-center gap-3 text-haze">
               <span aria-hidden className="h-px w-8 bg-jade" />
               <Descriptor />
             </p>
-            <h1 className="type-display mt-6 text-ink">
+            {/* Visual hero headline; the document's h1 (same words) is in page.tsx. */}
+            <p aria-hidden className="type-display mt-6 text-ink">
               Identifying
               <br />
               Opportunity.
@@ -443,7 +444,7 @@ export function OpeningSequence() {
                 <br />
                 Growth.
               </span>
-            </h1>
+            </p>
             <p className="mt-6 max-w-[33rem] text-[0.98rem] leading-relaxed text-mist lg:type-lede">
               We uncover opportunities others overlook, connect strategy with intelligent technology, and engineer tailored solutions that create measurable value for businesses, brands, and institutions.
             </p>
@@ -479,7 +480,7 @@ export function OpeningSequence() {
           <div data-k="f5" className="absolute left-5 top-24 sm:left-8 lg:left-12 lg:top-[18svh] lg:w-[30%]" style={{ opacity: 0 }}>
             <p className="type-label flex items-center gap-3 text-haze">
               <span aria-hidden className="h-px w-8 bg-jade" />
-              Three disciplines · One strategic advantage
+              Choose where to begin
             </p>
             <p className="mt-5 hidden text-[4rem] font-semibold leading-[0.95] tracking-[-0.035em] text-ink lg:block">
               Choose where
@@ -498,7 +499,7 @@ export function OpeningSequence() {
             </div>
           ))}
 
-          <div data-k="f6" className="pointer-events-auto absolute bottom-[5svh] left-5 right-5 sm:left-8 lg:bottom-auto lg:left-12 lg:right-auto lg:top-1/2 lg:w-[38%] lg:-translate-y-1/2" style={{ opacity: 0 }}>
+          <div data-k="f6" className="pointer-events-auto absolute bottom-[5svh] left-5 right-5 sm:left-8 lg:bottom-auto lg:left-12 lg:right-auto lg:top-1/2 lg:w-[38%] lg:-translate-y-1/2" style={{ opacity: 0, visibility: "hidden" }}>
             <p className="type-label flex items-center gap-3" style={{ color: BLOCK_COLOURS[0] }}>
               <span aria-hidden className="h-px w-8" style={{ background: BLOCK_COLOURS[0] }} />
               01 · Business Development
@@ -572,7 +573,8 @@ function openedQuad(i: number, W: number, H: number, mobile: boolean, run: numbe
     ];
   }
   // Portals 02 and 03 wait as slivers at the right edge, on the same angle.
-  const h = H * 0.4;
+  // On the stacked (phone/tablet) layout the copy fills the lower half, so the slivers wait above it.
+  const h = mobile ? H * 0.24 : H * 0.4;
   const x = W - (mobile ? 60 : 110) + (i - 1) * (mobile ? 16 : 26) - K * h;
-  return para(x, H * 0.7, mobile ? 8 : 14, h);
+  return para(x, mobile ? H * 0.34 : H * 0.7, mobile ? 8 : 14, h);
 }

@@ -86,7 +86,7 @@ export const DISCIPLINES: Discipline[] = [
     ],
     pageLines: ["See the Opportunity.", "Build the Advantage."],
     pageIntro: [
-      "Growth is not always about doing more. Sometimes it's about recognizing what others have missed.",
+      "Growth is not always about doing more. Sometimes it’s about recognizing what others have missed.",
       "ADEN-CHASE helps organizations uncover commercial opportunities, strengthen their strategic position, and develop practical pathways toward new revenue, stronger relationships, and long-term growth.",
       "We look beyond conventional boundaries to identify how existing capabilities, market conditions, customer relationships, and emerging opportunities can be connected to create value.",
     ],
@@ -120,7 +120,7 @@ export const DISCIPLINES: Discipline[] = [
     ],
     pageLines: ["Intelligence That", "Works With Your", "Business."],
     pageIntro: [
-      "Artificial intelligence should make organizations more capable—not more complicated.",
+      "Artificial intelligence should make organizations more capable⁠—⁠not more complicated.",
       "ADEN-CHASE engineers intelligent solutions that integrate with existing systems, teams, and workflows. We focus on practical applications that reduce friction, improve information access, strengthen customer experiences, and support better operational decisions.",
       "Our approach begins with understanding the business challenge, not selecting a technology.",
     ],
@@ -135,7 +135,7 @@ export const DISCIPLINES: Discipline[] = [
       { title: "Continuous Optimization", description: "Evaluating performance and refining solutions as business needs and technologies evolve." },
     ],
     closing: {
-      title: "Let's Engineer Something Useful.",
+      title: "Let’s Engineer Something Useful.",
       copy: "Tell us where friction, disconnected systems, or slow information are holding the business back.",
       cta: "Explore AI Engineering",
     },
@@ -147,7 +147,7 @@ export const DISCIPLINES: Discipline[] = [
     region: 2,
     index: "03",
     title: "Market Growth",
-    headline: "Expand What's Possible.",
+    headline: "Expand What’s Possible.",
     copy: [
       "We help brands and organizations become more visible, relevant, and competitive.",
       "Through market positioning, digital infrastructure, customer engagement, strategic partnerships, and intelligent discovery, we connect organizations with new audiences and commercial opportunities.",

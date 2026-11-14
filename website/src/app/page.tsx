@@ -3,6 +3,7 @@ import { AiEngineering, Approach, Differentiation, Introduction, MarketGrowth, S
 import { FinalCta } from "@/components/home/FinalCta";
 import { LivingCircuit } from "@/components/motion/LivingCircuit";
 import { preload } from "react-dom";
+import { SITE } from "@/lib/site";
 
 /**
  * Home: the logo-first opening, then the full story — with a jade signal that travels through
@@ -13,6 +14,13 @@ export default function Home() {
   preload("/photos/logo-text.webp", { as: "image", fetchPriority: "high" });
   return (
     <main id="main" className="relative">
+      {/* The hero's message for assistive technology, present from the first paint (the visible
+          hero headline appears only as the opening sequence is scrolled). */}
+      <div className="sr-only">
+        <h1>{SITE.statement}</h1>
+        <p>We uncover opportunities others overlook, connect strategy with intelligent technology, and engineer tailored solutions that create measurable value for businesses, brands, and institutions.</p>
+        <p>{SITE.disciplines}</p>
+      </div>
       <OpeningSequence />
 
       <div className="relative">

@@ -3,11 +3,18 @@ import { Reveal } from "@/components/editorial/SplitLines";
 import type { Capability } from "@/lib/site";
 
 /** A discipline's capabilities in the site's hairline grid (the same pattern as the capabilities page). */
+/** Column span for the last item so the final row is always full (md: 2 columns, xl: 3). */
+export function lastSpan(n: number) {
+  const md = n % 2 === 1 ? "md:col-span-2" : "";
+  const xl = n % 3 === 1 ? "xl:col-span-3" : n % 3 === 2 ? "xl:col-span-2" : "xl:col-span-1";
+  return `${md} ${xl}`;
+}
+
 export function CapabilityGrid({ items, block }: { items: readonly Capability[]; block: 0 | 1 | 2 }) {
   return (
     <ul className="grid gap-px overflow-hidden rounded-3xl border border-line bg-line md:grid-cols-2 xl:grid-cols-3">
       {items.map((c, i) => (
-        <li key={c.title} className="bg-navy-deep">
+        <li key={c.title} className={`bg-navy-deep ${i === items.length - 1 ? lastSpan(items.length) : ""}`}>
           <Reveal delay={(i % 3) * 90} className="group flex h-full flex-col p-6 transition-colors duration-300 hover:bg-sapphire/10 sm:p-8 lg:p-9">
             <BrandBlock block={block} className="h-3 w-auto self-start" />
             <h3 className="mt-6 text-[1.3rem] font-medium leading-tight tracking-[-0.015em] text-ink">{c.title}</h3>
