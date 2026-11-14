@@ -220,7 +220,7 @@ function Hub({ L }: { L: Layout }) {
         <div className="nx3-plaque-light" style={{ width: P.w * 1.1, height: P.h * 1.6, left: -P.w * 0.55, top: -P.h * 1.2 }} />
         <Slab w={P.w} h={P.h} d={P.d} className="nx3-plaque-box" front="nx3-plaque-front">
           {/* eslint-disable-next-line @next/next/no-img-element -- authentic logo artwork, shown as-is */}
-          <img src="/brand/aden-chase-blocks.png" alt="" width={497} height={112} draggable={false} className="nx3-mark" style={{ width: P.w * 0.66 }} />
+          <img src="/brand/aden-chase-blocks.png" alt="" width={497} height={112} loading="lazy" decoding="async" draggable={false} className="nx3-mark" style={{ width: P.w * 0.66 }} />
         </Slab>
       </div>
     </>

@@ -116,15 +116,21 @@ export function OpeningSequence() {
     let introDone = false;
     let cssIntroDone = false;
     const art = [...WM_LAYERS.filter((l) => l.file !== "text").map((l) => `/photos/logo-${l.file}.webp`), ...BLOCKS.map((_, i) => `/photos/logo-block-${i}.png`)];
+    // The wordmark (the page's largest paint) loads first; the rest of the artwork is fetched after it,
+    // so it never competes with it for bandwidth.
+    const first = els.wmText as HTMLImageElement | null;
+    const wordmark = first && !first.complete ? new Promise((r) => first.addEventListener("load", r, { once: true })) : Promise.resolve();
     Promise.race([
-      Promise.all(
-        art.map((src) => {
-          const img = new Image();
-          img.src = src;
-          return img.decode().catch(() => undefined);
-        }),
+      wordmark.then(() =>
+        Promise.all(
+          art.map((src) => {
+            const img = new Image();
+            img.src = src;
+            return img.decode().catch(() => undefined);
+          }),
+        ),
       ),
-      new Promise((r) => setTimeout(r, 1000)),
+      new Promise((r) => setTimeout(r, 1200)),
     ]).then(() => (assetsReady = true));
     // Work elsewhere on the page that is heavy on the main thread (the Living Circuit's routing)
     // waits for this signal, so it never competes with the intro.
