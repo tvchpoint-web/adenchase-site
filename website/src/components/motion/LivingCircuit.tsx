@@ -37,12 +37,14 @@ function contentRects(root: HTMLElement, skip: (n: Element) => boolean, box: DOM
     for (const r of Array.from(range.getClientRects())) add(r);
   }
   // Surfaces: only elements whose classes or inline style can draw one are inspected (cheap filter),
-  // then confirmed from computed style. Decorative aria-hidden overlays (hover glows, rails) are not
-  // surfaces.
+  // then confirmed from computed style.
   const MAY_DRAW = /(^|\s)(bg-|border|shadow|outline|ring|photo|demo-panel|rounded)/;
   root.querySelectorAll<HTMLElement>("section *").forEach((n) => {
     if (skip(n) || !(MAY_DRAW.test(n.getAttribute("class") || "") || n.hasAttribute("style"))) return;
-    if (n.closest("[aria-hidden='true'].absolute")) return;
+    // Visible decoration (rails, nodes, markers) is avoided like content; only layers hidden by
+    // design until interaction (e.g. hover glows marked opacity-0) are not obstacles.
+    const deco = n.closest<HTMLElement>("[aria-hidden='true'].absolute");
+    if (deco && /(^|\s)opacity-0(\s|$)/.test(deco.getAttribute("class") || "")) return;
     const cs = getComputedStyle(n);
     // Opacity is deliberately not checked: cards that fade in on scroll are still content.
     if (cs.visibility === "hidden" || cs.display === "none" || cs.position === "fixed") return;
@@ -128,15 +130,26 @@ export function LivingCircuit() {
     const root = el?.parentElement;
     if (!el || !root) return;
     let timer = 0;
+    // Everything (content, markers, sections) is measured at its revealed position: see
+    // .lc-measure in globals.css.
     const measure = () => {
+      const html = document.documentElement;
+      html.classList.add("lc-measure");
+      try {
+        computeRoute();
+      } finally {
+        html.classList.remove("lc-measure");
+      }
+    };
+    const computeRoute = () => {
       const box = root.getBoundingClientRect();
       const W = box.width;
       const H = box.height;
       const vw = window.innerWidth;
       const mobile = vw < 768;
       const tablet = !mobile && vw < 1100;
-      const cell = mobile ? 5 : tablet ? 6 : 10;
-      const inflate = mobile ? 7 : tablet ? 9 : 22;
+      const cell = mobile ? 5 : tablet ? 5 : 10;
+      const inflate = mobile ? 7 : tablet ? 14 : 22;
       const end = root.querySelector<HTMLElement>("[data-trail-end]");
       const obstacles = contentRects(root, (n) => el.contains(n) || !!end?.contains(n), box);
       // Real content only (before the artificial viewport-edge strips are added for routing).
@@ -291,7 +304,7 @@ export function LivingCircuit() {
     const total = t.total;
     // The light scales with the viewport so it stays in the open space around the signal.
     const vw = window.innerWidth;
-    const R = Math.round(Math.min(300, Math.max(160, vw * 0.2)));
+    const R = Math.round(Math.min(300, Math.max(185, vw * 0.21)));
     const RS = Math.round(R * 0.55);
     const TRAVEL = geo.mobile ? 240 : 320;
     const TAIL = geo.mobile ? 260 : 520;

@@ -107,7 +107,9 @@ async function revealContrast(page, litPng) {
   await sleep(120);
   const dark = await page.screenshot();
   await tag.evaluate((n) => n.remove());
-  const [a, b] = await Promise.all([litPng, dark].map((buf) => sharp(buf).greyscale().raw().toBuffer({ resolveWithObject: true })));
+  await sleep(450); // lamps fade back (320 ms opacity transition)
+  const lit2 = await page.screenshot();
+  const [a, b, a2] = await Promise.all([litPng, dark, lit2].map((buf) => sharp(buf).greyscale().raw().toBuffer({ resolveWithObject: true })));
   const { width, height } = a.info;
   const R = Math.min(140, width * 0.18);
   let nearSum = 0;
@@ -117,6 +119,9 @@ async function revealContrast(page, litPng) {
   for (let y = 0; y < height; y += 2) {
     for (let x = 0; x < width; x += 2) {
       const d = Math.hypot(x - headPt.x, y - headPt.y);
+      // Ignore pixels that change between the two lit captures (other animation on the page, e.g.
+      // a demo playing), so only the light's own contribution is measured.
+      if (Math.abs(a.data[y * width + x] - a2.data[y * width + x]) > 3) continue;
       const diff = Math.abs(a.data[y * width + x] - b.data[y * width + x]);
       if (d < R) {
         nearSum += diff;

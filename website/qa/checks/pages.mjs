@@ -16,11 +16,19 @@ export async function checkPages({ browser, base, out }) {
     const { width, height, ...device } = vp;
     const newCtx = () => browser.newContext({ viewport: { width, height }, ...device });
     let ctx = await newCtx();
-    for (const route of ROUTES) {
+    const checkRoute = async (route) => {
       const page = await ctx.newPage();
       const errors = watchErrors(page, base);
       const res = await page.goto(base + route, { waitUntil: "networkidle" });
+      // Layout stability while scrolling: section positions at load must not move once the visitor
+      // has scrolled through (content that grows or shrinks as it comes into view shifts the page).
+      const tops = () => page.evaluate(() => [...document.querySelectorAll("main section, main > div > section, footer")].map((el) => Math.round(el.getBoundingClientRect().top + scrollY)));
+      const tops0 = await tops();
       await settlePage(page);
+      await page.waitForTimeout(2500);
+      const tops1 = await tops();
+      const moved = tops0.map((t, i) => Math.abs((tops1[i] ?? t) - t)).reduce((m, v) => Math.max(m, v), 0);
+      if (moved > 4) results.push(fail(`${route} @ ${vpName}: layout shifts while scrolling`, `a section moved ${moved}px after scrolling through the page (content changing size as it comes into view)`));
       const label = `${route} @ ${vpName}`;
       if (!res || res.status() !== 200) results.push(fail(`${label}: HTTP ${res?.status()}`));
 
@@ -85,6 +93,27 @@ export async function checkPages({ browser, base, out }) {
         results.push(warn(`${label}: screenshot failed (browser renderer crashed)`, String(e?.message || e).split("\n")[0]));
         await ctx.close().catch(() => {});
         ctx = await newCtx();
+      }
+        };
+    for (const route of ROUTES) {
+      // Headless WebKit on Linux occasionally crashes its renderer; retry the route once in a fresh
+      // context, and report (not abort) if it crashes again.
+      const mark = { results: results.length, shots: shots.length };
+      try {
+        await checkRoute(route);
+      } catch (e) {
+        results.length = mark.results;
+        shots.length = mark.shots;
+        await ctx.close().catch(() => {});
+        ctx = await newCtx();
+        try {
+          await checkRoute(route);
+          results.push(warn(`${route} @ ${vpName}: browser renderer crashed once; the retry completed`, String(e?.message || e).split("\n")[0]));
+        } catch (e2) {
+          results.push(warn(`${route} @ ${vpName}: checks not completed (browser renderer crashed twice)`, String(e2?.message || e2).split("\n")[0]));
+          await ctx.close().catch(() => {});
+          ctx = await newCtx();
+        }
       }
     }
     await ctx.close();

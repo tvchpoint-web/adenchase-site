@@ -11,7 +11,7 @@ and Sapphire in CSS (`.photo`).
 | strategy | 1519389950473-47ba0277781c | Opening slices; Business Development; Approach (manufacturer mark on an external drive retouched out) |
 | engineering | 1515879218367-8466d910aaa4 | Opening slices; AI Engineering (close-up of generic code; no hardware, product marks or names — replaced a laptop photo showing a MacBook bezel, menu-bar logo and a personal name) |
 | intelligence | 1558494949-ef010cbdcc31 | Opening slices + portal; AI Engineering detail |
-| growth | 1494412574643-ff11b0a5c1c3 | Opening slices; Market Growth |
+| growth | 1494412574643-ff11b0a5c1c3 | Opening slices; Market Growth (shipping-line names on containers softened and operator marks on crane cabins retouched out) |
 | decision | 1528819622765-d6bcf132f793 | Strategy portal; Expertise (strategic thinking: chess study, no people) |
 | earth | 1451187580459-43490279c0fa | Growth portal; final call to action |
 | boardroom | 1497366811353-6870744d04b2 | Expertise and Capabilities heroes (empty boardroom; checked at full resolution: no text, logos or people — replaced a chart photo whose handwritten axis labels were unsuitable, which itself replaced a template dashboard showing a personal name) |
