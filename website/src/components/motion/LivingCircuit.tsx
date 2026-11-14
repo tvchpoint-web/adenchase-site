@@ -266,7 +266,11 @@ export function LivingCircuit() {
     // Routing is a long main-thread task (hundreds of ms on a phone). The homepage's opening intro
     // plays first and the signal is below it, so measuring waits until the intro has finished
     // (it used to land mid-intro and make it skip ahead).
-    const introRunning = () => document.documentElement.dataset.openingIntro === "running";
+    // A safety net: if the intro never reports completion (an error, a tab opened in the background),
+    // routing goes ahead after 6 s regardless.
+    const deadline = performance.now() + 6000;
+    const introRunning = () => performance.now() < deadline && document.documentElement.dataset.openingIntro === "running";
+    const fallback = window.setTimeout(() => schedule(), 6100);
     const schedule = () => {
       window.clearTimeout(timer);
       if (introRunning()) return;
@@ -287,6 +291,7 @@ export function LivingCircuit() {
       window.removeEventListener("resize", schedule);
       window.removeEventListener("load", schedule);
       window.removeEventListener("opening:intro-done", schedule);
+      window.clearTimeout(fallback);
       window.clearTimeout(timer);
     };
   }, []);

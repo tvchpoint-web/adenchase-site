@@ -925,8 +925,38 @@ html[data-opening-hide-header="1"] .site-logo {
 .nx-caption.is-swapping {
   opacity: 0;
 }
+/* Touch: the deck drifts slowly (the plaque counter-turns so the mark stays square). */
+[data-drift="1"] .nx3-stage {
+  animation: nx3-drift 20s ease-in-out infinite alternate;
+}
+[data-drift="1"] [data-plaque] {
+  animation: nx3-drift-plaque 20s ease-in-out infinite alternate;
+}
+@keyframes nx3-drift {
+  from {
+    transform: rotateX(var(--nx3-tilt)) rotateZ(-2.2deg);
+  }
+  to {
+    transform: rotateX(var(--nx3-tilt)) rotateZ(2.2deg);
+  }
+}
+@keyframes nx3-drift-plaque {
+  from {
+    transform: translateZ(var(--nx3-pz)) rotateZ(2.2deg) rotateX(calc(6deg - var(--nx3-tilt)));
+  }
+  to {
+    transform: translateZ(var(--nx3-pz)) rotateZ(-2.2deg) rotateX(calc(6deg - var(--nx3-tilt)));
+  }
+}
+[data-paused="1"] .nx3-float,
+[data-paused="1"] .nx3-stage,
+[data-paused="1"] [data-plaque] {
+  animation-play-state: paused;
+}
 @media (prefers-reduced-motion: reduce) {
-  .nx3-float {
-    animation: none;
+  .nx3-float,
+  .nx3-stage,
+  [data-plaque] {
+    animation: none !important;
   }
 }

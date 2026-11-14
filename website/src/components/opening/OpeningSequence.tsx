@@ -124,7 +124,7 @@ export function OpeningSequence() {
           return img.decode().catch(() => undefined);
         }),
       ),
-      new Promise((r) => setTimeout(r, 1500)),
+      new Promise((r) => setTimeout(r, 1000)),
     ]).then(() => (assetsReady = true));
     // Work elsewhere on the page that is heavy on the main thread (the Living Circuit's routing)
     // waits for this signal, so it never competes with the intro.
@@ -159,7 +159,10 @@ export function OpeningSequence() {
       const stackSlices = mobile || W < 1280 || sideSliceWidth(W, H) < 170;
       const rect = tr.getBoundingClientRect();
       const target = clamp01(-rect.top / Math.max(1, rect.height - H));
-      const dt = last < 0 ? 0 : Math.min(now - last, 34); // a stalled frame counts as at most ~2 frames
+      // A long gap between frames is a main-thread stall (or a hidden tab): it counts as one frame, so
+      // the intro waits instead of skipping. Ordinary slow frame rates (e.g. 20 fps) count in full.
+      const gap = last < 0 ? 0 : now - last;
+      const dt = gap > 100 ? 16.7 : gap;
       last = now;
       if (shown < 0) {
         // First frame. If the page opened part-way through the sequence (scroll restored on reload or
@@ -187,7 +190,9 @@ export function OpeningSequence() {
       const sweep = ease(seg(p, 0.06, 0.18)); // F1 → F2: green band wipe
       // Copy hand-off F2 → F3: the outgoing copy has fully cleared (0.32) before any incoming copy
       // begins (0.34), so the two never overlap; the images keep their own, continuous timing.
-      const f2copy = easeOut(seg(p, 0.12, 0.22)) * (1 - ease(seg(p, 0.27, 0.32)));
+      // The headline enters only once the large logo has left (it fades out by 0.15), so the two
+      // never show together.
+      const f2copy = easeOut(seg(p, 0.15, 0.23)) * (1 - ease(seg(p, 0.27, 0.32)));
       const collapse = ease(seg(p, 0.5, 0.6)); // F3 → F4: slices resolve into the blocks
       const toPortals = ease(seg(p, 0.64, 0.76)); // F4 → F5
       const open = ease(seg(p, 0.8, 0.92)); // F5 → F6

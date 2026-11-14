@@ -184,13 +184,13 @@ function Deck({ L }: { L: Layout }) {
 }
 
 /** A box standing on the deck: its front faces the viewer's side of the deck. */
-function Slab({ w, h, d, className, children }: { w: number; h: number; d: number; className: string; children?: React.ReactNode }) {
+function Slab({ w, h, d, className, front = "nx3-front", children }: { w: number; h: number; d: number; className: string; front?: string; children?: React.ReactNode }) {
   return (
     <div className={`nx3-slab ${className}`} style={{ width: w, height: h, left: -w / 2, top: -h }}>
       <div className="nx3-face nx3-top" style={{ width: w, height: d, top: (h - d) / 2, transform: `rotateX(90deg) translateZ(${h / 2}px)` }} />
       <div className="nx3-face nx3-side nx3-left" style={{ width: d, height: h, left: (w - d) / 2, transform: `rotateY(-90deg) translateZ(${w / 2}px)` }} />
       <div className="nx3-face nx3-side nx3-right" style={{ width: d, height: h, left: (w - d) / 2, transform: `rotateY(90deg) translateZ(${w / 2}px)` }} />
-      <div className="nx3-face nx3-front" style={{ width: w, height: h, transform: `translateZ(${d / 2}px)` }}>
+      <div className={`nx3-face ${front}`} style={{ width: w, height: h, transform: `translateZ(${d / 2}px)` }}>
         {children}
       </div>
     </div>
@@ -218,15 +218,10 @@ function Hub({ L }: { L: Layout }) {
           light; the mark is never redrawn, tinted or skewed). */}
       <div data-plaque className="nx3-plaque" style={{ transform: `translateZ(${P.z}px) rotateX(${6 - L.tilt}deg)` }}>
         <div className="nx3-plaque-light" style={{ width: P.w * 1.1, height: P.h * 1.6, left: -P.w * 0.55, top: -P.h * 1.2 }} />
-        <div className="nx3-slab nx3-plaque-box" style={{ width: P.w, height: P.h, left: -P.w / 2, top: -P.h }}>
-          <div className="nx3-face nx3-top" style={{ width: P.w, height: P.d, top: (P.h - P.d) / 2, transform: `rotateX(90deg) translateZ(${P.h / 2}px)` }} />
-          <div className="nx3-face nx3-side nx3-left" style={{ width: P.d, height: P.h, left: (P.w - P.d) / 2, transform: `rotateY(-90deg) translateZ(${P.w / 2}px)` }} />
-          <div className="nx3-face nx3-side nx3-right" style={{ width: P.d, height: P.h, left: (P.w - P.d) / 2, transform: `rotateY(90deg) translateZ(${P.w / 2}px)` }} />
-          <div className="nx3-face nx3-plaque-front" style={{ width: P.w, height: P.h, transform: `translateZ(${P.d / 2}px)` }}>
-            {/* eslint-disable-next-line @next/next/no-img-element -- authentic logo artwork, shown as-is */}
-            <img src="/brand/aden-chase-blocks.png" alt="" width={497} height={112} draggable={false} className="nx3-mark" style={{ width: P.w * 0.66 }} />
-          </div>
-        </div>
+        <Slab w={P.w} h={P.h} d={P.d} className="nx3-plaque-box" front="nx3-plaque-front">
+          {/* eslint-disable-next-line @next/next/no-img-element -- authentic logo artwork, shown as-is */}
+          <img src="/brand/aden-chase-blocks.png" alt="" width={497} height={112} draggable={false} className="nx3-mark" style={{ width: P.w * 0.66 }} />
+        </Slab>
       </div>
     </>
   );
@@ -278,12 +273,17 @@ export function IntegrationNexus() {
   }, []);
 
   const L = fit?.L ?? WIDE;
+  // The choreography depends on the layout only; a change of scale (any resize) must not restart it.
+  const layout = fit?.L;
 
   useEffect(() => {
     const el = root.current;
     const st = stage.current;
-    if (!el || !st || !fit) return;
-    const Lc = fit.L;
+    if (!el || !st || !layout) return;
+    const Lc = layout;
+    const plaque = el.querySelector<HTMLElement>("[data-plaque]");
+    const cap = caption.current;
+    let alive = true;
     const q = (sel: string) => Array.from(el.querySelectorAll<HTMLElement | SVGElement>(sel));
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
@@ -292,6 +292,7 @@ export function IntegrationNexus() {
     let focused = false;
     let lit: Element[] = [];
     const setOn = (id: string, on: boolean) => {
+      if (!alive) return;
       const els = q(`[data-route="${id}"], [data-node="${id}"]`);
       if (focused) {
         lit = on ? [...new Set([...lit, ...els])] : lit.filter((n) => !els.includes(n as HTMLElement));
@@ -303,7 +304,7 @@ export function IntegrationNexus() {
     let said = caption.current?.textContent ?? "";
     const say = (t: string) => {
       const c = caption.current;
-      if (!c || said === t) return;
+      if (!alive || !c || said === t) return;
       said = t;
       c.classList.add("is-swapping");
       window.clearTimeout(swap);
@@ -324,39 +325,47 @@ export function IntegrationNexus() {
     const pose = () => {
       st.style.transform = `rotateX(${(Lc.tilt + tilt).toFixed(2)}deg) rotateZ(${yaw.toFixed(2)}deg)`;
       // The plaque counter-turns, so the mark stays square to the viewer.
-      const pl = el.querySelector<HTMLElement>("[data-plaque]");
-      if (pl) pl.style.transform = `translateZ(${Lc.plaque.z}px) rotateZ(${(-yaw).toFixed(2)}deg) rotateX(${(6 - (Lc.tilt + tilt)).toFixed(2)}deg)`;
+      if (plaque) plaque.style.transform = `translateZ(${Lc.plaque.z}px) rotateZ(${(-yaw).toFixed(2)}deg) rotateX(${(6 - (Lc.tilt + tilt)).toFixed(2)}deg)`;
     };
     const loop = (now: number) => {
       raf = 0;
       const dt = last < 0 ? 16 : Math.min(now - last, 50);
       last = now;
-      if (!fine && !reduced) goalYaw = Math.sin(now / 3200) * 2.2; // ~20 s period
       const k = 1 - Math.exp(-dt / 220);
       yaw += (goalYaw - yaw) * k;
       tilt += (goalTilt - tilt) * k;
       pose();
       const settled = Math.abs(goalYaw - yaw) < 0.01 && Math.abs(goalTilt - tilt) < 0.01;
-      if (inView && (!settled || (!fine && !reduced))) raf = requestAnimationFrame(loop);
+      if (inView && !settled) raf = requestAnimationFrame(loop);
       else last = -1;
     };
     const kick = () => {
       if (!raf && inView) raf = requestAnimationFrame(loop);
     };
     pose();
+    // Touch devices: a slow drift instead of the pointer, run by CSS on the compositor.
+    el.style.setProperty("--nx3-tilt", `${Lc.tilt}deg`);
+    el.style.setProperty("--nx3-pz", `${Lc.plaque.z}px`);
+    if (!fine && !reduced) el.dataset.drift = "1";
+    el.dataset.paused = "1"; // until the observer reports the scene on screen
 
     if (reduced) {
       // A composed still: the workflow route lit, the core awake, no movement.
       ["crm", "scheduling", "support"].forEach((id) => setOn(id, true));
       el.dataset.core = "on";
       if (caption.current) caption.current.textContent = STILL;
-      return () => window.clearTimeout(swap);
+      return () => {
+        window.clearTimeout(swap);
+        q(".is-on").forEach((n) => n.classList.remove("is-on"));
+        el.dataset.core = "";
+      };
     }
 
-    let alive = true;
     const visible = () => inView && !document.hidden;
     let resume: (() => void) | null = null;
     const wake = () => {
+      // Off screen or in a hidden tab, the CSS loops (float, drift) pause too.
+      el.dataset.paused = visible() ? "" : "1";
       if (visible() && resume) {
         resume();
         resume = null;
@@ -366,8 +375,8 @@ export function IntegrationNexus() {
     let unfocus: (() => void) | null = null;
     const untilUnfocused = () => (focused ? new Promise<void>((r) => (unfocus = r)) : Promise.resolve());
     const io = new IntersectionObserver(
-      ([e]) => {
-        inView = e.isIntersecting;
+      (entries) => {
+        inView = entries[entries.length - 1].isIntersecting;
         wake();
       },
       { threshold: 0.35 },
@@ -407,6 +416,7 @@ export function IntegrationNexus() {
       return track(s.animate([{ transform: "translateY(-100%)", opacity: 1 }, { transform: "translateY(100%)", opacity: 1 }], { duration: ms, easing: "cubic-bezier(0.45, 0, 0.25, 1)" }));
     };
     const coreFlash = (ms = 420) => {
+      if (!alive) return;
       el.dataset.core = "on";
       later(() => (el.dataset.core = ""), ms);
     };
@@ -467,9 +477,16 @@ export function IntegrationNexus() {
       goalTilt = 0;
       kick();
     };
+    // Hover: moving between modules must not flash the paused flow back on, so leaving waits a
+    // moment; the caption describes the hovered system's connections meanwhile.
+    let leaving = 0;
+    let before = "";
+    const name = (id: Id) => SYSTEMS.find((m) => m.id === id)!.label;
     const enter = (e: Event) => {
       const id = (e.currentTarget as HTMLElement).dataset.node as Id;
+      window.clearTimeout(leaving);
       if (!focused) {
+        before = caption.current?.textContent ?? "";
         lit = q(".is-on");
         lit.forEach((n) => n.classList.remove("is-on"));
         running.forEach((a) => a.pause());
@@ -479,8 +496,14 @@ export function IntegrationNexus() {
       el.dataset.focus = id;
       [id, ...PARTNERS[id]].forEach((p) => q(`[data-route="${p}"]`).forEach((n) => n.classList.add("is-focus")));
       q(`[data-node="${id}"]`).forEach((n) => n.classList.add("is-focus"));
+      if (caption.current) caption.current.textContent = `${name(id)} ↔ ${PARTNERS[id].map(name).join(" · ")}: connected through ADEN-CHASE.`;
     };
     const leave = () => {
+      window.clearTimeout(leaving);
+      leaving = window.setTimeout(release, 150);
+    };
+    const release = () => {
+      if (caption.current) caption.current.textContent = before;
       el.dataset.focus = "";
       q(".is-focus").forEach((n) => n.classList.remove("is-focus"));
       lit.forEach((n) => n.classList.add("is-on"));
@@ -505,7 +528,14 @@ export function IntegrationNexus() {
       cancelAnimationFrame(raf);
       timers.forEach((t) => window.clearTimeout(t));
       window.clearTimeout(swap);
+      window.clearTimeout(leaving);
       running.forEach((a) => a.cancel());
+      // Leave the reused DOM exactly as rendered.
+      q(".is-on, .is-focus").forEach((n) => n.classList.remove("is-on", "is-focus"));
+      el.dataset.core = "";
+      el.dataset.focus = "";
+      delete el.dataset.drift;
+      cap?.classList.remove("is-swapping");
       resume?.();
       unfocus?.();
       io.disconnect();
@@ -519,7 +549,7 @@ export function IntegrationNexus() {
         });
       }
     };
-  }, [fit]);
+  }, [layout]);
 
   const s = fit?.s ?? 1;
   return (
