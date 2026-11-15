@@ -114,6 +114,7 @@ export function OpeningSequence() {
     let last = -1;
     let assetsReady = false;
     let introDone = false;
+    let ulClip = "";
     let cssIntroDone = false;
     const art = [...WM_LAYERS.filter((l) => l.file !== "text").map((l) => `/photos/logo-${l.file}.webp`), ...BLOCKS.map((_, i) => `/photos/logo-block-${i}.png`)];
     // The wordmark (the page's largest paint) loads first; the rest of the artwork is fetched after it,
@@ -246,10 +247,16 @@ export function OpeningSequence() {
         // Lit from the left edge of the underline (x 47) to where it meets the green block (≈ x 905).
         // Once the light has arrived the layer is shown whole: its last few pixels run under the green
         // block (see scripts/logo-join-overlap.py), so the join is artwork, never background.
+        // Only while the green block is in place over it, though: whenever the block is fading in,
+        // travelling or away, the layer stops at the block's edge so the overlap never shows alone.
         const lit = inF1 ? underline : 1;
+        const blockHome = inF1 ? easeOut(seg(intro, BLOCK_IN[0], BLOCK_IN[0] + 0.12)) >= 0.999 : collapse >= 0.999 && p < 0.64;
         const front = UL_X0 + (UL_X1 - UL_X0) * lit;
-        const clip = lit >= 1 ? "none" : `inset(0 ${(100 - (front / LOGO_W) * 100).toFixed(2)}% 0 0)`;
-        if (ul.style.clipPath !== clip) ul.style.clipPath = clip;
+        const clip = lit >= 1 && blockHome ? "none" : `inset(0 ${(100 - (front / LOGO_W) * 100).toFixed(2)}% 0 0)`;
+        if (ulClip !== clip) {
+          ul.style.clipPath = clip;
+          ulClip = clip;
+        }
       }
       const spark = els.spark;
       if (spark) {

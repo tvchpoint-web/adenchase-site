@@ -14,7 +14,7 @@ artwork behind it instead of background.
 Sources are never modified: public/brand/aden-chase-logo.png (master) and
 public/brand/aden-chase-logo-transparent.png (its colour-to-alpha version, from which every layer is
 cut). Run from website/:  python3 scripts/logo-join-overlap.py
-It is idempotent (it always rebuilds from the transparent master and the current layer).
+Re-running it is harmless: only empty pixels under the block are filled, from the transparent master.
 """
 
 from PIL import Image
@@ -22,6 +22,10 @@ import numpy as np
 
 OVER = 6  # master pixels of overlap under the green block
 BLOCK0 = ("public/photos/logo-block-0.png", 832, 234)  # crop and its offset in the master
+# Only the underline's rows: the overlap extends the underline's end along the block's slant. It is
+# never added along the rest of the block's edge, where it would show as a sliver while the block is
+# animating elsewhere.
+UNDERLINE_ROWS = range(234, 256)
 LAYERS = [
     ("public/photos/logo-wordmark.webp", 0),  # (file, its first master row)
     ("public/photos/logo-underline.webp", 216),
@@ -43,7 +47,7 @@ for path, y0 in LAYERS:
     added = 0
     for ly in range(layer.shape[0]):
         y = ly + y0
-        if not (by <= y < by + b0.shape[0]):
+        if y not in UNDERLINE_ROWS:
             continue
         # The first column of the green block on this row.
         xs = [x for x in range(bx, bx + b0.shape[1]) if block_alpha(x, y) > 0]

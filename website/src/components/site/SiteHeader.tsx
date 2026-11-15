@@ -65,7 +65,8 @@ export function SiteHeader() {
   }
 
   const activeHref = pathname === "/" ? sectionHref : pathname;
-  const activeIndex = NAV.findIndex((n) => n.href === activeHref);
+  // Sub-pages (e.g. /insights/<article>) highlight their section.
+  const activeIndex = NAV.findIndex((n) => n.href === activeHref || (!!activeHref && activeHref.startsWith(`${n.href}/`)));
   const target = hover ?? (activeIndex >= 0 ? activeIndex : null);
 
   // The soft indicator glides to the hovered or active item.

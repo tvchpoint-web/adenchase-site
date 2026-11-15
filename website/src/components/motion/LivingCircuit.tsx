@@ -135,10 +135,13 @@ export function LivingCircuit() {
     const measure = () => {
       const html = document.documentElement;
       html.classList.add("lc-measure");
+      let routed = false;
       try {
-        computeRoute();
+        routed = computeRoute();
       } finally {
         html.classList.remove("lc-measure");
+        // A failed re-route keeps the previous route visible rather than hiding the signal.
+        if (!routed) delete el.dataset.stale;
       }
     };
     const computeRoute = () => {
@@ -216,8 +219,10 @@ export function LivingCircuit() {
       if (end) {
         const r = rel(end.getBoundingClientRect(), box);
         endPt = { x: r.x + r.w * UNDERLINE.x, y: r.y + r.h * UNDERLINE.y };
-        ax = Math.max(mobile ? 6 : gutterL, Math.min(r.x, endPt.x - (mobile ? 12 : 40)));
-        way.push({ x: ax, y: r.y - (mobile ? 28 : 44) });
+        ax = Math.min(endPt.x - 8, Math.max(mobile ? 6 : gutterL, Math.min(r.x, endPt.x - (mobile ? 12 : 40))));
+        // Routed (A*) to the top of the column above the logo, then down the column to the
+        // underline's height; only the last short step into the underline is drawn directly.
+        way.push({ x: ax, y: r.y - (mobile ? 28 : 44) }, { x: ax, y: endPt.y });
       } else {
         way.push({ x: gutterL, y: H - 40 });
       }
@@ -228,14 +233,9 @@ export function LivingCircuit() {
         const seg = route(g, snapped[i - 1], snapped[i], mobile ? 14 : 26);
         poly = poly.concat(i === 1 ? seg : seg.slice(1));
       }
-      if (!poly.length) return;
+      if (!poly.length) return false;
       poly[0] = { x: poly[0].x, y: 0 };
-      if (endPt) {
-        // Into the approach column (if A* ended elsewhere), straight down, then right into the underline.
-        const lastP = poly[poly.length - 1];
-        if (Math.abs(lastP.x - ax) > 0.5) poly.push({ x: ax, y: lastP.y });
-        poly.push({ x: ax, y: endPt.y }, endPt);
-      }
+      if (endPt) poly.push({ x: poly[poly.length - 1].x, y: endPt.y }, endPt);
       // Clean: remove zero-length steps and merge collinear points.
       const clean: P[] = [];
       for (const p of poly) {
@@ -273,6 +273,7 @@ export function LivingCircuit() {
         clear[i] = Math.sqrt(d2);
       }
       setGeo({ w: W, h: H, d, t, nodes, mobile, clear });
+      return true;
     };
     // Routing is a long main-thread task (hundreds of ms on a phone). The homepage's opening intro
     // plays first and the signal is below it, so measuring waits until the intro has finished
@@ -293,8 +294,14 @@ export function LivingCircuit() {
     ro.observe(root);
     // While the viewport is being resized the current route no longer matches the layout: hide the
     // signal until it has been re-routed, so no stale path or ghost line can show.
+    // Only a change of width re-flows the page; phones resize the height whenever the URL bar
+    // collapses or expands while scrolling, which must not hide the signal.
+    let lastW = window.innerWidth;
     const onResize = () => {
-      el.dataset.stale = "1";
+      if (window.innerWidth !== lastW) {
+        lastW = window.innerWidth;
+        el.dataset.stale = "1";
+      }
       schedule();
     };
     window.addEventListener("resize", onResize);
