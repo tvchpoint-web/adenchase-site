@@ -244,8 +244,12 @@ export function OpeningSequence() {
       const sc = wmBox.width / LOGO_W;
       if (ul) {
         // Lit from the left edge of the underline (x 47) to where it meets the green block (≈ x 905).
-        const front = UL_X0 + (UL_X1 - UL_X0) * (inF1 ? underline : 1);
-        ul.style.clipPath = `inset(0 ${(100 - (front / LOGO_W) * 100).toFixed(2)}% 0 0)`;
+        // Once the light has arrived the layer is shown whole: its last few pixels run under the green
+        // block (see scripts/logo-join-overlap.py), so the join is artwork, never background.
+        const lit = inF1 ? underline : 1;
+        const front = UL_X0 + (UL_X1 - UL_X0) * lit;
+        const clip = lit >= 1 ? "none" : `inset(0 ${(100 - (front / LOGO_W) * 100).toFixed(2)}% 0 0)`;
+        if (ul.style.clipPath !== clip) ul.style.clipPath = clip;
       }
       const spark = els.spark;
       if (spark) {

@@ -1,6 +1,7 @@
 import { OpeningSequence } from "@/components/opening/OpeningSequence";
 import { AiEngineering, Approach, Differentiation, Introduction, MarketGrowth, StrategyInPractice, WhoWeWorkWith } from "@/components/home/Sections";
 import { FinalCta } from "@/components/home/FinalCta";
+import { InsightsPreview } from "@/components/home/InsightsPreview";
 import { LivingCircuit } from "@/components/motion/LivingCircuit";
 import { preload } from "react-dom";
 import { SITE } from "@/lib/site";
@@ -32,6 +33,7 @@ export default function Home() {
         <Differentiation />
         <WhoWeWorkWith />
         <Approach />
+        <InsightsPreview />
         <FinalCta />
       </div>
     </main>

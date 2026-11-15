@@ -208,10 +208,16 @@ export function LivingCircuit() {
         }
       });
       let endPt: P | null = null;
+      // The final approach column: just left of where the logo's underline begins. The signal always
+      // reaches the logo from above in this column and enters the underline from its left end, so it
+      // never crosses the logo, never runs past the underline's start and never doubles back (on
+      // phones it used to arrive down the right side and return beneath the logo).
+      let ax = 0;
       if (end) {
         const r = rel(end.getBoundingClientRect(), box);
         endPt = { x: r.x + r.w * UNDERLINE.x, y: r.y + r.h * UNDERLINE.y };
-        way.push({ x: Math.max(gutterL, endPt.x - (mobile ? 18 : 40)), y: endPt.y });
+        ax = Math.max(mobile ? 6 : gutterL, Math.min(r.x, endPt.x - (mobile ? 12 : 40)));
+        way.push({ x: ax, y: r.y - (mobile ? 28 : 44) });
       } else {
         way.push({ x: gutterL, y: H - 40 });
       }
@@ -224,7 +230,12 @@ export function LivingCircuit() {
       }
       if (!poly.length) return;
       poly[0] = { x: poly[0].x, y: 0 };
-      if (endPt) poly.push({ x: poly[poly.length - 1].x, y: endPt.y }, endPt);
+      if (endPt) {
+        // Into the approach column (if A* ended elsewhere), straight down, then right into the underline.
+        const lastP = poly[poly.length - 1];
+        if (Math.abs(lastP.x - ax) > 0.5) poly.push({ x: ax, y: lastP.y });
+        poly.push({ x: ax, y: endPt.y }, endPt);
+      }
       // Clean: remove zero-length steps and merge collinear points.
       const clean: P[] = [];
       for (const p of poly) {
@@ -280,7 +291,13 @@ export function LivingCircuit() {
     window.addEventListener("opening:intro-done", schedule);
     const ro = new ResizeObserver(schedule);
     ro.observe(root);
-    window.addEventListener("resize", schedule);
+    // While the viewport is being resized the current route no longer matches the layout: hide the
+    // signal until it has been re-routed, so no stale path or ghost line can show.
+    const onResize = () => {
+      el.dataset.stale = "1";
+      schedule();
+    };
+    window.addEventListener("resize", onResize);
     // Images and reveals settle after load; measure again then.
     window.addEventListener("load", schedule);
     schedule();
@@ -288,7 +305,7 @@ export function LivingCircuit() {
     document.fonts?.ready.then(schedule);
     return () => {
       ro.disconnect();
-      window.removeEventListener("resize", schedule);
+      window.removeEventListener("resize", onResize);
       window.removeEventListener("load", schedule);
       window.removeEventListener("opening:intro-done", schedule);
       window.clearTimeout(fallback);
@@ -301,6 +318,7 @@ export function LivingCircuit() {
     const root = el?.parentElement;
     const t = geo.t;
     if (!el || !root || !t) return;
+    delete el.dataset.stale; // routed for the current layout
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const lit = el.querySelector<SVGPathElement>("[data-lit-path]");
     const tail = el.querySelector<SVGPathElement>("[data-tail]");

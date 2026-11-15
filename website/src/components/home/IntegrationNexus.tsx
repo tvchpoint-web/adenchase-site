@@ -86,7 +86,7 @@ const WIDE: Layout = {
   persp: 1700,
   maxScale: 1.3,
   mod: { w: 94, h: 56, d: 13, label: 14.5, icon: 18 },
-  plaque: { w: 118, h: 42, d: 14, z: 24 },
+  plaque: { w: 134, h: 48, d: 14, z: 24 },
   rings: [48, 41, 34],
   pos: {
     finance: { x: -92, y: -150, z: 16, turn: 4 },
@@ -108,7 +108,7 @@ const COMPACT: Layout = {
   persp: 1200,
   maxScale: 1.15,
   mod: { w: 84, h: 52, d: 12, label: 13.2, icon: 17 },
-  plaque: { w: 90, h: 33, d: 11, z: 20 },
+  plaque: { w: 98, h: 36, d: 11, z: 20 },
   rings: [40, 34, 28],
   pos: {
     finance: { x: -66, y: -160, z: 14, turn: 3 },
@@ -219,8 +219,12 @@ function Hub({ L }: { L: Layout }) {
       <div data-plaque className="nx3-plaque" style={{ transform: `translateZ(${P.z}px) rotateX(${6 - L.tilt}deg)` }}>
         <div className="nx3-plaque-light" style={{ width: P.w * 1.1, height: P.h * 1.6, left: -P.w * 0.55, top: -P.h * 1.2 }} />
         <Slab w={P.w} h={P.h} d={P.d} className="nx3-plaque-box" front="nx3-plaque-front">
+          {/* Light behind the glass and a fine light line beneath the mark; nothing is drawn over it. */}
+          <span className="nx3-backlight" aria-hidden />
+          {/* Loaded eagerly: Safari does not reliably start lazy images inside 3D-transformed layers. */}
           {/* eslint-disable-next-line @next/next/no-img-element -- authentic logo artwork, shown as-is */}
-          <img src="/brand/aden-chase-blocks.png" alt="" width={497} height={112} loading="lazy" decoding="async" draggable={false} className="nx3-mark" style={{ width: P.w * 0.66 }} />
+          <img src="/brand/aden-chase-blocks.png" alt="" width={497} height={112} decoding="async" draggable={false} className="nx3-mark" style={{ width: P.w * 0.74 }} />
+          <span className="nx3-markline" aria-hidden style={{ width: P.w * 0.74 }} />
         </Slab>
       </div>
     </>

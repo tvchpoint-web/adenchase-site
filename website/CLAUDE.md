@@ -105,6 +105,7 @@ The logo's own block colours (`BLOCK_COLOURS` in `src/lib/blocks.ts`) are used o
   - `public/photos/logo-wordmark.webp` and `logo-{text,underline,strategies,descriptor}.webp`: layers for animation.
   - `public/photos/logo-block-{0,1,2}.png` and `public/brand/aden-chase-blocks.png`: the three blocks.
 - The block geometry in `src/lib/blocks.ts` is pixel-measured: rows 234–345, quads equal to the crop boxes. The underline runs from x 47 to the green block (`UNDERLINE`). If any layer is regenerated, verify the recomposite against the master (maximum error 0, or imperceptible) and magnify the underline–green join at hero and header sizes. There must be no navy gap.
+- **Join overlap (15 Nov 2026).** The wordmark and underline layers carry the master's own pixels 6px under the green block along its slanted edge (`scripts/logo-join-overlap.py`). Abutting layers resample independently at fractional sizes and left a background seam at the underline–block join. Overlapping layers composite back to the artwork. Keep the overlap whenever layers are regenerated, and never clip the underline layer short of the block once it is fully lit.
 - Animation may only move, fade, clip or light these layers. It must never alter their shapes or colours.
 
 ---

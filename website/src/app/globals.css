@@ -914,9 +914,33 @@ html[data-opening-hide-header="1"] .site-logo {
     inset 0 0 0 1px color-mix(in oklab, var(--ocean) 30%, transparent),
     0 10px 24px -10px rgba(0, 0, 0, 0.8);
 }
+.nx3-plaque-front {
+  overflow: hidden;
+}
+.nx3-plaque-front > * {
+  grid-area: 1 / 1;
+}
+.nx3-backlight {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 75% at 50% 52%, color-mix(in oklab, var(--ocean) 16%, transparent), transparent 70%);
+  transition: background 500ms var(--ease);
+}
+[data-core="on"] .nx3-backlight {
+  background: radial-gradient(60% 75% at 50% 52%, color-mix(in oklab, var(--jade) 22%, transparent), transparent 72%);
+}
 .nx3-mark {
+  position: relative;
   height: auto;
   user-select: none;
+}
+.nx3-markline {
+  position: relative;
+  align-self: end;
+  margin-bottom: 14%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--ocean) 55%, transparent) 30%, color-mix(in oklab, var(--jade) 60%, transparent) 70%, transparent);
+  opacity: 0.7;
 }
 
 .nx-caption {
@@ -958,5 +982,120 @@ html[data-opening-hide-header="1"] .site-logo {
   .nx3-stage,
   [data-plaque] {
     animation: none !important;
+  }
+}
+
+/* Living Circuit: hidden while its route is stale (during a resize), then faded back in. */
+.living-circuit {
+  transition: opacity 260ms var(--ease);
+}
+.living-circuit[data-stale="1"] {
+  opacity: 0;
+  transition: none;
+}
+
+/* ------------------------------------------------------------ Insights (The Opportunity Perspective) */
+.insight-card {
+  transition:
+    border-color 300ms var(--ease),
+    transform 400ms var(--ease);
+}
+.insight-card:hover,
+.insight-card:focus-within {
+  border-color: color-mix(in oklab, var(--jade) 40%, transparent);
+  transform: translateY(-3px);
+}
+.insight-card-img {
+  transition: transform 900ms var(--ease);
+}
+.insight-card:hover .insight-card-img {
+  transform: scale(1.03);
+}
+.insight-card-link:focus-visible {
+  outline: none;
+}
+.insight-card:has(.insight-card-link:focus-visible) {
+  outline: 2px solid var(--jade);
+  outline-offset: 3px;
+}
+.insight-card-arrow {
+  transition: transform 300ms var(--ease);
+}
+.insight-card:hover .insight-card-arrow {
+  transform: translateX(4px);
+}
+/* Article body: a comfortable measure and rhythm for long reading. */
+.insight-prose {
+  color: var(--mist);
+  font-size: 1.125rem;
+  line-height: 1.75;
+}
+.insight-prose > * + * {
+  margin-top: 1.4em;
+}
+.insight-prose h2 {
+  margin-top: 2.4em;
+  color: var(--ink);
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.insight-prose h3 {
+  margin-top: 2em;
+  color: var(--ink);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.insight-prose a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--jade) 60%, transparent);
+  text-underline-offset: 4px;
+}
+.insight-prose a:hover {
+  text-decoration-color: var(--jade);
+}
+.insight-prose ul,
+.insight-prose ol {
+  padding-left: 1.3em;
+}
+.insight-prose ul {
+  list-style: disc;
+}
+.insight-prose ol {
+  list-style: decimal;
+}
+.insight-prose li + li {
+  margin-top: 0.5em;
+}
+.insight-quote {
+  margin-block: 2.2em;
+  border-left: 2px solid var(--jade);
+  padding-left: 1.4em;
+}
+.insight-quote blockquote {
+  color: var(--ink);
+  font-size: clamp(1.3rem, 1.1rem + 0.8vw, 1.65rem);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+.insight-quote figcaption {
+  margin-top: 0.8em;
+  color: var(--haze);
+  font-size: 0.9rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .insight-card,
+  .insight-card-img,
+  .insight-card-arrow {
+    transition: none;
+  }
+  .insight-card:hover,
+  .insight-card:hover .insight-card-img,
+  .insight-card:hover .insight-card-arrow {
+    transform: none;
   }
 }
