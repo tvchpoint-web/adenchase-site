@@ -53,8 +53,8 @@ export default async function ArticlePage({ params }: PageProps<"/insights/[slug
   if (!a) notFound();
   const v = view(a);
   const author = authorOf(a);
-  const jsonLd = editionJsonLd(a);
-  const related = (a.discoverability?.related ?? []).map((slug) => articleBySlug(slug)).filter((x): x is NonNullable<typeof x> => !!x);
+  const jsonLd = editionJsonLd(a, v);
+  const related = [...new Set(a.discoverability?.related ?? [])].filter((slug) => slug !== a.slug).map((slug) => articleBySlug(slug)).filter((x): x is NonNullable<typeof x> => !!x);
 
   return (
     <main id="main">

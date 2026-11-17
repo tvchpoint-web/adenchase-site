@@ -14,7 +14,13 @@ if (!urls.length) {
   process.exit(1);
 }
 for (const u of urls) {
-  const url = new URL(u);
+  let url;
+  try {
+    url = new URL(u);
+  } catch {
+    console.error(`Refusing ${u}: not a full URL (expected https://${HOST}/...).`);
+    process.exit(1);
+  }
   if (url.protocol !== "https:" || url.hostname !== HOST) {
     console.error(`Refusing ${u}: only production URLs on https://${HOST} are submitted.`);
     process.exit(1);

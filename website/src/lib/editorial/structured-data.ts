@@ -1,4 +1,5 @@
-import { INSIGHTS, authorOf, type Article, type RelatedEntity, view } from "@/lib/insights";
+import { plainText, wordCount } from "@/lib/editorial/markdown";
+import { INSIGHTS, authorOf, type Article, type EditionView, type RelatedEntity, view } from "@/lib/insights";
 import { SITE } from "@/lib/site";
 
 /**
@@ -8,8 +9,7 @@ import { SITE } from "@/lib/site";
  */
 const entity = (e: RelatedEntity) => ({ "@type": e.type, name: e.name, ...(e.description ? { description: e.description } : {}) });
 
-export function editionJsonLd(a: Article) {
-  const v = view(a);
+export function editionJsonLd(a: Article, v: EditionView = view(a)) {
   const au = authorOf(a);
   const d = a.discoverability;
   const org = { "@type": "Organization", "@id": `${SITE.url}/#organization`, name: SITE.name, url: SITE.url, logo: { "@type": "ImageObject", url: `${SITE.url}/brand/aden-chase-logo.png`, width: 1397, height: 473 } };
@@ -26,9 +26,12 @@ export function editionJsonLd(a: Article) {
     inLanguage: "en",
     isAccessibleForFree: true,
     articleSection: a.category,
-    wordCount: v.words,
+    wordCount: wordCount(plainText(v.blocks)), // body only
     timeRequired: `PT${v.minutes}M`,
-    image: [{ "@type": "ImageObject", url: `${SITE.url}${v.assets.landscape}`, width: 1200, height: 630 }],
+    image: [
+      { "@type": "ImageObject", url: `${SITE.url}${v.assets.landscape}`, width: 1200, height: 630 },
+      { "@type": "ImageObject", url: `${SITE.url}${v.assets.portrait}`, width: 1080, height: 1350 },
+    ],
     author: { "@type": "Person", name: au.name, jobTitle: au.title, worksFor: { "@id": org["@id"] } },
     publisher: { "@id": org["@id"] },
     isPartOf: { "@type": "Periodical", name: INSIGHTS.title, publisher: { "@id": org["@id"] }, url: `${SITE.url}/insights` },
@@ -55,7 +58,7 @@ export function editionJsonLd(a: Article) {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: SITE.url },
-      { "@type": "ListItem", position: 2, name: `Insights: ${INSIGHTS.title}`, item: `${SITE.url}/insights` },
+      { "@type": "ListItem", position: 2, name: INSIGHTS.title, item: `${SITE.url}/insights` },
       { "@type": "ListItem", position: 3, name: a.title, item: v.url },
     ],
   };
