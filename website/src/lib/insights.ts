@@ -203,7 +203,7 @@ export function formatDate(iso: string) {
  * the PDF and graphics; a unit test fails if an edition changes without its assets being rebuilt.
  */
 /** Bump when the PDF or graphic templates change, so every edition's assets must be regenerated. */
-export const EDITION_TEMPLATE_VERSION = 1;
+export const EDITION_TEMPLATE_VERSION = 2;
 
 export function editionFingerprint(a: Article): string {
   const au = authorOf(a);

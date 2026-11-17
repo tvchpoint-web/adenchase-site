@@ -64,11 +64,11 @@ export default async function PrintEdition({ params }: PageProps<"/editions/[slu
           <p className="pdf-sign-name">{au.name}</p>
           <p>{au.title}</p>
           <p>{au.organization}</p>
-          <p className="pdf-sign-tag">{SITE.statement}</p>
           {au.email ? <p>{au.emailVerified ? <a href={`mailto:${au.email}`}>{au.email}</a> : au.email}</p> : null}
           <p>
-            <a href="https://www.adenchase.com">www.adenchase.com</a>
+            <a href="https://adenchase.com">adenchase.com</a>
           </p>
+          <p className="pdf-sign-tag">{SITE.statement}</p>
         </div>
         <div className="pdf-qr">
           <div className="pdf-qr-code" dangerouslySetInnerHTML={{ __html: qr }} />
@@ -119,7 +119,7 @@ body { background: #fff !important; }
 .pdf-end { margin: 24pt auto 0; max-width: 5.55in; display: flex; justify-content: space-between; gap: 20pt; border-top: 1.4pt solid #00103D; padding-top: 12pt; break-inside: avoid; }
 .pdf-sign { font-size: 9pt; color: #34436a; line-height: 1.5; }
 .pdf-sign-name { font-size: 12pt; font-weight: 650; color: #00103D; }
-.pdf-sign-tag { margin: 6pt 0; font-size: 7.2pt; letter-spacing: 0.06em; text-transform: uppercase; color: #0042AC; font-weight: 650; }
+.pdf-sign-tag { margin-top: 10pt; font-size: 9pt; color: #0042AC; font-weight: 650; }
 .pdf-qr { width: 1.35in; text-align: center; font-size: 7.4pt; color: #4a587a; line-height: 1.4; }
 .pdf-qr-code svg { width: 1.05in; height: 1.05in; display: block; margin: 0 auto 4pt; }
 .pdf-qr a { word-break: break-all; }

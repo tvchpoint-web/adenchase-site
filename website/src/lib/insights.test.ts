@@ -126,7 +126,7 @@ describe("discoverability", () => {
     expect(article["@type"]).toBe("OpinionNewsArticle"); // analysis, not straight news
     expect(article.headline).toBe("Paradise Shouldn't Come With Preventable Risks");
     expect(article.url).toBe("https://adenchase.com/insights/paradise-shouldnt-come-with-preventable-risks");
-    expect(article.author).toMatchObject({ name: "Emmanuel Adenaike, Sr.", jobTitle: "Development Strategist" });
+    expect(article.author).toMatchObject({ name: "Emmanuel Adenaike, Sr.", jobTitle: "Strategic Development Advisor" });
     expect(article.citation[0].url).toBe("https://www.jamaicaobserver.com/2026/11/15/us-tourist-drowns-trying-help-mother-blue-hole-st-ann/");
     expect(JSON.stringify(article.mentions)).toMatch(/Jamaica Safe Waters.*[Pp]roposed/);
     expect(article.contentLocation.address).toMatchObject({ addressRegion: "St. Ann", addressCountry: "JM" });

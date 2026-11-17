@@ -8,7 +8,6 @@ export function AuthorSignature({ author }: { author: Author }) {
       <p className="text-[1.35rem] font-semibold tracking-[-0.01em] text-ink">{author.name}</p>
       <p className="mt-1 text-mist">{author.title}</p>
       <p className="text-mist">{author.organization}</p>
-      <p className="type-label mt-4 text-jade">{SITE.statement}</p>
       <p className="mt-4 flex flex-col gap-1 text-sm">
         {author.email ? (
           author.emailVerified ? (
@@ -19,10 +18,11 @@ export function AuthorSignature({ author }: { author: Author }) {
             <span className="text-mist">{author.email}</span>
           )
         ) : null}
-        <a href="https://www.adenchase.com" className="link-quiet underline-offset-4 hover:underline">
-          www.adenchase.com
+        <a href="https://adenchase.com" className="link-quiet underline-offset-4 hover:underline">
+          adenchase.com
         </a>
       </p>
+      <p className="mt-6 font-medium text-jade">{SITE.statement}</p>
     </address>
   );
 }
