@@ -3,7 +3,9 @@ import { CtaBand } from "@/components/site/CtaBand";
 import { PageHero } from "@/components/site/PageHero";
 import { Reveal } from "@/components/editorial/SplitLines";
 import { DisciplineLabel } from "@/components/home/Sections";
+import { JsonLd } from "@/components/seo/JsonLd";
 import type { Discipline } from "@/lib/site";
+import { serviceJsonLd } from "@/lib/structured-data";
 
 /**
  * A discipline page: editorial hero, the rest of the introduction, the capabilities grid, any
@@ -13,6 +15,7 @@ export function DisciplinePage({ d, photo, children }: { d: Discipline; photo: s
   const [lede, ...rest] = d.pageIntro;
   return (
     <main id="main">
+      <JsonLd data={serviceJsonLd(d.href, d.title, d.capabilities)} />
       <PageHero label={d.title} lines={d.pageLines} accent={d.pageLines.length - 1} photo={photo} block={d.region} lede={lede} />
 
       <section aria-labelledby="capabilities-title" className="relative border-t border-line bg-navy/40">

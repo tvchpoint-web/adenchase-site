@@ -6,9 +6,11 @@ import { EditionMeta } from "@/components/insights/EditionMeta";
 import { FeaturedImage } from "@/components/insights/FeaturedImage";
 import { ShareBar } from "@/components/insights/ShareBar";
 import { pageMeta } from "@/lib/meta";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { pageJsonLd } from "@/lib/structured-data";
 import { INSIGHTS, authorOf, featuredArticle, publishedArticles, publishedCategories, view } from "@/lib/insights";
 
-export const metadata: Metadata = pageMeta(`${INSIGHTS.title} | Insights`, `${INSIGHTS.description} ${INSIGHTS.about}`);
+export const metadata: Metadata = pageMeta("/insights");
 
 export default function InsightsPage() {
   const featured = featuredArticle();
@@ -19,6 +21,7 @@ export default function InsightsPage() {
 
   return (
     <main id="main">
+      <JsonLd data={pageJsonLd("/insights", "Insights: The Opportunity Perspective")} />
       {/* Masthead */}
       <header data-reveal-immediate="" className="mx-auto max-w-[96rem] px-5 pt-32 sm:px-8 lg:px-12 lg:pt-40">
         <div className="border-y border-line py-8 text-center sm:py-10">

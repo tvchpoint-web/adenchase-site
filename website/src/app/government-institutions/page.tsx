@@ -9,11 +9,11 @@ import { BrandBlock } from "@/components/brand/AngledPhoto";
 import { BLOCK_TEXT } from "@/lib/blocks";
 import { DISCIPLINES, INSTITUTIONAL_CAPABILITIES } from "@/lib/site";
 import { PHOTO } from "@/lib/photos";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { serviceJsonLd } from "@/lib/structured-data";
 
 const TITLE = "Government & Institutions";
-const DESCRIPTION = "Tailored solutions for institutional modernization, intelligent systems, service improvement, and collaborative public-sector initiatives.";
-
-export const metadata: Metadata = pageMeta(TITLE, DESCRIPTION);
+export const metadata: Metadata = pageMeta("/government-institutions");
 
 /**
  * Government & Institutions: an application of the three disciplines (not a fourth discipline).
@@ -23,6 +23,7 @@ export const metadata: Metadata = pageMeta(TITLE, DESCRIPTION);
 export default function GovernmentInstitutionsPage() {
   return (
     <main id="main">
+      <JsonLd data={serviceJsonLd("/government-institutions", TITLE, INSTITUTIONAL_CAPABILITIES, "Government and public-sector institutions")} />
       <PageHero
         label={TITLE}
         lines={["Complex Challenges.", "Engineered Solutions."]}

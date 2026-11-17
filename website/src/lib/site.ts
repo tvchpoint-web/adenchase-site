@@ -35,6 +35,53 @@ export const NAV = [
   { href: "/contact", label: "Contact" },
 ] as const;
 
+/**
+ * Search titles and descriptions for every page (the visible headlines are unchanged). Each title is
+ * unique and at most 65 characters; each description is one honest sentence of 70 to 170 characters
+ * that summarises what the page actually says (src/lib/site.test.ts). Never add services, clients,
+ * locations or claims here that the page itself does not support.
+ */
+export const SEO = {
+  "/": {
+    title: "ADEN-CHASE Strategies | Business Development & AI Engineering",
+    description: "ADEN-CHASE Strategies connects business development, AI engineering and market growth to identify opportunities and tailor solutions for businesses and institutions.",
+  },
+  "/about": {
+    title: "About ADEN-CHASE Strategies | Strategic Development Advisory",
+    description: "How ADEN-CHASE Strategies works: opportunity identification, strategy connected to execution, intelligent engineering, strategic partnerships and measurable growth.",
+  },
+  "/capabilities": {
+    title: "Strategy, AI & Growth Capabilities | ADEN-CHASE Strategies",
+    description: "Business development, AI engineering and market growth capabilities, connected to identify opportunities and develop tailored solutions for businesses and institutions.",
+  },
+  "/business-development": {
+    title: "Business Development Consulting | ADEN-CHASE Strategies",
+    description: "Business development consulting: opportunity identification, revenue opportunities, strategic partnerships, market intelligence and international market entry.",
+  },
+  "/ai-engineering": {
+    title: "AI Engineering & Automation Consulting | ADEN-CHASE Strategies",
+    description: "AI strategy and implementation, workflow automation, AI assistants, systems integration and AI search visibility, engineered around real business needs.",
+  },
+  "/market-growth": {
+    title: "Market Growth & Brand Strategy | ADEN-CHASE Strategies",
+    description: "Market positioning, brand development, AI search and discovery visibility, customer acquisition and market expansion strategy for growing organizations.",
+  },
+  "/government-institutions": {
+    title: "Government & Institutional Advisory | ADEN-CHASE Strategies",
+    description: "Digital modernization, practical AI, service improvement and public-private collaboration for government and public-sector institutions, tailored to each challenge.",
+  },
+  "/insights": {
+    title: "The Opportunity Perspective | Insights | ADEN-CHASE Strategies",
+    description: "The Opportunity Perspective: ideas, observations and practical thinking on business, technology, opportunity and progress from ADEN-CHASE Strategies.",
+  },
+  "/contact": {
+    title: "Contact ADEN-CHASE Strategies | Start a Conversation",
+    description: "Start a conversation or request a private consultation with ADEN-CHASE Strategies on business development, AI engineering, market growth or an institutional challenge.",
+  },
+} as const satisfies Record<string, { title: string; description: string }>;
+
+export type SeoPath = keyof typeof SEO;
+
 export const CTA = {
   conversation: "Start a Conversation",
   consultation: "Request a Private Consultation",
@@ -61,7 +108,7 @@ export interface Capability {
 
 export interface Discipline {
   id: "business-development" | "ai-engineering" | "market-growth";
-  href: string;
+  href: "/business-development" | "/ai-engineering" | "/market-growth";
   region: 0 | 1 | 2;
   index: string;
   title: string;
@@ -73,7 +120,6 @@ export interface Discipline {
   pageIntro: string[];
   capabilities: Capability[];
   closing: { title: string; copy: string; cta: string };
-  metaDescription: string;
 }
 
 export const DISCIPLINES: Discipline[] = [
@@ -109,7 +155,6 @@ export const DISCIPLINES: Discipline[] = [
       copy: "The right opportunity can change the direction of a business. Our role is to identify it, evaluate its potential, and develop a practical path forward.",
       cta: "Explore a Business Opportunity",
     },
-    metaDescription: "Explore strategic business development, commercial opportunity identification, partnerships, market intelligence, and new revenue strategies.",
   },
   {
     id: "ai-engineering",
@@ -143,7 +188,6 @@ export const DISCIPLINES: Discipline[] = [
       copy: "Tell us where friction, disconnected systems, or slow information are holding the business back.",
       cta: "Explore AI Engineering",
     },
-    metaDescription: "Intelligent systems, AI integration, workflow automation, and tailored applications engineered around real business needs.",
   },
   {
     id: "market-growth",
@@ -179,7 +223,6 @@ export const DISCIPLINES: Discipline[] = [
       copy: "We connect market intelligence, digital experience, and commercial strategy to help organizations turn attention into opportunity.",
       cta: "Explore Market Growth",
     },
-    metaDescription: "Brand positioning, digital visibility, intelligent discovery, customer engagement, and market expansion strategies.",
   },
 ];
 

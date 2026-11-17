@@ -1,6 +1,7 @@
 import { plainText, wordCount } from "@/lib/editorial/markdown";
 import { INSIGHTS, authorOf, type Article, type EditionView, type RelatedEntity, view } from "@/lib/insights";
 import { SITE } from "@/lib/site";
+import { organizationNode } from "@/lib/structured-data";
 
 /**
  * Schema.org data for an edition: the article (an opinion piece for perspectives, so readers and
@@ -12,7 +13,7 @@ const entity = (e: RelatedEntity) => ({ "@type": e.type, name: e.name, ...(e.des
 export function editionJsonLd(a: Article, v: EditionView = view(a)) {
   const au = authorOf(a);
   const d = a.discoverability;
-  const org = { "@type": "Organization", "@id": `${SITE.url}/#organization`, name: SITE.name, url: SITE.url, logo: { "@type": "ImageObject", url: `${SITE.url}/brand/aden-chase-logo.png`, width: 1397, height: 473 } };
+  const org = organizationNode;
   const article = {
     "@type": a.kind === "report" ? "NewsArticle" : "OpinionNewsArticle",
     "@id": `${v.url}#article`,

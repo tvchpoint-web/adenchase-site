@@ -9,7 +9,7 @@ import { PHOTO } from "@/lib/photos";
 
 const d = DISCIPLINES[1];
 
-export const metadata: Metadata = pageMeta(d.title, d.metaDescription);
+export const metadata: Metadata = pageMeta("/ai-engineering");
 
 export default function AiEngineeringPage() {
   return (

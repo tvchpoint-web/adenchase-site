@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/meta";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { pageJsonLd } from "@/lib/structured-data";
 import { PHOTO } from "@/lib/photos";
 import { PageHero } from "@/components/site/PageHero";
 import { Reveal } from "@/components/editorial/SplitLines";
 import { InquiryForm } from "./InquiryForm";
 import { CTA, SITE } from "@/lib/site";
 
-const DESCRIPTION = "Start a conversation or request a private consultation with ADEN-CHASE Strategies.";
-
-export const metadata: Metadata = pageMeta("Contact", DESCRIPTION);
+export const metadata: Metadata = pageMeta("/contact");
 
 export default function ContactPage() {
   return (
     <main id="main">
+      <JsonLd data={pageJsonLd("/contact", "Contact")} />
       <PageHero
         label="Contact & private engagement"
         lines={["Let’s Explore", "What’s Possible."]}

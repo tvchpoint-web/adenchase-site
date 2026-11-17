@@ -4,7 +4,11 @@ import { FinalCta } from "@/components/home/FinalCta";
 import { InsightsPreview } from "@/components/home/InsightsPreview";
 import { LivingCircuit } from "@/components/motion/LivingCircuit";
 import { preload } from "react-dom";
+import type { Metadata } from "next";
 import { SITE } from "@/lib/site";
+import { pageMeta } from "@/lib/meta";
+
+export const metadata: Metadata = pageMeta("/");
 
 /**
  * Home: the logo-first opening, then the full story — with a jade signal that travels through

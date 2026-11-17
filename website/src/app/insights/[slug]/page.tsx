@@ -10,6 +10,7 @@ import { ShareBar } from "@/components/insights/ShareBar";
 import { INSIGHTS, articleBySlug, authorOf, issueLabel, publishedArticles, view } from "@/lib/insights";
 import { SITE } from "@/lib/site";
 import { editionJsonLd } from "@/lib/editorial/structured-data";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 /** Only published editions are built; any other slug (drafts included) is a 404. */
 export const dynamicParams = false;
@@ -59,7 +60,7 @@ export default async function ArticlePage({ params }: PageProps<"/insights/[slug
   return (
     <main id="main">
       <ReadingProgress target="#edition" />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      <JsonLd data={jsonLd} />
       <article id="edition" aria-labelledby="page-title">
         <header data-reveal-immediate="" className="mx-auto max-w-[60rem] px-5 pt-32 sm:px-8 lg:pt-40">
           <nav aria-label="Breadcrumb" className="border-b border-line pb-4 text-center">

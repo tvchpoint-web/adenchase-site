@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/meta";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { pageJsonLd } from "@/lib/structured-data";
 import Link from "next/link";
 import { PHOTO } from "@/lib/photos";
 import { PageHero } from "@/components/site/PageHero";
@@ -9,14 +11,13 @@ import { BrandBlock } from "@/components/brand/AngledPhoto";
 import { BLOCK_TEXT } from "@/lib/blocks";
 import { DISCIPLINES } from "@/lib/site";
 
-const DESCRIPTION = "Business development, AI engineering, and market growth capabilities—connected to identify opportunities and develop tailored solutions.";
-
-export const metadata: Metadata = pageMeta("Capabilities", DESCRIPTION);
+export const metadata: Metadata = pageMeta("/capabilities");
 
 /** The capabilities overview: the three disciplines side by side, each leading to its own page. */
 export default function CapabilitiesPage() {
   return (
     <main id="main">
+      <JsonLd data={pageJsonLd("/capabilities", "Capabilities")} />
       <PageHero
         label="Our capabilities"
         lines={["Explore Our", "Capabilities."]}

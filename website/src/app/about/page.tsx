@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/meta";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { pageJsonLd } from "@/lib/structured-data";
 import { CtaBand } from "@/components/site/CtaBand";
 import { PageHero } from "@/components/site/PageHero";
 import { TextSection } from "@/components/site/TextSection";
@@ -7,13 +9,12 @@ import { Reveal } from "@/components/editorial/SplitLines";
 import { OPERATING_PHILOSOPHY, PRINCIPLES, SITE } from "@/lib/site";
 import { PHOTO } from "@/lib/photos";
 
-const DESCRIPTION = "Discover the ADEN-CHASE approach to opportunity identification, intelligent engineering, strategic partnerships, and measurable growth.";
-
-export const metadata: Metadata = pageMeta("About ADEN-CHASE Strategies | Our Philosophy", DESCRIPTION, { absolute: true });
+export const metadata: Metadata = pageMeta("/about");
 
 export default function AboutPage() {
   return (
     <main id="main">
+      <JsonLd data={pageJsonLd("/about", "About")} />
       <PageHero
         label="About ADEN-CHASE"
         lines={["A Different", "Perspective on", "What’s Possible."]}

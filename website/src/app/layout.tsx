@@ -5,6 +5,8 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { RevealController } from "@/components/editorial/RevealController";
 import { PhotoLoader } from "@/components/site/PhotoLoader";
 import { SITE } from "@/lib/site";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { siteJsonLd } from "@/lib/structured-data";
 import "./globals.css";
 
 // Inter Tight — neo-grotesque, SIL Open Font License 1.1 (see src/fonts/OFL-InterTight.txt). Self-hosted.
@@ -55,6 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
       <body className="antialiased">
+        <JsonLd data={siteJsonLd()} />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-jade focus:px-5 focus:py-3 focus:text-navy"

@@ -6,7 +6,7 @@ import { PHOTO } from "@/lib/photos";
 
 const d = DISCIPLINES[0];
 
-export const metadata: Metadata = pageMeta(d.title, d.metaDescription);
+export const metadata: Metadata = pageMeta("/business-development");
 
 export default function BusinessDevelopmentPage() {
   return <DisciplinePage d={d} photo={PHOTO.businessDevelopmentHero} />;
