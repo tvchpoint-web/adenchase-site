@@ -96,3 +96,49 @@ describe("The Opportunity Perspective editions", () => {
     }
   });
 });
+
+describe("discoverability", () => {
+  it("gives every published edition unique, honest search metadata", async () => {
+    const { ARTICLES } = await import("@/content/insights");
+    const titles = ARTICLES.map((a) => a.seoTitle ?? a.title);
+    const descs = ARTICLES.map((a) => a.description);
+    expect(new Set(titles).size).toBe(titles.length);
+    expect(new Set(descs).size).toBe(descs.length);
+    for (const a of ARTICLES) {
+      expect((a.seoTitle ?? a.title).length, a.slug).toBeLessThanOrEqual(65);
+      expect(a.description.length, a.slug).toBeGreaterThan(70);
+      expect(a.description.length, a.slug).toBeLessThanOrEqual(170);
+    }
+    const i1 = ARTICLES.find((a) => a.issue === 1)!;
+    expect(i1.seoTitle).toBe("Blue Hole Jamaica: Tourism & Water Safety | ADEN-CHASE");
+    expect(i1.description).toBe(
+      "Following the recent Blue Hole accident in Jamaica, Emmanuel Adenaike, Sr. explores water safety, visitor protection and the proposed Jamaica Safe Waters initiative.",
+    );
+  });
+
+  it("builds Article, publisher and breadcrumb structured data from the edition", async () => {
+    const { ARTICLES } = await import("@/content/insights");
+    const { editionJsonLd } = await import("@/lib/editorial/structured-data");
+    const ld = editionJsonLd(ARTICLES.find((a) => a.issue === 1)!) as { "@graph": Record<string, unknown>[] };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- free-form JSON-LD under test
+    const [org, article, crumbs] = ld["@graph"] as Record<string, any>[];
+    expect(org["@type"]).toBe("Organization");
+    expect(article["@type"]).toBe("OpinionNewsArticle"); // analysis, not straight news
+    expect(article.headline).toBe("Paradise Shouldn't Come With Preventable Risks");
+    expect(article.url).toBe("https://adenchase.com/insights/paradise-shouldnt-come-with-preventable-risks");
+    expect(article.author).toMatchObject({ name: "Emmanuel Adenaike, Sr.", jobTitle: "Development Strategist" });
+    expect(article.citation[0].url).toBe("https://www.jamaicaobserver.com/2026/11/15/us-tourist-drowns-trying-help-mother-blue-hole-st-ann/");
+    expect(JSON.stringify(article.mentions)).toMatch(/Jamaica Safe Waters.*[Pp]roposed/);
+    expect(article.contentLocation.address).toMatchObject({ addressRegion: "St. Ann", addressCountry: "JM" });
+    expect(crumbs["@type"]).toBe("BreadcrumbList");
+    expect(crumbs.itemListElement).toHaveLength(3);
+  });
+
+  it("keeps the Jamaica Safe Waters idea framed as a proposal wherever it is described", async () => {
+    const { ARTICLES } = await import("@/content/insights");
+    const a = ARTICLES.find((x) => x.issue === 1)!;
+    expect(a.body).toContain("provisionally called Jamaica Safe Waters");
+    expect(a.description).toContain("proposed Jamaica Safe Waters initiative");
+    expect(a.summary?.text ?? "").toMatch(/provisionally called Jamaica Safe Waters/);
+  });
+});

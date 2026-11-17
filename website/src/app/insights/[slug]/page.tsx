@@ -9,6 +9,7 @@ import { ReadingProgress } from "@/components/insights/ReadingProgress";
 import { ShareBar } from "@/components/insights/ShareBar";
 import { INSIGHTS, articleBySlug, authorOf, issueLabel, publishedArticles, view } from "@/lib/insights";
 import { SITE } from "@/lib/site";
+import { editionJsonLd } from "@/lib/editorial/structured-data";
 
 /** Only published editions are built; any other slug (drafts included) is a 404. */
 export const dynamicParams = false;
@@ -40,6 +41,7 @@ export async function generateMetadata({ params }: PageProps<"/insights/[slug]">
       modifiedTime: a.modified ?? a.date,
       authors: [author.name],
       section: a.category,
+      tags: a.discoverability ? [a.discoverability.primaryTopic, ...a.discoverability.secondaryTopics.slice(0, 5)] : undefined,
       images: [image],
     },
     twitter: { card: "summary_large_image", title: a.title, description: a.description, images: [image] },
@@ -51,26 +53,8 @@ export default async function ArticlePage({ params }: PageProps<"/insights/[slug
   if (!a) notFound();
   const v = view(a);
   const author = authorOf(a);
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: a.title,
-    alternativeHeadline: a.subtitle,
-    description: a.description,
-    datePublished: a.date,
-    dateModified: a.modified ?? a.date,
-    articleSection: a.category,
-    wordCount: v.words,
-    timeRequired: `PT${v.minutes}M`,
-    inLanguage: "en",
-    url: v.url,
-    mainEntityOfPage: v.url,
-    image: [`${SITE.url}${v.assets.landscape}`],
-    author: { "@type": "Person", name: author.name, jobTitle: author.title, worksFor: { "@type": "Organization", name: author.organization, url: SITE.url } },
-    publisher: { "@type": "Organization", name: SITE.name, url: SITE.url, logo: { "@type": "ImageObject", url: `${SITE.url}/brand/aden-chase-logo.png` } },
-    isPartOf: { "@type": "Periodical", name: INSIGHTS.title, publisher: { "@type": "Organization", name: SITE.name } },
-    encoding: { "@type": "MediaObject", encodingFormat: "application/pdf", contentUrl: `${SITE.url}${v.assets.pdf}` },
-  };
+  const jsonLd = editionJsonLd(a);
+  const related = (a.discoverability?.related ?? []).map((slug) => articleBySlug(slug)).filter((x): x is NonNullable<typeof x> => !!x);
 
   return (
     <main id="main">
@@ -78,11 +62,11 @@ export default async function ArticlePage({ params }: PageProps<"/insights/[slug
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <article id="edition" aria-labelledby="page-title">
         <header data-reveal-immediate="" className="mx-auto max-w-[60rem] px-5 pt-32 sm:px-8 lg:pt-40">
-          <p className="border-b border-line pb-4 text-center">
+          <nav aria-label="Breadcrumb" className="border-b border-line pb-4 text-center">
             <Link href="/insights" className="type-label text-ink outline-none hover:text-jade focus-visible:underline">
               The Opportunity Perspective
             </Link>
-          </p>
+          </nav>
           <EditionMeta article={a} minutes={v.minutes} className="mt-8 justify-center" />
           <h1 id="page-title" className="type-headline mt-7 text-center text-ink">
             {a.title}
@@ -96,6 +80,13 @@ export default async function ArticlePage({ params }: PageProps<"/insights/[slug
 
         <FeaturedImage image={a.image} priority className="mx-auto mt-12 max-w-[72rem] px-5 sm:px-8" sizes="(min-width: 1152px) 1152px, 100vw" />
 
+        {a.summary?.status === "approved" ? (
+          <aside aria-label="Editorial summary" className="mx-auto mt-14 max-w-[42rem] border-l-2 border-jade px-5 sm:px-8">
+            <p className="type-label text-haze">Editorial summary</p>
+            <p className="mt-2 leading-relaxed text-mist">{a.summary.text}</p>
+          </aside>
+        ) : null}
+
         <ArticleBody blocks={v.blocks} className="mx-auto max-w-[42rem] px-5 py-14 sm:px-8 lg:py-20" />
 
         <footer className="mx-auto max-w-[42rem] px-5 pb-16 sm:px-8">
@@ -103,6 +94,22 @@ export default async function ArticlePage({ params }: PageProps<"/insights/[slug
             <AuthorSignature author={author} />
           </div>
           <ShareBar url={v.url} title={a.title} pdf={v.assets.pdf} pdfName={v.assets.pdfName} className="mt-10 border-y border-line py-3" />
+          {related.length ? (
+            <section aria-labelledby="related-title" className="mt-12">
+              <h2 id="related-title" className="type-label text-haze">
+                Related perspectives
+              </h2>
+              <ul className="mt-3 flex flex-col gap-2">
+                {related.map((r) => (
+                  <li key={r.slug}>
+                    <Link href={`/insights/${r.slug}`} className="link-quiet underline-offset-4 hover:underline">
+                      {r.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
           <p className="mt-10">
             <Link href="/insights" className="link-quiet text-sm underline-offset-4 hover:underline">
               ← Back to Insights: {INSIGHTS.title}

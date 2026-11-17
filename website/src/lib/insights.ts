@@ -39,6 +39,49 @@ export interface EditorialImage {
   approved: boolean;
 }
 
+/** A verified source the edition cites (shown in structured data; links stay in the body). */
+export interface SourceReference {
+  title: string;
+  publisher: string;
+  url: string;
+  /** ISO date of the source's publication, if known. */
+  date?: string;
+  /** Confirmed reachable and matching its description (date of the check). */
+  verified: string;
+}
+
+/** A person, place, organisation or concept the edition is about or mentions. */
+export interface RelatedEntity {
+  name: string;
+  type: "Place" | "Organization" | "Person" | "Thing" | "Event";
+  /** Plain description, e.g. "Proposed initiative (not an established programme)". */
+  description?: string;
+}
+
+/**
+ * Discoverability: who the edition serves and how people search for its subject. Used for honest
+ * metadata and structured data (never repeated into the visible text or hidden on the page).
+ */
+export interface Discoverability {
+  primaryTopic: string;
+  secondaryTopics: string[];
+  /** Search intentions the edition genuinely answers (targets, not measured volumes). */
+  searchIntents: string[];
+  /** Natural-language questions the edition helps answer. */
+  questions: string[];
+  geography?: { name: string; region?: string; country: string; countryCode: string };
+  entities: RelatedEntity[];
+  sources: SourceReference[];
+  /** Slugs of related published editions (shown only once they exist). */
+  related?: string[];
+}
+
+/** A short visible standfirst; shown only once approved. */
+export interface EditorialSummary {
+  text: string;
+  status: "proposed" | "approved";
+}
+
 export interface Article {
   /** Issue number, unique across the publication (validated by the unit tests). */
   issue: number;
@@ -65,6 +108,10 @@ export interface Article {
   image: EditorialImage;
   /** The body, in the small Markdown dialect of src/lib/editorial/markdown.ts. */
   body: string;
+  /** Opinion/analysis (the default for this publication) or straight reporting. */
+  kind?: "perspective" | "report";
+  summary?: EditorialSummary;
+  discoverability?: Discoverability;
 }
 
 export const INSIGHTS = {

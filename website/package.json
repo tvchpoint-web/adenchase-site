@@ -19,7 +19,8 @@
     "qa:preview": "NODE_USE_ENV_PROXY=1 node qa/run.mjs --base=preview",
     "qa:preview:webkit": "NODE_USE_ENV_PROXY=1 node qa/run.mjs --base=preview --browser=webkit",
     "qa:webkit": "node qa/run.mjs --browser=webkit",
-    "editions": "node scripts/editions.mjs"
+    "editions": "node scripts/editions.mjs",
+    "indexnow": "node scripts/indexnow.mjs"
   },
   "engines": {
     "node": ">=20.9"

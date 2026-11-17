@@ -10,6 +10,8 @@ distributed everywhere:
 - the PDF, US Letter;
 - three graphics: 1200×630 for LinkedIn, Facebook and link previews; 1080×1350 for Instagram; 1080×1920 for Stories and WhatsApp Status.
 
+Before publishing, also follow **[DISCOVERABILITY.md](./DISCOVERABILITY.md)**: search and AI metadata, the pre- and post-publication checklists, Search Console and Bing setup, and measurement.
+
 ## Add a new edition
 
 1. **Copy the file.** Copy `001-paradise-shouldnt-come-with-preventable-risks.ts` to `NNN-<slug>.ts`.

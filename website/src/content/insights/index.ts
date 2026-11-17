@@ -11,7 +11,7 @@ export const ARTICLES: Article[] = [issue001];
 export const AUTHORS: Record<string, Author> = {
   "emmanuel-adenaike-sr": {
     name: "Emmanuel Adenaike, Sr.",
-    title: "Business Development Strategist",
+    title: "Development Strategist",
     organization: "ADEN-CHASE Strategies",
     email: "EmmanuelSr@AdenChase.com",
     // The adenchase.com domain had no mail (MX) records when Issue 001 was prepared (17 Nov 2026), so

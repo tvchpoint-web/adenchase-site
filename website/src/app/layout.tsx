@@ -32,6 +32,12 @@ export const metadata: Metadata = {
   // Indexable on the real domain. Vercel hosts (previews, *.vercel.app) get X-Robots-Tag: noindex at
   // request time (next.config.ts), so a promoted preview build can never carry a stale noindex.
   robots: { index: true, follow: true },
+  // Search engine ownership tokens, supplied by the site owner (Vercel environment variables);
+  // nothing is emitted until they are set.
+  verification: {
+    ...(process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : {}),
+    ...(process.env.BING_SITE_VERIFICATION ? { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } } : {}),
+  },
 };
 
 export const viewport: Viewport = {

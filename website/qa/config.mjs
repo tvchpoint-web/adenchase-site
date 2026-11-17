@@ -22,7 +22,7 @@ export const REDIRECTS = { "/approach": "/about", "/expertise": "/capabilities",
 export const NOT_FOUND_ROUTE = "/qa-route-that-does-not-exist";
 
 /** Routes Lighthouse audits (each in mobile and desktop form factors). */
-export const PERF_ROUTES = ["/", "/government-institutions"];
+export const PERF_ROUTES = ["/", "/government-institutions", "/insights/paradise-shouldnt-come-with-preventable-risks"];
 
 export const THRESHOLDS = {
   // Accessibility (axe-core, WCAG 2.2 A/AA). Violations at these impacts fail the run.
