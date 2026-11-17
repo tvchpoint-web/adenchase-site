@@ -35,7 +35,7 @@ export function InsightsPreview() {
           </Reveal>
           <Reveal delay={220} className="lg:col-span-6">
             <EditionMeta article={a} minutes={v.minutes} />
-            <h3 className="mt-6 text-[clamp(1.75rem,1.3rem+1.6vw,2.6rem)] font-semibold leading-[1.08] tracking-[-0.025em] text-ink">{a.title}</h3>
+            <h3 className="type-title mt-6 text-ink">{a.title}</h3>
             <p className="mt-5 max-w-[34rem] text-[1.05rem] leading-relaxed text-mist">{a.subtitle}</p>
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link href={`/insights/${a.slug}`} className="btn btn-primary">

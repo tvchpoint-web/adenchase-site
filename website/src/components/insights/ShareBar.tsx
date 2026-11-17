@@ -1,6 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+
+const noop = () => () => {};
+/** Whether this device offers the native share sheet (false while server rendering). */
+const useCanShare = () => useSyncExternalStore(noop, () => typeof navigator.share === "function", () => false);
 
 /**
  * Download and share an edition. Plain links (no third-party scripts or tracking), the device's
@@ -9,6 +13,23 @@ import { useState } from "react";
  */
 export function ShareBar({ url, title, pdf, pdfName, className = "", compact = false }: { url: string; title: string; pdf: string; pdfName: string; className?: string; compact?: boolean }) {
   const [status, setStatus] = useState("");
+  const canShare = useCanShare();
+  const file = useRef<File | null>(null);
+  // Where the device can share, fetch the PDF ahead of time: Safari only opens the share sheet if it
+  // is called straight from the tap, with no network wait in between.
+  useEffect(() => {
+    if (!canShare) return;
+    let live = true;
+    fetch(pdf)
+      .then((r) => (r.ok ? r.blob() : null))
+      .then((b) => {
+        if (live && b) file.current = new File([b], pdfName, { type: "application/pdf" });
+      })
+      .catch(() => undefined);
+    return () => {
+      live = false;
+    };
+  }, [canShare, pdf, pdfName]);
   const say = (s: string) => {
     setStatus(s);
     window.setTimeout(() => setStatus(""), 2600);
@@ -23,12 +44,10 @@ export function ShareBar({ url, title, pdf, pdfName, className = "", compact = f
   ];
 
   const nativeShare = async () => {
-    if (!navigator.share) return copy();
     try {
       // Share the PDF itself where the device supports sharing files; otherwise the article link.
-      const res = await fetch(pdf);
-      const file = res.ok ? new File([await res.blob()], pdfName, { type: "application/pdf" }) : null;
-      if (file && navigator.canShare?.({ files: [file] })) await navigator.share({ title, text: url, files: [file] });
+      const f = file.current;
+      if (f && navigator.canShare?.({ files: [f] })) await navigator.share({ title, text: url, files: [f] });
       else await navigator.share({ title, url });
     } catch (e) {
       if ((e as DOMException)?.name !== "AbortError") await copy();
@@ -57,9 +76,11 @@ export function ShareBar({ url, title, pdf, pdfName, className = "", compact = f
       </a>
       <span aria-hidden className="mx-1.5 h-4 w-px bg-line" />
       {!compact && <span className="type-label mr-1 text-haze">Share</span>}
-      <button type="button" onClick={nativeShare} className={`${item} share-native`}>
-        Share…
-      </button>
+      {canShare && (
+        <button type="button" onClick={nativeShare} className={item}>
+          Share…
+        </button>
+      )}
       {links.map((l) => (
         <a key={l.label} href={l.href} target={l.label === "Email" ? undefined : "_blank"} rel="noopener noreferrer" className={item}>
           {l.label}

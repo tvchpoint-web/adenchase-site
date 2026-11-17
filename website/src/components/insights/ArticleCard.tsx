@@ -9,7 +9,7 @@ export function ArticleCard({ article }: { article: Article }) {
     <article className="editorial-row group relative grid gap-3 border-t border-line py-8 md:grid-cols-12 md:gap-8">
       <EditionMeta article={article} minutes={v.minutes} className="md:col-span-4" />
       <div className="md:col-span-8">
-        <h3 className="text-[1.6rem] font-semibold leading-tight tracking-[-0.02em] text-ink">
+        <h3 className="type-title text-ink">
           <Link href={`/insights/${article.slug}`} className="outline-none after:absolute after:inset-0 after:content-[''] group-hover:text-jade focus-visible:underline">
             {article.title}
           </Link>

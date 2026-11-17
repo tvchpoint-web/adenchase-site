@@ -24,6 +24,13 @@ const nextConfig: NextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         ],
       },
+      // Previews and other *.vercel.app addresses are never indexed (decided per request, by host,
+      // so promoting a preview build to production cannot carry it over).
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "(?<host>.+)\\.vercel\\.app" }],
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
       // Edition PDFs and graphics: the HTML article is the canonical, indexable source.
       {
         source: "/editions/:path*",

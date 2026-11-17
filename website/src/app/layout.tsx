@@ -29,8 +29,9 @@ export const metadata: Metadata = {
     description: SITE.description,
   },
   twitter: { card: "summary_large_image", title: `${SITE.name} | ${SITE.statement}`, description: SITE.description },
-  // Vercel previews are never indexed (VERCEL_ENV is "preview" there); production is.
-  robots: process.env.VERCEL_ENV && process.env.VERCEL_ENV !== "production" ? { index: false, follow: false } : { index: true, follow: true },
+  // Indexable on the real domain. Vercel hosts (previews, *.vercel.app) get X-Robots-Tag: noindex at
+  // request time (next.config.ts), so a promoted preview build can never carry a stale noindex.
+  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {

@@ -19,8 +19,8 @@ export function AuthorSignature({ author }: { author: Author }) {
             <span className="text-mist">{author.email}</span>
           )
         ) : null}
-        <a href={SITE.url.replace("https://", "https://www.")} className="link-quiet underline-offset-4 hover:underline">
-          {SITE.url.replace("https://", "www.")}
+        <a href="https://www.adenchase.com" className="link-quiet underline-offset-4 hover:underline">
+          www.adenchase.com
         </a>
       </p>
     </address>

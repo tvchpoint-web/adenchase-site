@@ -45,7 +45,7 @@ export default function InsightsPage() {
             </Reveal>
             <div className="lg:col-span-5">
               <EditionMeta article={featured} minutes={f.minutes} />
-              <h2 id="featured-title" className="mt-6 text-[clamp(2rem,1.2rem+2.4vw,3.4rem)] font-semibold leading-[1.04] tracking-[-0.03em] text-ink">
+              <h2 id="featured-title" className="type-title mt-6 text-ink">
                 <Link href={`/insights/${f.slug}`} className="outline-none hover:text-jade focus-visible:underline">
                   {f.title}
                 </Link>

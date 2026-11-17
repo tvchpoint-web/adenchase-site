@@ -155,9 +155,12 @@ export function formatDate(iso: string) {
  * A fingerprint of everything the generated assets show. `npm run editions` records it next to
  * the PDF and graphics; a unit test fails if an edition changes without its assets being rebuilt.
  */
+/** Bump when the PDF or graphic templates change, so every edition's assets must be regenerated. */
+export const EDITION_TEMPLATE_VERSION = 1;
+
 export function editionFingerprint(a: Article): string {
   const au = authorOf(a);
-  const s = JSON.stringify([a.issue, a.edition, a.slug, a.title, a.subtitle, a.category, a.date, a.body, a.image, au]);
+  const s = JSON.stringify([EDITION_TEMPLATE_VERSION, a.issue, a.edition, a.slug, a.title, a.subtitle, a.category, a.date, a.body, a.image, au]);
   let h = 0x811c9dc5;
   for (let i = 0; i < s.length; i++) {
     h ^= s.charCodeAt(i);

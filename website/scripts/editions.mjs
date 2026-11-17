@@ -78,7 +78,8 @@ try {
   writeFileSync(join(ROOT, "public/editions/manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
 } finally {
   server.kill("SIGTERM");
+  // Always leave a normal build behind (without the template routes), even if generation failed.
+  console.log("• Rebuilding without templates…");
+  run("npx", ["next", "build"]);
 }
-console.log("• Rebuilding without templates…");
-run("npx", ["next", "build"]);
 console.log("Done.");
