@@ -29,7 +29,8 @@ export const metadata: Metadata = {
     description: SITE.description,
   },
   twitter: { card: "summary_large_image", title: `${SITE.name} | ${SITE.statement}`, description: SITE.description },
-  robots: { index: true, follow: true },
+  // Vercel previews are never indexed (VERCEL_ENV is "preview" there); production is.
+  robots: process.env.VERCEL_ENV && process.env.VERCEL_ENV !== "production" ? { index: false, follow: false } : { index: true, follow: true },
 };
 
 export const viewport: Viewport = {

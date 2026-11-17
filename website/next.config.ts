@@ -24,6 +24,14 @@ const nextConfig: NextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         ],
       },
+      // Edition PDFs and graphics: the HTML article is the canonical, indexable source.
+      {
+        source: "/editions/:path*",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex" },
+          { key: "Cache-Control", value: "public, max-age=3600, must-revalidate" },
+        ],
+      },
     ];
   },
 };

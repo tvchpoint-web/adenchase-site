@@ -1099,3 +1099,34 @@ html[data-opening-hide-header="1"] .site-logo {
     transform: none;
   }
 }
+
+/* ------------------------------------------------------------ The Opportunity Perspective (editorial) */
+.editorial-masthead {
+  font-size: clamp(2.1rem, 1.1rem + 4.6vw, 5.6rem);
+  font-weight: 650;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+/* Placeholder for a photograph whose licence is not yet approved: plainly a placeholder, never fake imagery. */
+.editorial-placeholder {
+  background:
+    repeating-linear-gradient(135deg, color-mix(in oklab, var(--ocean) 6%, transparent) 0 1px, transparent 1px 14px),
+    linear-gradient(160deg, color-mix(in oklab, var(--sapphire) 45%, var(--navy)), var(--navy-deep));
+  border: 1px dashed color-mix(in oklab, var(--ocean) 40%, transparent);
+}
+.insight-prose > p:first-child::first-letter {
+  float: left;
+  margin: 0.08em 0.12em 0 0;
+  color: var(--ink);
+  font-size: 3.4em;
+  font-weight: 600;
+  line-height: 0.82;
+}
+.insight-prose ul li::marker {
+  color: var(--jade);
+}
+@media (prefers-reduced-motion: reduce) {
+  .editorial-row a {
+    transition: none;
+  }
+}

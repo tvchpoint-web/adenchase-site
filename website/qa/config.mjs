@@ -16,7 +16,7 @@ export const OVERLAP_EXTRA_VIEWPORTS = {
 };
 
 /** Every public route, plus one unknown path that must answer 404. */
-export const ROUTES = ["/", "/about", "/business-development", "/ai-engineering", "/market-growth", "/government-institutions", "/capabilities", "/insights", "/contact"];
+export const ROUTES = ["/", "/about", "/business-development", "/ai-engineering", "/market-growth", "/government-institutions", "/capabilities", "/insights", "/insights/paradise-shouldnt-come-with-preventable-risks", "/contact"];
 /** Retired routes that must redirect to their replacements. */
 export const REDIRECTS = { "/approach": "/about", "/expertise": "/capabilities", "/engagement": "/contact" };
 export const NOT_FOUND_ROUTE = "/qa-route-that-does-not-exist";
