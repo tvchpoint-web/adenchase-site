@@ -52,12 +52,7 @@ export default async function PrintEdition({ params }: PageProps<"/editions/[slu
           <img src={a.image.src} alt={a.image.alt} />
           {a.image.credit ? <figcaption>{a.image.credit}</figcaption> : null}
         </figure>
-      ) : (
-        <figure className="pdf-figure pdf-placeholder" aria-label="Placeholder for the featured photograph">
-          <p className="pdf-ph-label">Featured photograph · {a.image.subject}</p>
-          <p className="pdf-ph-note">Temporary placeholder: a licensed photograph will replace this panel before publication.</p>
-        </figure>
-      )}
+      ) : null}
       <ArticleBody blocks={v.blocks} className="pdf-body" />
       <section className="pdf-end">
         <div className="pdf-sign">

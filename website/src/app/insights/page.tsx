@@ -41,12 +41,14 @@ export default function InsightsPage() {
             <p className="type-label text-ink">{inaugural ? "Inaugural edition" : "Featured"}</p>
           </div>
           <div className="mt-8 grid gap-10 lg:grid-cols-12 lg:gap-14">
-            <Reveal className="lg:col-span-7">
-              <Link href={`/insights/${f.slug}`} tabIndex={-1} aria-hidden className="block">
-                <FeaturedImage image={f.image} priority />
-              </Link>
-            </Reveal>
-            <div className="lg:col-span-5">
+            {f.image.approved && f.image.src ? (
+              <Reveal className="lg:col-span-7">
+                <Link href={`/insights/${f.slug}`} tabIndex={-1} aria-hidden className="block">
+                  <FeaturedImage image={f.image} priority />
+                </Link>
+              </Reveal>
+            ) : null}
+            <div className={f.image.approved && f.image.src ? "lg:col-span-5" : "lg:col-span-8"}>
               <EditionMeta article={featured} minutes={f.minutes} />
               <h2 id="featured-title" className="type-title mt-6 text-ink">
                 <Link href={`/insights/${f.slug}`} className="outline-none hover:text-jade focus-visible:underline">
