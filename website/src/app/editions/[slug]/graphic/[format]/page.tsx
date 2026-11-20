@@ -6,83 +6,85 @@ import { BARE_PAGE_CSS, templateSlugs } from "@/lib/editorial/templates";
 const FORMATS = { landscape: [1200, 630], portrait: [1080, 1350], story: [1080, 1920] } as const;
 type Format = keyof typeof FORMATS;
 
+/**
+ * Per-format scale. Sizes are chosen so the headline stays legible where previews are smallest:
+ * a 1200×630 link card is shown about 350px wide on a phone, so its 78px headline reads at ~23px.
+ * The story format keeps text inside Instagram/WhatsApp's top and bottom interface zones.
+ */
+const SCALE: Record<Format, { pad: [number, number, number, number]; mast: number; rule: number; title: number; byline: number; logo: number; url: number }> = {
+  landscape: { pad: [58, 68, 50, 68], mast: 19, rule: 3, title: 78, byline: 21, logo: 200, url: 19 },
+  portrait: { pad: [96, 92, 84, 92], mast: 27, rule: 4, title: 112, byline: 30, logo: 290, url: 27 },
+  story: { pad: [250, 88, 260, 88], mast: 29, rule: 4, title: 112, byline: 32, logo: 310, url: 29 },
+};
+
 export const dynamicParams = false;
 export const generateStaticParams = () => templateSlugs().flatMap((slug) => (Object.keys(FORMATS) as Format[]).map((format) => ({ slug, format })));
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 /**
- * Promotional graphic for an edition (captured as an image by `npm run editions`): masthead,
- * issue, headline, photograph, author, discreet ADEN-CHASE branding and the web address.
+ * Social-sharing graphic for an edition (captured as an image by `npm run editions`): a text-only
+ * editorial card — masthead and issue, the headline, the author, and the official ADEN-CHASE
+ * artwork with the web address. No photograph (the featured photograph is for the online article).
  */
 export default async function EditionGraphic({ params }: PageProps<"/editions/[slug]/graphic/[format]">) {
   const { slug, format } = await params;
   const a = articleBySlug(slug);
   if (!a || !(format in FORMATS)) notFound();
-  const [w, h] = FORMATS[format as Format];
-  const wide = format === "landscape";
-  // The featured photograph is for the online article only; the graphics do not change with it.
-  const photo: string | null = null;
-  const titleSize = wide ? 54 : format === "portrait" ? 76 : 88;
+  const f = format as Format;
+  const [w, h] = FORMATS[f];
+  const s = SCALE[f];
+  const author = authorOf(a);
 
   return (
-    <div className="g" style={{ width: w, height: h }}>
+    <div className="g" style={{ width: w, height: h, padding: s.pad.map((v) => `${v}px`).join(" ") }}>
       <style>{BARE_PAGE_CSS + G_CSS}</style>
-      <div className={`g-photo ${photo ? "" : "g-ph"}`} style={wide ? { left: 640, top: 0, width: 560, height: h } : { left: 0, top: 0, width: w, height: format === "portrait" ? 560 : 900 }}>
-        {photo ? (
-          // eslint-disable-next-line @next/next/no-img-element -- licensed editorial photograph
-          <img src={photo} alt="" />
-        ) : (
-          <p>
-            Photograph pending approval
-            <br />
-            <span>{a.image.subject}</span>
-          </p>
-        )}
-      </div>
-      <div className="g-text" style={wide ? { left: 64, top: 56, width: 520, bottom: 52 } : { left: 80, right: 80, top: format === "portrait" ? 620 : 980, bottom: 72 }}>
-        <p className="g-pub" style={{ fontSize: wide ? 18 : 27 }}>
-          The Opportunity Perspective
-        </p>
-        <p className="g-issue" style={{ fontSize: wide ? 15 : 22 }}>
-          {issueLabel(a.issue)}
-          {a.edition ? ` · ${a.edition}` : ""}
-        </p>
-        <h1 className="g-title" style={{ fontSize: titleSize }}>
+      <header className="g-mast" style={{ fontSize: s.mast }}>
+        <span>{INSIGHTS.title}</span>
+        <span className="g-sep" aria-hidden="true">
+          |
+        </span>
+        <span className="g-issue">{issueLabel(a.issue)}</span>
+      </header>
+      <span className="g-rule" style={{ height: s.rule, width: s.mast * 3 }} />
+
+      <main className="g-body">
+        <h1 className="g-title" style={{ fontSize: s.title, textWrap: f === "landscape" ? "balance" : "pretty" }}>
           {a.title}
         </h1>
-        <p className="g-author" style={{ fontSize: wide ? 20 : 28 }}>
-          {authorOf(a).name}
+        <p className="g-byline" style={{ fontSize: s.byline }}>
+          {author.name}
+          <span className="g-dot"> · </span>
+          {author.title}
         </p>
-        <div className="g-foot">
-          {/* eslint-disable-next-line @next/next/no-img-element -- the official logo (colour-to-alpha cut of the master) */}
-          <img src="/brand/aden-chase-logo-transparent.png" alt="" style={{ width: wide ? 190 : 250 }} />
-          <span style={{ fontSize: wide ? 17 : 24 }}>adenchase.com</span>
-        </div>
-      </div>
-      <span className="g-tagline" style={{ fontSize: wide ? 13 : 18 }}>
-        {INSIGHTS.tagline}
-      </span>
+      </main>
+
+      <footer className="g-foot">
+        {/* eslint-disable-next-line @next/next/no-img-element -- the official logo (colour-to-alpha cut of the master artwork) */}
+        <img src="/brand/aden-chase-logo-transparent.png" alt="" style={{ width: s.logo }} />
+        <span style={{ fontSize: s.url }}>adenchase.com</span>
+      </footer>
     </div>
   );
 }
 
 const G_CSS = `
 html, body { margin: 0; background: #00103D !important; }
-.g { position: relative; overflow: hidden; background: #00103D; color: #fff; font-family: var(--font-inter-tight), system-ui, sans-serif; }
-.g::before { content: ""; position: absolute; inset: 0; background: radial-gradient(80% 70% at 0% 100%, rgba(0,66,172,0.55), transparent 70%); }
-.g-photo { position: absolute; overflow: hidden; }
-.g-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.g-ph { display: flex; align-items: flex-end; padding: 36px; box-sizing: border-box; border-left: 1px dashed rgba(0,211,251,0.45); border-bottom: 1px dashed rgba(0,211,251,0.45);
-  background: repeating-linear-gradient(135deg, rgba(0,211,251,0.07) 0 1px, transparent 1px 16px), linear-gradient(160deg, #0a2e7a, #010b31); }
-.g-ph p { margin: 0; font-size: 18px; letter-spacing: 0.18em; text-transform: uppercase; color: #00D3FB; line-height: 1.6; }
-.g-ph p span { letter-spacing: 0; text-transform: none; color: #b4c4e0; font-size: 26px; }
-.g-text { position: absolute; display: flex; flex-direction: column; }
-.g-pub { margin: 0; font-size: 18px; font-weight: 650; letter-spacing: 0.24em; text-transform: uppercase; color: #fff; }
-.g-issue { margin: 10px 0 0; font-size: 15px; letter-spacing: 0.2em; text-transform: uppercase; color: #83FD80; }
-.g-title { margin: 28px 0 0; font-weight: 650; line-height: 1.04; letter-spacing: -0.03em; color: #fff; }
-.g-author { margin: 22px 0 0; color: #b4c4e0; }
-.g-foot { margin-top: auto; display: flex; align-items: flex-end; justify-content: space-between; border-top: 1px solid rgba(180,196,224,0.25); padding-top: 18px; }
+.g { position: relative; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column; color: #fff;
+  font-family: var(--font-inter-tight), system-ui, sans-serif;
+  background:
+    radial-gradient(70% 60% at 0% 100%, rgba(0,66,172,0.55), transparent 72%),
+    radial-gradient(45% 40% at 100% 0%, rgba(0,211,251,0.08), transparent 70%),
+    #00103D; }
+.g > * { position: relative; }
+.g-mast { display: flex; align-items: baseline; gap: 0.7em; margin: 0; font-weight: 650; letter-spacing: 0.22em; text-transform: uppercase; line-height: 1; }
+.g-sep { color: rgba(180,196,224,0.55); letter-spacing: 0; font-weight: 400; }
+.g-issue { color: #83FD80; }
+.g-rule { display: block; margin-top: 0.9em; background: #83FD80; border-radius: 1px; }
+.g-body { margin: auto 0; padding: 0.4em 0; }
+.g-title { margin: 0; font-weight: 650; line-height: 1.02; letter-spacing: -0.035em; color: #fff; }
+.g-byline { margin: 0.9em 0 0; color: #b4c4e0; line-height: 1.3; letter-spacing: 0.005em; }
+.g-dot { color: rgba(180,196,224,0.55); }
+.g-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; border-top: 1px solid rgba(180,196,224,0.22); padding-top: 0.9em; font-size: 20px; }
 .g-foot img { display: block; height: auto; }
-.g-foot span { color: #b4c4e0; letter-spacing: 0.02em; }
-.g-tagline { position: absolute; right: 36px; bottom: 18px; display: none; }
+.g-foot span { color: #b4c4e0; letter-spacing: 0.02em; line-height: 1; }
 `;

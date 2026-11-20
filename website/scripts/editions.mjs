@@ -12,7 +12,7 @@
  * Chromium, and finally rebuilds the site normally. No external service is involved.
  */
 import { spawnSync, spawn } from "node:child_process";
-import { mkdirSync, writeFileSync, statSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { chromium } from "playwright";
 
@@ -35,6 +35,8 @@ try {
     await sleep(500);
   }
   const editions = await (await fetch(`${BASE}/editions/list`)).json();
+  // --graphics-only: regenerate the social graphics and keep each existing PDF byte-for-byte.
+  const graphicsOnly = process.argv.includes("--graphics-only");
   const browser = await chromium.launch();
   const manifest = {};
   for (const e of editions) {
@@ -51,7 +53,8 @@ try {
     const fingerprint = await page.getAttribute(".pdf", "data-fingerprint");
     if (fingerprint !== e.fingerprint) throw new Error("fingerprint mismatch");
     const small = "font-family: Helvetica, Arial, sans-serif; font-size: 7px; color: #6b7794; width: 100%; padding: 0 0.95in; display: flex; justify-content: space-between; letter-spacing: 0.06em;";
-    await page.pdf({
+    if (graphicsOnly && !existsSync(out(e.assets.pdf))) throw new Error(`${e.assets.pdf} is missing: run npm run editions (full) first`);
+    if (!graphicsOnly) await page.pdf({
       path: out(e.assets.pdf),
       format: "Letter",
       printBackground: true,
