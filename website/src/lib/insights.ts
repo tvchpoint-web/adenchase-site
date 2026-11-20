@@ -207,7 +207,7 @@ export const EDITION_TEMPLATE_VERSION = 2;
 
 export function editionFingerprint(a: Article): string {
   const au = authorOf(a);
-  const s = JSON.stringify([EDITION_TEMPLATE_VERSION, a.issue, a.edition, a.slug, a.title, a.subtitle, a.category, a.date, a.body, a.image, au]);
+  const s = JSON.stringify([EDITION_TEMPLATE_VERSION, a.issue, a.edition, a.slug, a.title, a.subtitle, a.category, a.date, a.body, a.image.subject, au]);
   let h = 0x811c9dc5;
   for (let i = 0; i < s.length; i++) {
     h ^= s.charCodeAt(i);

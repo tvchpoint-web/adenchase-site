@@ -20,7 +20,8 @@ export default async function EditionGraphic({ params }: PageProps<"/editions/[s
   if (!a || !(format in FORMATS)) notFound();
   const [w, h] = FORMATS[format as Format];
   const wide = format === "landscape";
-  const photo = a.image.approved && a.image.src ? a.image.src : null;
+  // The featured photograph is for the online article only; the graphics do not change with it.
+  const photo: string | null = null;
   const titleSize = wide ? 54 : format === "portrait" ? 76 : 88;
 
   return (

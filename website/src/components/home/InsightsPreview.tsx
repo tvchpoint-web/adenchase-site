@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Reveal } from "@/components/editorial/SplitLines";
 import { EditionMeta } from "@/components/insights/EditionMeta";
-import { FeaturedImage } from "@/components/insights/FeaturedImage";
 import { INSIGHTS, featuredArticle, view } from "@/lib/insights";
 
 /**
@@ -30,12 +29,8 @@ export function InsightsPreview() {
           </Reveal>
         </div>
         <div className="mt-10 grid gap-10 lg:grid-cols-12 lg:gap-14">
-          {a.image.approved && a.image.src ? (
-            <Reveal delay={160} className="lg:col-span-6">
-              <FeaturedImage image={a.image} sizes="(min-width: 1024px) 45vw, 100vw" />
-            </Reveal>
-          ) : null}
-          <Reveal delay={220} className={a.image.approved && a.image.src ? "lg:col-span-6" : "lg:col-span-8"}>
+          {/* The featured photograph appears on the article page only. */}
+          <Reveal delay={220} className="lg:col-span-8">
             <EditionMeta article={a} minutes={v.minutes} />
             <h3 className="type-title mt-6 text-ink">{a.title}</h3>
             <p className="mt-5 max-w-[34rem] text-[1.05rem] leading-relaxed text-mist">{a.subtitle}</p>

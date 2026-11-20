@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Reveal } from "@/components/editorial/SplitLines";
 import { ArticleCard } from "@/components/insights/ArticleCard";
 import { EditionMeta } from "@/components/insights/EditionMeta";
-import { FeaturedImage } from "@/components/insights/FeaturedImage";
 import { ShareBar } from "@/components/insights/ShareBar";
 import { pageMeta } from "@/lib/meta";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -41,14 +39,8 @@ export default function InsightsPage() {
             <p className="type-label text-ink">{inaugural ? "Inaugural edition" : "Featured"}</p>
           </div>
           <div className="mt-8 grid gap-10 lg:grid-cols-12 lg:gap-14">
-            {f.image.approved && f.image.src ? (
-              <Reveal className="lg:col-span-7">
-                <Link href={`/insights/${f.slug}`} tabIndex={-1} aria-hidden className="block">
-                  <FeaturedImage image={f.image} priority />
-                </Link>
-              </Reveal>
-            ) : null}
-            <div className={f.image.approved && f.image.src ? "lg:col-span-5" : "lg:col-span-8"}>
+            {/* The featured photograph appears on the article page only. */}
+            <div className="lg:col-span-8">
               <EditionMeta article={featured} minutes={f.minutes} />
               <h2 id="featured-title" className="type-title mt-6 text-ink">
                 <Link href={`/insights/${f.slug}`} className="outline-none hover:text-jade focus-visible:underline">

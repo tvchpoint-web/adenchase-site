@@ -46,13 +46,7 @@ export default async function PrintEdition({ params }: PageProps<"/editions/[slu
       <p className="pdf-byline">
         By {au.name} | {au.organization}
       </p>
-      {a.image.approved && a.image.src ? (
-        <figure className="pdf-figure">
-          {/* eslint-disable-next-line @next/next/no-img-element -- licensed editorial photograph */}
-          <img src={a.image.src} alt={a.image.alt} />
-          {a.image.credit ? <figcaption>{a.image.credit}</figcaption> : null}
-        </figure>
-      ) : null}
+      {/* The PDF is a clean, text-only edition: the featured photograph appears online only. */}
       <ArticleBody blocks={v.blocks} className="pdf-body" />
       <section className="pdf-end">
         <div className="pdf-sign">
