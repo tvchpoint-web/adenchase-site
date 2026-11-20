@@ -1130,3 +1130,26 @@ html[data-opening-hide-header="1"] .site-logo {
     transition: none;
   }
 }
+
+/* ------------------------------------------------- private assessments (/private/*) */
+.assessment-field {
+  @apply rounded-xl border border-line bg-navy-deep/70 text-[1rem] text-ink placeholder:text-haze/70 transition-colors duration-200 hover:border-ocean/50 focus:border-ocean focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-jade;
+}
+.assessment-error {
+  @apply border-l-2 border-ocean pl-4 text-sm leading-relaxed text-ink;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .assessment-step {
+    animation: assessment-in 420ms var(--ease) both;
+  }
+}
+@keyframes assessment-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

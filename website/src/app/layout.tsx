@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
+import { PublicChrome } from "@/components/site/PublicChrome";
 import { RevealController } from "@/components/editorial/RevealController";
 import { PhotoLoader } from "@/components/site/PhotoLoader";
 import { SITE } from "@/lib/site";
@@ -64,9 +65,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
-        <SiteHeader />
+        <PublicChrome>
+          <SiteHeader />
+        </PublicChrome>
         {children}
-        <SiteFooter />
+        <PublicChrome>
+          <SiteFooter />
+        </PublicChrome>
         <RevealController />
         <PhotoLoader />
       </body>

@@ -31,6 +31,15 @@ const nextConfig: NextConfig = {
         has: [{ type: "host", value: "(?<host>.+)\\.vercel\\.app" }],
         headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
       },
+      // Private assessments: never indexed, never cached, and no referrer is sent onward.
+      {
+        source: "/private/:path*",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive" },
+          { key: "Cache-Control", value: "private, no-store" },
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
+      },
       // Edition PDFs and graphics: the HTML article is the canonical, indexable source.
       {
         source: "/editions/:path*",
