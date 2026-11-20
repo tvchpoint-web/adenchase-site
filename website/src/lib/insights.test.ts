@@ -130,6 +130,8 @@ describe("discoverability", () => {
     expect(article.citation[0].url).toBe("https://www.jamaicaobserver.com/2026/11/15/us-tourist-drowns-trying-help-mother-blue-hole-st-ann/");
     expect(JSON.stringify(article.mentions)).toMatch(/Jamaica Safe Waters.*[Pp]roposed/);
     expect(article.contentLocation.address).toMatchObject({ addressRegion: "St. Ann", addressCountry: "JM" });
+    // The approved featured photograph is listed first, with its CC BY licence and credit.
+    expect(article.image[0]).toMatchObject({ url: "https://adenchase.com/photos/editions/001-blue-hole.jpg", width: 1319, height: 740, license: "https://creativecommons.org/licenses/by/2.0/", creator: { name: "nigel burgher" } });
     expect(crumbs["@type"]).toBe("BreadcrumbList");
     expect(crumbs.itemListElement).toHaveLength(3);
   });

@@ -30,6 +30,25 @@ export function editionJsonLd(a: Article, v: EditionView = view(a)) {
     wordCount: wordCount(plainText(v.blocks)), // body only
     timeRequired: `PT${v.minutes}M`,
     image: [
+      // The approved featured photograph (online article), with its licence and credit for image search.
+      ...(a.image.approved && a.image.src
+        ? [
+            {
+              "@type": "ImageObject",
+              url: `${SITE.url}${a.image.src}`,
+              ...(a.image.width && a.image.height ? { width: a.image.width, height: a.image.height } : {}),
+              caption: a.image.alt,
+              ...(a.image.attribution
+                ? {
+                    creditText: `${a.image.attribution.author} (${a.image.attribution.licence})`,
+                    creator: { "@type": "Person", name: a.image.attribution.author, ...(a.image.attribution.authorUrl ? { url: a.image.attribution.authorUrl } : {}) },
+                    license: a.image.attribution.licenceUrl,
+                    acquireLicensePage: a.image.attribution.sourceUrl,
+                  }
+                : {}),
+            },
+          ]
+        : []),
       { "@type": "ImageObject", url: `${SITE.url}${v.assets.landscape}`, width: 1200, height: 630 },
       { "@type": "ImageObject", url: `${SITE.url}${v.assets.portrait}`, width: 1080, height: 1350 },
     ],
