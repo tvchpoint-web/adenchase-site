@@ -58,9 +58,19 @@ export const article: Article = {
       "What safety measures should Jamaican water attractions implement?",
       "What is the proposed Jamaica Safe Waters initiative?",
     ],
-    geography: { name: "Blue Hole, St. Ann, Jamaica", region: "St. Ann", country: "Jamaica", countryCode: "JM" },
+    // The Blue Hole attraction near Ocho Rios, St. Ann (as located by the cited Jamaica Observer report);
+    // also known as Island Gully Falls (the photograph's source record). Not the Blue Hole Mineral Spring
+    // (Westmoreland) or the Blue Lagoon in Portland.
+    geography: {
+      name: "Blue Hole",
+      alternateNames: ["Blue Hole, St. Ann, Jamaica", "Island Gully Falls"],
+      description: "Waterfall and natural pool attraction near Ocho Rios, St. Ann, Jamaica",
+      region: "St. Ann",
+      regionName: "Saint Ann Parish",
+      country: "Jamaica",
+      countryCode: "JM",
+    },
     entities: [
-      { name: "Blue Hole", type: "Place", description: "Natural attraction with pools and waterfalls in St. Ann, Jamaica" },
       { name: "Jamaica", type: "Place" },
       { name: "Jamaica Safe Waters", type: "Thing", description: "Proposed initiative suggested in this article; not an established government programme" },
       { name: "Jamaica Observer", type: "Organization", description: "Newspaper; source of the incident report" },

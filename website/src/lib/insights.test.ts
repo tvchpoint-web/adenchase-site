@@ -129,7 +129,13 @@ describe("discoverability", () => {
     expect(article.author).toMatchObject({ name: "Emmanuel Adenaike, Sr.", jobTitle: "Strategic Development Advisor" });
     expect(article.citation[0].url).toBe("https://www.jamaicaobserver.com/2026/11/15/us-tourist-drowns-trying-help-mother-blue-hole-st-ann/");
     expect(JSON.stringify(article.mentions)).toMatch(/Jamaica Safe Waters.*[Pp]roposed/);
+    // The specific Blue Hole: near Ocho Rios, St. Ann (as the cited report locates it), one linked Place.
+    expect(article.contentLocation).toMatchObject({ "@id": `${article.url}#location`, name: "Blue Hole", alternateName: expect.arrayContaining(["Island Gully Falls"]) });
+    expect(article.contentLocation.description).toMatch(/near Ocho Rios, St\. Ann, Jamaica/);
     expect(article.contentLocation.address).toMatchObject({ addressRegion: "St. Ann", addressCountry: "JM" });
+    expect(article.contentLocation.containedInPlace).toMatchObject({ name: "Saint Ann Parish", containedInPlace: { name: "Jamaica" } });
+    expect(article.about).toContainEqual({ "@id": `${article.url}#location` });
+    expect(JSON.stringify(ld)).not.toMatch(/St\.? Mary|Portland|Westmoreland/); // no unsupported locations
     // The approved featured photograph is listed first, with its CC BY licence and credit.
     expect(article.image[0]).toMatchObject({ url: "https://adenchase.com/photos/editions/001-blue-hole.jpg", width: 1319, height: 740, license: "https://creativecommons.org/licenses/by/2.0/", creator: { name: "nigel burgher" } });
     expect(crumbs["@type"]).toBe("BreadcrumbList");

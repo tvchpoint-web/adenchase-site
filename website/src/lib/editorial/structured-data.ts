@@ -13,6 +13,21 @@ const entity = (e: RelatedEntity) => ({ "@type": e.type, name: e.name, ...(e.des
 export function editionJsonLd(a: Article, v: EditionView = view(a)) {
   const au = authorOf(a);
   const d = a.discoverability;
+  const g = d?.geography;
+  // One Place for the location: described once (contentLocation) and referenced from `about`.
+  const place = g
+    ? {
+        "@type": "Place",
+        "@id": `${v.url}#location`,
+        name: g.name,
+        ...(g.alternateNames?.length ? { alternateName: g.alternateNames } : {}),
+        ...(g.description ? { description: g.description } : {}),
+        address: { "@type": "PostalAddress", ...(g.region ? { addressRegion: g.region } : {}), addressCountry: g.countryCode },
+        containedInPlace: g.regionName
+          ? { "@type": "AdministrativeArea", name: g.regionName, containedInPlace: { "@type": "Country", name: g.country } }
+          : { "@type": "Country", name: g.country },
+      }
+    : null;
   const org = organizationNode;
   const article = {
     "@type": a.kind === "report" ? "NewsArticle" : "OpinionNewsArticle",
@@ -58,18 +73,10 @@ export function editionJsonLd(a: Article, v: EditionView = view(a)) {
     encoding: { "@type": "MediaObject", encodingFormat: "application/pdf", contentUrl: `${SITE.url}${v.assets.pdf}` },
     ...(d
       ? {
-          about: [{ "@type": "Thing", name: d.primaryTopic }, ...d.entities.filter((e) => e.type === "Place").map(entity)],
+          about: [{ "@type": "Thing", name: d.primaryTopic }, ...(place ? [{ "@id": place["@id"] }] : []), ...d.entities.filter((e) => e.type === "Place").map(entity)],
           mentions: d.entities.filter((e) => e.type !== "Place").map(entity),
           keywords: [d.primaryTopic, ...d.secondaryTopics].join(", "),
-          ...(d.geography
-            ? {
-                contentLocation: {
-                  "@type": "Place",
-                  name: d.geography.name,
-                  address: { "@type": "PostalAddress", ...(d.geography.region ? { addressRegion: d.geography.region } : {}), addressCountry: d.geography.countryCode },
-                },
-              }
-            : {}),
+          ...(place ? { contentLocation: place } : {}),
           citation: d.sources.map((s) => ({ "@type": "NewsArticle", headline: s.title, url: s.url, publisher: { "@type": "Organization", name: s.publisher }, ...(s.date ? { datePublished: s.date } : {}) })),
         }
       : {}),

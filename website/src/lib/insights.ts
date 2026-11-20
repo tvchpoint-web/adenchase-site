@@ -71,7 +71,21 @@ export interface Discoverability {
   searchIntents: string[];
   /** Natural-language questions the edition helps answer. */
   questions: string[];
-  geography?: { name: string; region?: string; country: string; countryCode: string };
+  /**
+   * The specific place the edition is about. Only facts supported by the cited sources: used to tell it
+   * apart from similarly named places (one schema.org Place, linked from `about` and `contentLocation`).
+   */
+  geography?: {
+    name: string;
+    alternateNames?: string[];
+    /** One factual line, e.g. "Waterfall and natural pool attraction near Ocho Rios, St. Ann, Jamaica". */
+    description?: string;
+    region?: string;
+    /** Full name of the administrative area, e.g. "Saint Ann Parish". */
+    regionName?: string;
+    country: string;
+    countryCode: string;
+  };
   entities: RelatedEntity[];
   sources: SourceReference[];
   /** Slugs of related published editions (shown only once they exist). */
