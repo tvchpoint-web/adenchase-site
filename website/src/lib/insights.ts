@@ -37,6 +37,8 @@ export interface EditorialImage {
   licence: string | null;
   /** True only once the owner has approved the image and its licence covers every distribution format. */
   approved: boolean;
+  /** Linked credit for openly licensed images (e.g. Creative Commons: title, author, source, licence, changes). */
+  attribution?: { title: string; sourceUrl: string; author: string; authorUrl?: string; via?: string; licence: string; licenceUrl: string; changes?: string };
 }
 
 /** A verified source the edition cites (shown in structured data; links stay in the body). */

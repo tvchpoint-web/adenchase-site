@@ -22,6 +22,12 @@ are layers cut from the official ADEN-CHASE artwork (never redrawn). Block crops
 (rows 234–345); recomposited at rest they reproduce the original exactly, and the underline/green
 junction overlaps by 4px of identical green so scaled layers never show a hairline.
 
+## Editorial photography (The Opportunity Perspective)
+
+| File | Source | Licence | Used for |
+| --- | --- | --- | --- |
+| `editions/001-blue-hole.jpg` | "Island Gully Falls - Blue Hole" by nigel burgher (Flickr, 25 Aug 2016: https://www.flickr.com/photos/nigel_sb/31614815034/), via Wikimedia Commons: https://commons.wikimedia.org/wiki/File:Island_Gully_Falls_-_Blue_Hole_(31614815034).jpg | CC BY 2.0 (https://creativecommons.org/licenses/by/2.0/): attribution required, shown with links under the photo | Issue 001 article only (not the PDF, social graphics, homepage or /insights). 1319×740 crop supplied and approved by the owner 20 Nov 2026; not upscaled. Shows an identifiable visitor (editorial use) |
+
 ## Client-supplied photography
 
 Supplied by ADEN-CHASE for this site (licence status to be confirmed by ADEN-CHASE).

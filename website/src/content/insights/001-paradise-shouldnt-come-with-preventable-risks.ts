@@ -81,16 +81,28 @@ export const article: Article = {
   date: "2026-11-17",
   status: "published",
   featured: true,
-  // No verified, licensed photograph of Blue Hole is on file yet: the publication shows a clearly
-  // labelled placeholder until one is supplied and approved (see README.md → Images and rights).
+  // Approved by the owner (20 Nov 2026), online article only (never the PDF or social graphics).
+  // "Island Gully Falls - Blue Hole" by nigel burgher, CC BY 2.0: attribution with links is shown under the photo.
   image: {
-    src: null,
-    alt: "Blue Hole, St. Ann, Jamaica: turquoise pools and waterfalls among tropical vegetation.",
+    src: "/photos/editions/001-blue-hole.jpg",
+    width: 1319,
+    height: 740,
+    alt: "Visitor wearing a life jacket jumping into the natural turquoise waters at Blue Hole, Jamaica.",
     subject: "Blue Hole, St. Ann, Jamaica",
-    credit: null,
-    source: null,
-    licence: null,
-    approved: false,
+    credit: 'Photo: "Island Gully Falls - Blue Hole" by nigel burgher, via Wikimedia Commons, CC BY 2.0 (cropped)',
+    source: "https://commons.wikimedia.org/wiki/File:Island_Gully_Falls_-_Blue_Hole_(31614815034).jpg (originally https://www.flickr.com/photos/nigel_sb/31614815034/)",
+    licence: "CC BY 2.0, https://creativecommons.org/licenses/by/2.0/ — commercial use and adaptation permitted with attribution",
+    approved: true,
+    attribution: {
+      title: "Island Gully Falls - Blue Hole",
+      sourceUrl: "https://www.flickr.com/photos/nigel_sb/31614815034/",
+      author: "nigel burgher",
+      authorUrl: "https://www.flickr.com/people/134672109@N08",
+      via: "Wikimedia Commons",
+      licence: "CC BY 2.0",
+      licenceUrl: "https://creativecommons.org/licenses/by/2.0/",
+      changes: "cropped",
+    },
   },
   body: String.raw`
 Some time ago, I had the pleasure of visiting Blue Hole, one of Jamaica's remarkable natural attractions.
