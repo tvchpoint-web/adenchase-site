@@ -74,6 +74,10 @@ export const SEO = {
     title: "The Opportunity Perspective | Insights | ADEN-CHASE Strategies",
     description: "The Opportunity Perspective: ideas, observations and practical thinking on business, technology, opportunity and progress from ADEN-CHASE Strategies.",
   },
+  "/privacy": {
+    title: "Privacy Notice | ADEN-CHASE Strategies",
+    description: "How ADEN-CHASE Strategies uses website analytics (Google Analytics), handles inquiries and private assessments, and the choices and rights you have.",
+  },
   "/contact": {
     title: "Contact ADEN-CHASE Strategies | Start a Conversation",
     description: "Start a conversation or request a private consultation with ADEN-CHASE Strategies on business development, AI engineering, market growth or an institutional challenge.",

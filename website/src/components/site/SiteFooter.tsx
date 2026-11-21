@@ -56,7 +56,12 @@ export function SiteFooter() {
           </div>
         </nav>
         <div className="flex flex-col gap-2 border-t border-line pt-8 text-xs text-haze sm:flex-row sm:justify-between lg:col-span-12">
-          <p>© {new Date().getFullYear()} {SITE.name}. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} {SITE.name}. All rights reserved.{" "}
+            <Link href="/privacy" className="link-quiet ml-2 underline-offset-4 hover:underline">
+              Privacy
+            </Link>
+          </p>
           <p>{SITE.belief}</p>
         </div>
       </div>
