@@ -7,6 +7,7 @@ import { RevealController } from "@/components/editorial/RevealController";
 import { PhotoLoader } from "@/components/site/PhotoLoader";
 import { SITE } from "@/lib/site";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { Analytics } from "@/components/analytics/Analytics";
 import { siteJsonLd } from "@/lib/structured-data";
 import "./globals.css";
 
@@ -74,6 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </PublicChrome>
         <RevealController />
         <PhotoLoader />
+        <Analytics />
       </body>
     </html>
   );

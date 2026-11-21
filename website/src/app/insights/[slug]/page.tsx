@@ -7,6 +7,7 @@ import { EditionMeta } from "@/components/insights/EditionMeta";
 import { FeaturedImage } from "@/components/insights/FeaturedImage";
 import { ReadingProgress } from "@/components/insights/ReadingProgress";
 import { ShareBar } from "@/components/insights/ShareBar";
+import { ArticleAnalytics } from "@/components/insights/ArticleAnalytics";
 import { INSIGHTS, articleBySlug, authorOf, issueLabel, publishedArticles, view } from "@/lib/insights";
 import { SITE } from "@/lib/site";
 import { editionJsonLd } from "@/lib/editorial/structured-data";
@@ -60,6 +61,7 @@ export default async function ArticlePage({ params }: PageProps<"/insights/[slug
   return (
     <main id="main">
       <ReadingProgress target="#edition" />
+      <ArticleAnalytics slug={a.slug} issue={String(a.issue).padStart(3, "0")} category={a.category} />
       <JsonLd data={jsonLd} />
       <article id="edition" aria-labelledby="page-title">
         <header data-reveal-immediate="" className="mx-auto max-w-[60rem] px-5 pt-32 sm:px-8 lg:pt-40">

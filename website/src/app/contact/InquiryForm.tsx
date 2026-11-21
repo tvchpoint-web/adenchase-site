@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef } from "react";
 import { submitInquiry } from "./actions";
 import type { InquiryField, InquiryState } from "@/lib/inquiry/schema";
 import { INTERESTS } from "@/lib/site";
+import { track } from "@/lib/analytics";
 
 const initial: InquiryState = { status: "idle" };
 
@@ -33,6 +34,11 @@ export function InquiryForm() {
       statusRef.current?.focus();
     }
   }, [state]);
+
+  // A lead is counted only when the server has accepted the inquiry (never on the button click).
+  useEffect(() => {
+    if (state.status === "sent") track("generate_lead", { form_name: "contact_inquiry" });
+  }, [state.status]);
 
   if (state.status === "sent") {
     return (
