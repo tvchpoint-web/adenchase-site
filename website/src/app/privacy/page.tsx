@@ -41,8 +41,8 @@ export default function PrivacyPage() {
             have turned off Google&rsquo;s advertising features and Google signals, and we do not use this data for advertising.
           </p>
           <p>
-            For visitors in the European Economic Area, the United Kingdom and Switzerland, analytics cookies are not set; only limited, cookieless measurements are sent. Analytics
-            data is kept for up to 14 months and then deleted by Google.
+            For visitors in the European Economic Area, the United Kingdom and Switzerland, analytics cookies are not set; Google Analytics receives only limited, cookieless
+            measurements without identifiers. Detailed analytics data is kept for 14 months; aggregated reports, which do not identify individuals, may be kept longer.
           </p>
           <p>
             You can block or delete cookies in your browser settings, or install Google&rsquo;s opt-out browser add-on (
@@ -58,7 +58,7 @@ export default function PrivacyPage() {
 
           <h2>Contact and inquiry forms</h2>
           <p>
-            When you contact us, we receive the details you choose to provide, such as your name, email address, organisation, area of interest and message. We use them only to
+            When you contact us, we receive the details you choose to provide, such as your name, organisation, email address, website, area of interest and message. We use them only to
             respond to you and to consider a possible engagement. The form is delivered to us by email through our email delivery provider (Resend). We do not sell this
             information or add it to marketing lists.
           </p>
@@ -66,7 +66,7 @@ export default function PrivacyPage() {
           <h2>Private assessments</h2>
           <p>
             Some clients are invited to complete a private assessment. Those pages are available only with an access code, use no analytics, and the answers are stored in a
-            private, access-restricted Google workspace controlled by ADEN-CHASE, used only to prepare the assessment and follow up.
+            private, access-restricted Google Sheet in ADEN-CHASE&rsquo;s Google account, used only to prepare the assessment and follow up.
           </p>
 
           <h2>Hosting and security</h2>
